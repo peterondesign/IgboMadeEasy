@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "IgboMadeEasy",
+    "slug": "igbo-made-easy",
+    "scheme": "igbomadeeasy",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.igbomadeeasy.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {},
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a3f01ad1-dd08-400b-a04b-f07b9e3343b6"
+      }
+    }
+  }
+}

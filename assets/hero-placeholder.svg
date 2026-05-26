@@ -1,0 +1,68 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="1200" rx="48" fill="transparent"/>
+
+  <g opacity="0.18">
+    <circle cx="240" cy="290" r="72" fill="#55BFF2"/>
+    <circle cx="960" cy="260" r="86" fill="#FF9A3C"/>
+    <circle cx="940" cy="820" r="96" fill="#8A5CF6"/>
+    <circle cx="260" cy="850" r="88" fill="#00B388"/>
+  </g>
+
+  <g transform="translate(120 220)">
+    <rect x="0" y="540" width="960" height="260" rx="86" fill="#35584A"/>
+    <rect x="58" y="660" width="844" height="32" rx="16" fill="#273F35" opacity="0.85"/>
+    <rect x="120" y="650" width="720" height="40" rx="20" fill="#4F7261" opacity="0.65"/>
+
+    <g transform="translate(130 48)">
+      <circle cx="0" cy="260" r="74" fill="#C97A4A"/>
+      <circle cx="0" cy="200" r="90" fill="#24364F"/>
+      <rect x="-50" y="250" width="100" height="220" rx="48" fill="#2D9C9A"/>
+    </g>
+
+    <g transform="translate(250 10)">
+      <circle cx="0" cy="250" r="72" fill="#D38A5D"/>
+      <circle cx="0" cy="188" r="84" fill="#414141"/>
+      <rect x="-44" y="242" width="88" height="232" rx="44" fill="#0F8C73"/>
+    </g>
+
+    <g transform="translate(450 -10)">
+      <circle cx="0" cy="240" r="90" fill="#A35D41"/>
+      <circle cx="0" cy="160" r="102" fill="#3657A8"/>
+      <rect x="-66" y="242" width="132" height="278" rx="58" fill="#355DC4"/>
+    </g>
+
+    <g transform="translate(670 18)">
+      <circle cx="0" cy="240" r="78" fill="#F0B088"/>
+      <circle cx="0" cy="182" r="88" fill="#2F4F95"/>
+      <rect x="-54" y="240" width="108" height="240" rx="52" fill="#FF8A22"/>
+    </g>
+
+    <g transform="translate(790 40)">
+      <circle cx="0" cy="250" r="70" fill="#D38A5D"/>
+      <circle cx="0" cy="190" r="80" fill="#44251F"/>
+      <rect x="-48" y="246" width="96" height="220" rx="44" fill="#6B3A2E"/>
+    </g>
+
+    <g transform="translate(300 260)">
+      <circle cx="0" cy="220" r="72" fill="#C77A4E"/>
+      <circle cx="0" cy="164" r="82" fill="#F3A95F"/>
+      <rect x="-50" y="220" width="100" height="246" rx="48" fill="#F27E65"/>
+    </g>
+
+    <g transform="translate(548 270)">
+      <circle cx="0" cy="212" r="74" fill="#B96B4C"/>
+      <circle cx="0" cy="160" r="84" fill="#A81616"/>
+      <rect x="-52" y="216" width="104" height="248" rx="48" fill="#1D1A1A"/>
+    </g>
+
+    <g transform="translate(738 288)">
+      <circle cx="0" cy="192" r="60" fill="#D38A5D"/>
+      <circle cx="0" cy="146" r="70" fill="#444444"/>
+      <rect x="-42" y="194" width="84" height="220" rx="38" fill="#F2C15F"/>
+    </g>
+
+    <circle cx="604" cy="598" r="22" fill="#111111" opacity="0.25"/>
+    <circle cx="356" cy="592" r="18" fill="#111111" opacity="0.18"/>
+    <circle cx="838" cy="594" r="18" fill="#111111" opacity="0.18"/>
+  </g>
+</svg>

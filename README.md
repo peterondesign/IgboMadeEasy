@@ -2,7 +2,13 @@
 
 Starter repository for IgboMadeEasy_v1.
 
+## Expo app
+
+This repo now contains a minimal Expo React Native app with a single landing screen and SVG support.
+
+Place or replace the placeholder visual at `assets/hero-placeholder.svg`. The project is configured with `react-native-svg-transformer`, so SVG assets can be imported directly into the screen.
+
 ## Next steps
 
-- Add the app or site stack you want to use.
-- Connect the repo to GitHub and push the first commit.
+- Run `npm install` to fetch dependencies.
+- Start the app with `npm start`.
