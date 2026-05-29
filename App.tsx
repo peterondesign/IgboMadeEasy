@@ -938,6 +938,7 @@ function QuizScreen({
         <Pressable
           onPress={onBack}
           style={styles.quizBackIconButton}
+          hitSlop={12}
           accessibilityRole="button"
           accessibilityLabel="Back to lessons"
         >
@@ -961,6 +962,7 @@ function QuizScreen({
             <Pressable
               onPress={onPlayAudio}
               style={styles.speakerButton}
+              hitSlop={14}
               accessibilityRole="button"
               accessibilityLabel="Play audio"
             >
@@ -970,6 +972,7 @@ function QuizScreen({
             <Pressable
               onPress={onToggleAudioPlaybackRate}
               style={styles.speedToggleButton}
+              hitSlop={12}
               accessibilityRole="button"
               accessibilityLabel="Toggle playback speed"
             >
@@ -995,7 +998,7 @@ function QuizScreen({
           <Pressable
             onPress={onOpenHint}
             style={styles.hintIconButton}
-            hitSlop={12}
+            hitSlop={14}
             accessibilityRole="button"
             accessibilityLabel="Open hint"
           >
@@ -1045,7 +1048,7 @@ function QuizScreen({
                     onPress={() => handleSlotPress(slotIndex)}
                     onLongPress={() => handleSlotLongPress(slotIndex)}
                     delayLongPress={170}
-                    hitSlop={10}
+                    hitSlop={14}
                     style={[
                       styles.slotChip,
                       isDenseSentenceLayout && styles.slotChipCompact,
@@ -1090,7 +1093,7 @@ function QuizScreen({
                     key={`bank-${word}-${index}`}
                     onPress={() => placeWord(word)}
                     disabled={isDisabled}
-                    hitSlop={10}
+                    hitSlop={14}
                     style={[
                       styles.wordBankChip,
                       isDenseSentenceLayout && styles.wordBankChipCompact,
@@ -1160,6 +1163,7 @@ function QuizScreen({
               styles.checkButton,
               isDenseSentenceLayout && styles.checkButtonCompact,
             ]}
+            hitSlop={12}
             accessibilityRole="button"
             onPress={onCheckAnswer}
           >
@@ -1874,10 +1878,12 @@ const styles = StyleSheet.create({
   sentenceBuilderWrap: {
     marginTop: 14,
     gap: 10,
+    paddingHorizontal: 4,
   },
   sentenceBuilderWrapCompact: {
     marginTop: 8,
     gap: 6,
+    paddingHorizontal: 2,
   },
   sentenceSourceCard: {
     borderRadius: 14,
@@ -1908,8 +1914,8 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   slotChip: {
-    minWidth: 98,
-    minHeight: 52,
+    minWidth: 108,
+    minHeight: 58,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "#2A2F3A",
@@ -1917,13 +1923,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#10141B",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
   },
   slotChipCompact: {
-    minWidth: 86,
-    minHeight: 44,
+    minWidth: 94,
+    minHeight: 50,
     borderRadius: 13,
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
   },
   slotChipFilled: {
     borderStyle: "solid",
@@ -1963,28 +1971,34 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   wordBankWrap: {
+    marginTop: 10,
+    marginHorizontal: 6,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    gap: 10,
+    gap: 30,
   },
   wordBankWrapCompact: {
-    gap: 7,
+    marginTop: 8,
+    marginHorizontal: 4,
+    gap: 21,
   },
   wordBankChip: {
-    minHeight: 48,
+    minHeight: 56,
     borderRadius: 24,
     borderWidth: 1,
     borderColor: "#2B313D",
     backgroundColor: "#181C23",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 14,
+    paddingHorizontal: 24,
+    paddingVertical: 18,
   },
   wordBankChipCompact: {
-    minHeight: 42,
+    minHeight: 48,
     borderRadius: 21,
-    paddingHorizontal: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 4,
   },
   wordBankChipDisabled: {
     opacity: 0.35,

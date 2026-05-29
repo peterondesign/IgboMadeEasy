@@ -5,6 +5,7 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
+    "start:node22": "npm_config_yes=true npx -p node@22.13.0 node ./node_modules/expo/bin/cli start --host localhost -c",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
