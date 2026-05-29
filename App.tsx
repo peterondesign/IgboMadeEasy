@@ -20,7 +20,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
   Image,
   Modal,
@@ -31,6 +30,10 @@ import SpeakerIcon from "./assets/icons/speaker-icon.svg";
 import CompletionIllustration from "./assets/illustrations/lesson-complete.svg";
 import FireIllustration from "./assets/illustrations/fire.svg";
 import PlantIllustration from "./assets/illustrations/plant.svg";
+import {
+  EVERYDAY_VERBS_AUDIO,
+  EVERYDAY_VERBS_ENTRIES,
+} from "./src/data/everydayVerbsAudio";
 import { GREETINGS_AUDIO, GREETINGS_PHRASES } from "./src/data/greetingsAudio";
 import GameGroup from "./src/groups/GameGroup";
 import HomeGroup from "./src/groups/HomeGroup";
@@ -81,6 +84,12 @@ const GREETINGS_TRANSLATIONS = require("./assets/audio/greetings/translations.js
   string,
   string
 >;
+const GAME_SOUND_SUCCESS = require("./assets/audio/game-sounds/success-sound.m4a");
+const GAME_SOUND_FAILURE = require("./assets/audio/game-sounds/try-again-sound.m4a");
+const QUESTION_AUDIO: Record<string, number> = {
+  ...GREETINGS_AUDIO,
+  ...EVERYDAY_VERBS_AUDIO,
+};
 
 const WORD_QUESTION_BANK: Record<string, Question[]> = {
   greetings: GREETINGS_PHRASES.map((phrase) => ({
@@ -89,18 +98,12 @@ const WORD_QUESTION_BANK: Record<string, Question[]> = {
     visualKey: "",
     audioKey: phrase,
   })),
-  "everyday-verbs": [
-    { prompt: "Eat", answer: "ri", visualKey: "verbs-eat" },
-    { prompt: "Go", answer: "ga", visualKey: "verbs-go" },
-    { prompt: "Come", answer: "bia", visualKey: "verbs-come" },
-    { prompt: "See", answer: "hu", visualKey: "verbs-see" },
-    { prompt: "Speak", answer: "kwuo", visualKey: "verbs-speak" },
-    { prompt: "Sleep", answer: "ra", visualKey: "verbs-sleep" },
-    { prompt: "Read", answer: "guo", visualKey: "verbs-read" },
-    { prompt: "Write", answer: "dee", visualKey: "verbs-write" },
-    { prompt: "Work", answer: "ruo oru", visualKey: "verbs-work" },
-    { prompt: "Play", answer: "gwuo", visualKey: "verbs-play" },
-  ],
+  "everyday-verbs": EVERYDAY_VERBS_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: EVERYDAY_VERBS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
   "asking-questions": [
     { prompt: "Dog", answer: "nkita", visualKey: "nouns-dog" },
     { prompt: "Water", answer: "mmiri", visualKey: "nouns-water" },
@@ -141,33 +144,7 @@ const WORD_QUESTION_BANK: Record<string, Question[]> = {
 
 const SENTENCE_BUILDER_BANK: Record<string, SentenceBuilderSeed[]> = {
   greetings: buildGreetingSentenceSeeds(),
-  "everyday-verbs": [
-    {
-      sourceSentence: "I am eating food.",
-      targetWords: ["mu", "na", "eri", "nri"],
-      distractors: ["ha", "ulo", "enyi"],
-    },
-    {
-      sourceSentence: "We are going home.",
-      targetWords: ["anyi", "na", "aga", "ulo"],
-      distractors: ["mmiri", "ego", "nwa"],
-    },
-    {
-      sourceSentence: "Come here now.",
-      targetWords: ["bia", "ebe", "a", "ugbua"],
-      distractors: ["ga", "hu", "ra"],
-    },
-    {
-      sourceSentence: "They are reading books.",
-      targetWords: ["ha", "na", "agu", "akwukwo"],
-      distractors: ["dee", "uzo", "ego"],
-    },
-    {
-      sourceSentence: "You are working today.",
-      targetWords: ["gi", "na", "aru", "oru", "taa"],
-      distractors: ["bia", "nri", "mmiri"],
-    },
-  ],
+  "everyday-verbs": buildSentenceSeedsFromEntries(EVERYDAY_VERBS_ENTRIES),
   "asking-questions": [
     {
       sourceSentence: "The dog is happy.",
@@ -315,7 +292,7 @@ const LESSON_DEFS = [
   { id: "food-cooking", title: "Food and Cooking" },
 ];
 
-const AUDIO_READY_LESSON_IDS = new Set<string>(["greetings"]);
+const AUDIO_READY_LESSON_IDS = new Set<string>(["greetings", "everyday-verbs"]);
 
 const ACTIVE_QUESTION_BANK: Record<string, Question[]> = Object.fromEntries(
   Object.entries(QUESTION_BANK).map(([lessonId, questions]) => [
@@ -339,7 +316,11 @@ export default function App() {
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState<FeedbackState>(null);
   const [isHintModalOpen, setIsHintModalOpen] = useState(false);
+  const [audioPlaybackRate, setAudioPlaybackRate] = useState<0.25 | 1>(1);
   const activePlayerRef = useRef<ReturnType<typeof createAudioPlayer> | null>(
+    null
+  );
+  const feedbackPlayerRef = useRef<ReturnType<typeof createAudioPlayer> | null>(
     null
   );
 
@@ -451,15 +432,11 @@ export default function App() {
   }, [activeLessonId]);
 
   const activeChoices = useMemo(() => {
-    if (
-      activeLessonId !== "greetings" ||
-      !activeQuestion ||
-      activeQuestion.sentenceBuilder
-    ) {
+    if (!activeLessonId || !activeQuestion || activeQuestion.sentenceBuilder) {
       return [];
     }
 
-    return buildGreetingChoices(activeQuestion.answer);
+    return buildLessonChoices(activeLessonId, activeQuestion);
   }, [activeLessonId, activeQuestion]);
 
   useEffect(() => {
@@ -468,7 +445,46 @@ export default function App() {
         activePlayerRef.current.remove();
         activePlayerRef.current = null;
       }
+
+      if (feedbackPlayerRef.current) {
+        feedbackPlayerRef.current.remove();
+        feedbackPlayerRef.current = null;
+      }
     };
+  }, []);
+
+  const toggleAudioPlaybackRate = useCallback(() => {
+    setAudioPlaybackRate((currentRate) => {
+      const nextRate: 0.25 | 1 = currentRate === 1 ? 0.25 : 1;
+
+      if (activePlayerRef.current) {
+        activePlayerRef.current.setPlaybackRate(nextRate);
+      }
+
+      return nextRate;
+    });
+  }, []);
+
+  const playFeedbackSound = useCallback(async (state: Exclude<FeedbackState, null>) => {
+    const sound = state === "correct" ? GAME_SOUND_SUCCESS : GAME_SOUND_FAILURE;
+
+    try {
+      if (feedbackPlayerRef.current) {
+        feedbackPlayerRef.current.remove();
+        feedbackPlayerRef.current = null;
+      }
+
+      await setAudioModeAsync({
+        playsInSilentMode: true,
+        interruptionMode: "mixWithOthers",
+      });
+
+      const player = createAudioPlayer(sound, { keepAudioSessionActive: true });
+      feedbackPlayerRef.current = player;
+      player.play();
+    } catch {
+      // Ignore feedback sound errors.
+    }
   }, []);
 
   const startLesson = (lessonId: string) => {
@@ -529,7 +545,7 @@ export default function App() {
       return;
     }
 
-    const clip = GREETINGS_AUDIO[activeQuestion.audioKey];
+    const clip = QUESTION_AUDIO[activeQuestion.audioKey];
     if (!clip) {
       return;
     }
@@ -547,11 +563,12 @@ export default function App() {
 
       const player = createAudioPlayer(clip, { keepAudioSessionActive: true });
       activePlayerRef.current = player;
+      player.setPlaybackRate(audioPlaybackRate);
       player.play();
     } catch {
       // Ignore audio playback errors.
     }
-  }, [activeQuestion]);
+  }, [activeQuestion, audioPlaybackRate]);
 
   const checkCurrentAnswer = () => {
     if (!activeQuestion) {
@@ -560,7 +577,13 @@ export default function App() {
 
     const normalizedInput = normalizeAnswer(userAnswer);
     const normalizedExpected = normalizeAnswer(activeQuestion.answer);
-    setFeedback(normalizedInput === normalizedExpected ? "correct" : "wrong");
+    const nextFeedback: FeedbackState =
+      normalizedInput === normalizedExpected ? "correct" : "wrong";
+    setFeedback(nextFeedback);
+
+    if (nextFeedback) {
+      void playFeedbackSound(nextFeedback);
+    }
   };
 
   const continueFromFeedback = () => {
@@ -662,6 +685,8 @@ export default function App() {
             onContinue={continueFromFeedback}
             showSpeaker={Boolean(question.audioKey)}
             onPlayAudio={playActiveAudio}
+            audioPlaybackRate={audioPlaybackRate}
+            onToggleAudioPlaybackRate={toggleAudioPlaybackRate}
             isHintModalOpen={isHintModalOpen}
             onOpenHint={() => setIsHintModalOpen(true)}
             onCloseHint={() => setIsHintModalOpen(false)}
@@ -750,6 +775,8 @@ function QuizScreen({
   onContinue,
   showSpeaker,
   onPlayAudio,
+  audioPlaybackRate,
+  onToggleAudioPlaybackRate,
   isHintModalOpen,
   onOpenHint,
   onCloseHint,
@@ -766,6 +793,8 @@ function QuizScreen({
   onContinue: () => void;
   showSpeaker: boolean;
   onPlayAudio: () => void;
+  audioPlaybackRate: 0.25 | 1;
+  onToggleAudioPlaybackRate: () => void;
   isHintModalOpen: boolean;
   onOpenHint: () => void;
   onCloseHint: () => void;
@@ -783,11 +812,16 @@ function QuizScreen({
   const sentenceBuilder = question.sentenceBuilder;
   const sentenceTargetWords = sentenceBuilder?.targetWords ?? [];
   const sentenceBankWords = sentenceBuilder?.bankWords ?? [];
-  const isMultipleChoice = showSpeaker && choices.length > 0;
+  const isDenseSentenceLayout =
+    isSentenceBuilder &&
+    (sentenceTargetWords.length >= 5 ||
+      sentenceBankWords.length >= 8 ||
+      (sentenceBuilder?.sourceSentence.length ?? 0) >= 34);
+  const isMultipleChoice = choices.length > 0;
+  const promptText = isMultipleChoice ? "What do you hear?" : question.prompt;
   const hasInput = isSentenceBuilder
     ? slottedWords.every((word) => word.trim().length > 0)
     : userAnswer.trim().length > 0;
-  const QuestionVisual = QUESTION_VISUALS[question.visualKey];
 
   const sentenceBankWordCounts = useMemo(
     () => countWords(sentenceBankWords),
@@ -918,18 +952,46 @@ function QuizScreen({
         </View>
 
         {showSpeaker && (
-          <Pressable
-            onPress={onPlayAudio}
-            style={styles.speakerButton}
-            accessibilityRole="button"
-            accessibilityLabel="Play audio"
+          <View
+            style={[
+              styles.speakerControlsRow,
+              isDenseSentenceLayout && styles.speakerControlsRowCompact,
+            ]}
           >
-            <SpeakerIcon width={34} height={34} />
-          </Pressable>
+            <Pressable
+              onPress={onPlayAudio}
+              style={styles.speakerButton}
+              accessibilityRole="button"
+              accessibilityLabel="Play audio"
+            >
+              <SpeakerIcon width={34} height={34} />
+            </Pressable>
+
+            <Pressable
+              onPress={onToggleAudioPlaybackRate}
+              style={styles.speedToggleButton}
+              accessibilityRole="button"
+              accessibilityLabel="Toggle playback speed"
+            >
+              <Text style={styles.speedToggleText}>{audioPlaybackRate.toFixed(2)}x</Text>
+            </Pressable>
+          </View>
         )}
 
-        <View style={styles.quizPromptRow}>
-          <Text style={styles.quizPromptWord}>{question.prompt}</Text>
+        <View
+          style={[
+            styles.quizPromptRow,
+            isDenseSentenceLayout && styles.quizPromptRowCompact,
+          ]}
+        >
+          <Text
+            style={[
+              styles.quizPromptWord,
+              isDenseSentenceLayout && styles.quizPromptWordCompact,
+            ]}
+          >
+            {promptText}
+          </Text>
           <Pressable
             onPress={onOpenHint}
             style={styles.hintIconButton}
@@ -941,23 +1003,26 @@ function QuizScreen({
           </Pressable>
         </View>
 
-        {!showSpeaker && !isSentenceBuilder && (
-          <View style={styles.quizVisualWrap}>
-            {QuestionVisual ? (
-              <QuestionVisual width="100%" height="100%" />
-            ) : (
-              <Text style={styles.quizVisualFallback}>No visual</Text>
-            )}
-          </View>
-        )}
-
         {isSentenceBuilder && sentenceBuilder ? (
-          <View style={styles.sentenceBuilderWrap}>
-            <View style={styles.sentenceSourceCard}>
+          <View
+            style={[
+              styles.sentenceBuilderWrap,
+              isDenseSentenceLayout && styles.sentenceBuilderWrapCompact,
+            ]}
+          >
+            <View
+              style={[
+                styles.sentenceSourceCard,
+                isDenseSentenceLayout && styles.sentenceSourceCardCompact,
+              ]}
+            >
               <Text
                 style={[
                   styles.sentenceSourceText,
-                  getDynamicSentencePromptStyle(sentenceBuilder.sourceSentence),
+                  getDynamicSentencePromptStyle(
+                    sentenceBuilder.sourceSentence,
+                    isDenseSentenceLayout
+                  ),
                 ]}
                 numberOfLines={2}
                 adjustsFontSizeToFit
@@ -967,7 +1032,9 @@ function QuizScreen({
               </Text>
             </View>
 
-            <View style={styles.slotGrid}>
+            <View
+              style={[styles.slotGrid, isDenseSentenceLayout && styles.slotGridCompact]}
+            >
               {sentenceTargetWords.map((_, slotIndex) => {
                 const slotWord = slottedWords[slotIndex] ?? "";
                 const isActive = dragFromIndex === slotIndex;
@@ -981,6 +1048,7 @@ function QuizScreen({
                     hitSlop={10}
                     style={[
                       styles.slotChip,
+                      isDenseSentenceLayout && styles.slotChipCompact,
                       slotWord.length > 0 && styles.slotChipFilled,
                       isActive && styles.slotChipActive,
                     ]}
@@ -990,11 +1058,13 @@ function QuizScreen({
                     <Text
                       style={[
                         styles.slotChipText,
+                        isDenseSentenceLayout && styles.slotChipTextCompact,
                         slotWord.length > 0 && styles.slotChipTextFilled,
                         getDynamicOptionTextStyle(
                           slotWord.length > 0
                             ? slotWord
-                            : sentenceTargetWords[slotIndex] ?? ""
+                            : sentenceTargetWords[slotIndex] ?? "",
+                          isDenseSentenceLayout
                         ),
                       ]}
                     >
@@ -1004,12 +1074,12 @@ function QuizScreen({
                 );
               })}
             </View>
-
-          
-
-          
-
-            <View style={styles.wordBankWrap}>
+            <View
+              style={[
+                styles.wordBankWrap,
+                isDenseSentenceLayout && styles.wordBankWrapCompact,
+              ]}
+            >
               {sentenceBankWords.map((word, index) => {
                 const maxWordCount = sentenceBankWordCounts[word] ?? 0;
                 const usedWordCount = slottedWordCounts[word] ?? 0;
@@ -1023,6 +1093,7 @@ function QuizScreen({
                     hitSlop={10}
                     style={[
                       styles.wordBankChip,
+                      isDenseSentenceLayout && styles.wordBankChipCompact,
                       isDisabled && styles.wordBankChipDisabled,
                     ]}
                     accessibilityRole="button"
@@ -1031,8 +1102,9 @@ function QuizScreen({
                     <Text
                       style={[
                         styles.wordBankChipText,
+                        isDenseSentenceLayout && styles.wordBankChipTextCompact,
                         isDisabled && styles.wordBankChipTextDisabled,
-                        getDynamicOptionTextStyle(word),
+                        getDynamicOptionTextStyle(word, isDenseSentenceLayout),
                       ]}
                     >
                       {word}
@@ -1049,7 +1121,7 @@ function QuizScreen({
 
               return (
                 <Pressable
-                  key={choice.label}
+                  key={`${choice.label}-${choice.translation}`}
                   onPress={() => onAnswerChange(choice.label)}
                   style={[
                     styles.choiceCard,
@@ -1078,31 +1150,27 @@ function QuizScreen({
               );
             })}
           </View>
-        ) : (
-          <View style={styles.answerInputWrap}>
-            <TextInput
-              value={userAnswer}
-              onChangeText={onAnswerChange}
-              style={styles.answerInput}
-              placeholder="Type Igbo translation"
-              placeholderTextColor="#617588"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            <View style={styles.answerLine} />
-            <View style={styles.answerLine} />
-          </View>
-        )}
+        ) : null}
 
         {hasInput && feedback == null && <View style={styles.quizBottomSpacer} />}
 
         {hasInput && feedback == null && (
           <Pressable
-            style={styles.checkButton}
+            style={[
+              styles.checkButton,
+              isDenseSentenceLayout && styles.checkButtonCompact,
+            ]}
             accessibilityRole="button"
             onPress={onCheckAnswer}
           >
-            <Text style={styles.checkButtonText}>Check</Text>
+            <Text
+              style={[
+                styles.checkButtonText,
+                isDenseSentenceLayout && styles.checkButtonTextCompact,
+              ]}
+            >
+              Check
+            </Text>
           </Pressable>
         )}
       </View>
@@ -1291,10 +1359,9 @@ function buildMixedQuestionSet(
       return question;
     }
 
-    const derivedGreetingSeed = buildGreetingSentenceSeedFromQuestion(question);
-    const sentenceSeed =
-      derivedGreetingSeed ?? sentenceSeeds[sentenceSeedIndex] ?? null;
-    sentenceSeedIndex += derivedGreetingSeed ? 0 : 1;
+    const matchedSeed = findSentenceSeedForQuestion(question, sentenceSeeds);
+    const sentenceSeed = matchedSeed ?? sentenceSeeds[sentenceSeedIndex] ?? null;
+    sentenceSeedIndex += matchedSeed ? 0 : 1;
 
     if (!sentenceSeed) {
       return question;
@@ -1319,6 +1386,20 @@ function buildMixedQuestionSet(
   });
 }
 
+function findSentenceSeedForQuestion(
+  question: Question,
+  sentenceSeeds: SentenceBuilderSeed[]
+): SentenceBuilderSeed | null {
+  const normalizedQuestionAnswer = normalizeAnswer(question.answer);
+
+  return (
+    sentenceSeeds.find(
+      (seed) =>
+        normalizeAnswer(seed.targetWords.join(" ")) === normalizedQuestionAnswer
+    ) ?? null
+  );
+}
+
 function buildGreetingSentenceSeeds(): SentenceBuilderSeed[] {
   const allGreetingWords = GREETINGS_PHRASES.flatMap((phrase) =>
     tokenizeSentenceWords(phrase)
@@ -1338,27 +1419,23 @@ function buildGreetingSentenceSeeds(): SentenceBuilderSeed[] {
   });
 }
 
-function buildGreetingSentenceSeedFromQuestion(
-  question: Question
-): SentenceBuilderSeed | null {
-  if (!question.audioKey || !GREETINGS_TRANSLATIONS[question.answer]) {
-    return null;
-  }
+function buildSentenceSeedsFromEntries(
+  entries: Array<{ english: string; igbo: string }>
+): SentenceBuilderSeed[] {
+  const allWords = entries.flatMap((entry) => tokenizeSentenceWords(entry.igbo));
 
-  const targetWords = tokenizeSentenceWords(question.answer);
-  const allGreetingWords = GREETINGS_PHRASES.flatMap((phrase) =>
-    tokenizeSentenceWords(phrase)
-  );
-  const distractorPool = allGreetingWords.filter(
-    (word) => !targetWords.includes(word)
-  );
+  return entries.map((entry) => {
+    const targetWords = tokenizeSentenceWords(entry.igbo);
+    const distractors = shuffleArray(
+      allWords.filter((word) => !targetWords.includes(word))
+    ).slice(0, 3);
 
-  return {
-    sourceSentence:
-      GREETINGS_TRANSLATIONS[question.answer] ?? "Translate this greeting",
-    targetWords,
-    distractors: shuffleArray(distractorPool).slice(0, 3),
-  };
+    return {
+      sourceSentence: entry.english,
+      targetWords,
+      distractors,
+    };
+  });
 }
 
 function tokenizeSentenceWords(value: string): string[] {
@@ -1374,11 +1451,30 @@ function pickRandomIndices(totalCount: number, pickCount: number): number[] {
   return shuffleArray(allIndices).slice(0, Math.max(0, pickCount));
 }
 
-function getDynamicOptionTextStyle(word: string): {
+function getDynamicOptionTextStyle(
+  word: string,
+  compact: boolean = false
+): {
   fontSize: number;
   lineHeight: number;
 } {
   const length = word.trim().length;
+
+  if (compact) {
+    if (length >= 12) {
+      return { fontSize: 11, lineHeight: 14 };
+    }
+
+    if (length >= 9) {
+      return { fontSize: 12, lineHeight: 15 };
+    }
+
+    if (length >= 6) {
+      return { fontSize: 13, lineHeight: 16 };
+    }
+
+    return { fontSize: 14, lineHeight: 17 };
+  }
 
   if (length >= 12) {
     return { fontSize: 14, lineHeight: 18 };
@@ -1395,11 +1491,26 @@ function getDynamicOptionTextStyle(word: string): {
   return { fontSize: 19, lineHeight: 23 };
 }
 
-function getDynamicSentencePromptStyle(sentence: string): {
+function getDynamicSentencePromptStyle(
+  sentence: string,
+  compact: boolean = false
+): {
   fontSize: number;
   lineHeight: number;
 } {
   const length = sentence.trim().length;
+
+  if (compact) {
+    if (length >= 38) {
+      return { fontSize: 13, lineHeight: 16 };
+    }
+
+    if (length >= 28) {
+      return { fontSize: 14, lineHeight: 18 };
+    }
+
+    return { fontSize: 15, lineHeight: 19 };
+  }
 
   if (length >= 38) {
     return { fontSize: 16, lineHeight: 20 };
@@ -1423,14 +1534,38 @@ function countWords(words: string[]): Record<string, number> {
   }, {});
 }
 
-function buildGreetingChoices(correctAnswer: string): ChoiceOption[] {
-  const pool = GREETINGS_PHRASES.filter((phrase) => phrase !== correctAnswer);
-  const distractors = shuffleArray(pool).slice(0, 3);
+function buildLessonChoices(lessonId: string, question: Question): ChoiceOption[] {
+  const lessonQuestions = (ACTIVE_QUESTION_BANK[lessonId] ?? []).filter(
+    (item) => !item.sentenceBuilder
+  );
+  const uniquePool = lessonQuestions.filter(
+    (item, index, array) =>
+      array.findIndex(
+        (candidate) =>
+          normalizeAnswer(candidate.answer) === normalizeAnswer(item.answer)
+      ) === index
+  );
 
-  return shuffleArray([correctAnswer, ...distractors]).map((phrase) => ({
-    label: phrase,
-    translation: GREETINGS_TRANSLATIONS[phrase] ?? "Translation pending",
+  const distractors = shuffleArray(
+    uniquePool.filter(
+      (item) => normalizeAnswer(item.answer) !== normalizeAnswer(question.answer)
+    )
+  ).slice(0, 3);
+
+  const selected = shuffleArray([question, ...distractors]);
+
+  return selected.map((item) => ({
+    label: item.answer,
+    translation: getChoiceTranslation(lessonId, item),
   }));
+}
+
+function getChoiceTranslation(lessonId: string, question: Question): string {
+  if (lessonId === "greetings") {
+    return GREETINGS_TRANSLATIONS[question.answer] ?? "Translation pending";
+  }
+
+  return question.prompt;
 }
 
 function shuffleArray<T>(values: T[]): T[] {
@@ -1660,7 +1795,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#9CD754",
   },
   speakerButton: {
-    marginTop: 22,
+    marginTop: 0,
     width: 66,
     height: 66,
     borderRadius: 33,
@@ -1669,6 +1804,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  speakerControlsRow: {
+    marginTop: 22,
+    flexDirection: "row",
+    alignSelf: "center",
+    alignItems: "center",
+    gap: 10,
+  },
+  speakerControlsRowCompact: {
+    marginTop: 10,
+  },
+  speedToggleButton: {
+    minHeight: 36,
+    minWidth: 66,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "#2B313D",
+    backgroundColor: "#181C23",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 10,
+  },
+  speedToggleText: {
+    color: "#DDE7F1",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 12,
+    lineHeight: 14,
+  },
   quizPromptRow: {
     marginTop: 14,
     flexDirection: "row",
@@ -1676,11 +1838,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
+  quizPromptRowCompact: {
+    marginTop: 8,
+  },
   quizPromptWord: {
     color: "#FFFFFF",
     fontFamily: "DMSans_400Regular",
     fontSize: 24,
     lineHeight: 28,
+  },
+  quizPromptWordCompact: {
+    fontSize: 20,
+    lineHeight: 24,
   },
   hintIconButton: {
     width: 44,
@@ -1706,6 +1875,10 @@ const styles = StyleSheet.create({
     marginTop: 14,
     gap: 10,
   },
+  sentenceBuilderWrapCompact: {
+    marginTop: 8,
+    gap: 6,
+  },
   sentenceSourceCard: {
     borderRadius: 14,
     borderWidth: 1,
@@ -1713,6 +1886,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#181C23",
     paddingHorizontal: 14,
     paddingVertical: 10,
+  },
+  sentenceSourceCardCompact: {
+    paddingHorizontal: 10,
+    paddingVertical: 8,
   },
   sentenceSourceText: {
     color: "#F4F7FA",
@@ -1727,6 +1904,9 @@ const styles = StyleSheet.create({
     gap: 10,
     justifyContent: "center",
   },
+  slotGridCompact: {
+    gap: 7,
+  },
   slotChip: {
     minWidth: 98,
     minHeight: 52,
@@ -1738,6 +1918,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 12,
+  },
+  slotChipCompact: {
+    minWidth: 86,
+    minHeight: 44,
+    borderRadius: 13,
+    paddingHorizontal: 8,
   },
   slotChipFilled: {
     borderStyle: "solid",
@@ -1753,6 +1939,10 @@ const styles = StyleSheet.create({
     fontFamily: "DMSans_700Bold",
     fontSize: 20,
     lineHeight: 24,
+  },
+  slotChipTextCompact: {
+    fontSize: 16,
+    lineHeight: 20,
   },
   slotChipTextFilled: {
     color: "#F2FAFF",
@@ -1778,6 +1968,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 10,
   },
+  wordBankWrapCompact: {
+    gap: 7,
+  },
   wordBankChip: {
     minHeight: 48,
     borderRadius: 24,
@@ -1788,6 +1981,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 14,
   },
+  wordBankChipCompact: {
+    minHeight: 42,
+    borderRadius: 21,
+    paddingHorizontal: 10,
+  },
   wordBankChipDisabled: {
     opacity: 0.35,
   },
@@ -1796,6 +1994,10 @@ const styles = StyleSheet.create({
     fontFamily: "DMSans_700Bold",
     fontSize: 16,
     lineHeight: 20,
+  },
+  wordBankChipTextCompact: {
+    fontSize: 13,
+    lineHeight: 17,
   },
   wordBankChipTextDisabled: {
     color: "#8A97A6",
@@ -1879,11 +2081,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  checkButtonCompact: {
+    minHeight: 56,
+    borderRadius: 16,
+  },
   checkButtonText: {
     color: "#0C1721",
     fontSize: 31,
     lineHeight: 35,
     fontWeight: "800",
+  },
+  checkButtonTextCompact: {
+    fontSize: 24,
+    lineHeight: 28,
   },
   feedbackSheet: {
     position: "absolute",
