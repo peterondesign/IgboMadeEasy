@@ -1,0 +1,22 @@
+{
+  "uzo": "Road",
+  "ugbo ala": "Car",
+  "ugbo njem": "Bus",
+  "okada": "Motorcycle",
+  "igwe kwu otu": "Bicycle",
+  "taxi": "Taxi",
+  "onye na-anya ugbo ala": "Driver",
+  "onye njem": "Passenger",
+  "ogige ugbo ala": "Park",
+  "kwusi": "Stop",
+  "gaa": "Go",
+  "tuo aka ekpe": "Turn left",
+  "tuo aka nri": "Turn right",
+  "akwa mmiri": "Bridge",
+  "okporo uzo juputara": "Traffic",
+  "mmanu ugbo ala": "Fuel",
+  "njem": "Journey",
+  "nso": "Near",
+  "anya": "Far",
+  "ruo": "Arrive"
+}

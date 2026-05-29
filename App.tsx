@@ -31,10 +31,50 @@ import CompletionIllustration from "./assets/illustrations/lesson-complete.svg";
 import FireIllustration from "./assets/illustrations/fire.svg";
 import PlantIllustration from "./assets/illustrations/plant.svg";
 import {
+  ASKING_QUESTIONS_AUDIO,
+  ASKING_QUESTIONS_ENTRIES,
+} from "./src/data/askingQuestionsAudio";
+import { ANIMALS_AUDIO, ANIMALS_ENTRIES } from "./src/data/animalsAudio";
+import {
+  CELEBRATIONS_AUDIO,
+  CELEBRATIONS_ENTRIES,
+} from "./src/data/celebrationsAudio";
+import { ELDERS_AUDIO, ELDERS_ENTRIES } from "./src/data/eldersAudio";
+import { EMOTIONS_AUDIO, EMOTIONS_ENTRIES } from "./src/data/emotionsAudio";
+import {
   EVERYDAY_VERBS_AUDIO,
   EVERYDAY_VERBS_ENTRIES,
 } from "./src/data/everydayVerbsAudio";
+import {
+  FAMILY_PEOPLE_AUDIO,
+  FAMILY_PEOPLE_ENTRIES,
+} from "./src/data/familyPeopleAudio";
+import {
+  FOOD_COOKING_AUDIO,
+  FOOD_COOKING_ENTRIES,
+} from "./src/data/foodCookingAudio";
 import { GREETINGS_AUDIO, GREETINGS_PHRASES } from "./src/data/greetingsAudio";
+import { HEALTH_AUDIO, HEALTH_ENTRIES } from "./src/data/healthAudio";
+import {
+  HOUSEHOLD_OBJECTS_AUDIO,
+  HOUSEHOLD_OBJECTS_ENTRIES,
+} from "./src/data/householdObjectsAudio";
+import {
+  NUMBERS_MONEY_AUDIO,
+  NUMBERS_MONEY_ENTRIES,
+} from "./src/data/numbersMoneyAudio";
+import {
+  SCHOOL_WORK_AUDIO,
+  SCHOOL_WORK_ENTRIES,
+} from "./src/data/schoolWorkAudio";
+import {
+  TRANSPORTATION_AUDIO,
+  TRANSPORTATION_ENTRIES,
+} from "./src/data/transportationAudio";
+import {
+  WEATHER_NATURE_AUDIO,
+  WEATHER_NATURE_ENTRIES,
+} from "./src/data/weatherNatureAudio";
 import GameGroup from "./src/groups/GameGroup";
 import HomeGroup from "./src/groups/HomeGroup";
 import LessonGroup from "./src/groups/LessonGroup";
@@ -87,8 +127,21 @@ const GREETINGS_TRANSLATIONS = require("./assets/audio/greetings/translations.js
 const GAME_SOUND_SUCCESS = require("./assets/audio/game-sounds/success-sound.m4a");
 const GAME_SOUND_FAILURE = require("./assets/audio/game-sounds/try-again-sound.m4a");
 const QUESTION_AUDIO: Record<string, number> = {
+  ...ASKING_QUESTIONS_AUDIO,
+  ...ANIMALS_AUDIO,
+  ...CELEBRATIONS_AUDIO,
+  ...ELDERS_AUDIO,
+  ...EMOTIONS_AUDIO,
   ...GREETINGS_AUDIO,
+  ...HEALTH_AUDIO,
+  ...HOUSEHOLD_OBJECTS_AUDIO,
+  ...NUMBERS_MONEY_AUDIO,
+  ...SCHOOL_WORK_AUDIO,
+  ...TRANSPORTATION_AUDIO,
+  ...WEATHER_NATURE_AUDIO,
   ...EVERYDAY_VERBS_AUDIO,
+  ...FAMILY_PEOPLE_AUDIO,
+  ...FOOD_COOKING_AUDIO,
 };
 
 const WORD_QUESTION_BANK: Record<string, Question[]> = {
@@ -104,128 +157,102 @@ const WORD_QUESTION_BANK: Record<string, Question[]> = {
     visualKey: "",
     audioKey: EVERYDAY_VERBS_AUDIO[entry.igbo] ? entry.igbo : undefined,
   })),
-  "asking-questions": [
-    { prompt: "Dog", answer: "nkita", visualKey: "nouns-dog" },
-    { prompt: "Water", answer: "mmiri", visualKey: "nouns-water" },
-    { prompt: "Child", answer: "nwa", visualKey: "nouns-child" },
-    { prompt: "Sun", answer: "anyu", visualKey: "nouns-sun" },
-    { prompt: "House", answer: "ulo", visualKey: "nouns-house" },
-    { prompt: "Road", answer: "uzo", visualKey: "nouns-road" },
-    { prompt: "Food", answer: "nri", visualKey: "nouns-food" },
-    { prompt: "Book", answer: "akwukwo", visualKey: "nouns-book" },
-    { prompt: "Friend", answer: "enyi", visualKey: "nouns-friend" },
-    { prompt: "Money", answer: "ego", visualKey: "nouns-money" },
-  ],
-  "family-people": [
-    { prompt: "I", answer: "mu", visualKey: "pronouns-i" },
-    { prompt: "You", answer: "gi", visualKey: "pronouns-you" },
-    { prompt: "He", answer: "ya", visualKey: "pronouns-he" },
-    { prompt: "She", answer: "ya", visualKey: "pronouns-she" },
-    { prompt: "We", answer: "anyi", visualKey: "pronouns-we" },
-    { prompt: "They", answer: "ha", visualKey: "pronouns-they" },
-    { prompt: "Me", answer: "m", visualKey: "pronouns-me" },
-    { prompt: "Us", answer: "anyi", visualKey: "pronouns-us" },
-    { prompt: "Them", answer: "ha", visualKey: "pronouns-them" },
-    { prompt: "My", answer: "m", visualKey: "pronouns-my" },
-  ],
-  "food-cooking": [
-    { prompt: "Dog", answer: "nkita", visualKey: "nouns-dog" },
-    { prompt: "Water", answer: "mmiri", visualKey: "nouns-water" },
-    { prompt: "Child", answer: "nwa", visualKey: "nouns-child" },
-    { prompt: "Sun", answer: "anyu", visualKey: "nouns-sun" },
-    { prompt: "House", answer: "ulo", visualKey: "nouns-house" },
-    { prompt: "Road", answer: "uzo", visualKey: "nouns-road" },
-    { prompt: "Food", answer: "nri", visualKey: "nouns-food" },
-    { prompt: "Book", answer: "akwukwo", visualKey: "nouns-book" },
-    { prompt: "Friend", answer: "enyi", visualKey: "nouns-friend" },
-    { prompt: "Money", answer: "ego", visualKey: "nouns-money" },
-  ],
+  "asking-questions": ASKING_QUESTIONS_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: ASKING_QUESTIONS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  "family-people": FAMILY_PEOPLE_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: FAMILY_PEOPLE_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  "food-cooking": FOOD_COOKING_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: FOOD_COOKING_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  "numbers-money": NUMBERS_MONEY_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: NUMBERS_MONEY_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  "school-work": SCHOOL_WORK_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: SCHOOL_WORK_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  transportation: TRANSPORTATION_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: TRANSPORTATION_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  emotions: EMOTIONS_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: EMOTIONS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  health: HEALTH_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: HEALTH_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  "household-objects": HOUSEHOLD_OBJECTS_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: HOUSEHOLD_OBJECTS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  "weather-nature": WEATHER_NATURE_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: WEATHER_NATURE_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  animals: ANIMALS_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: ANIMALS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  elders: ELDERS_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: ELDERS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
+  celebrations: CELEBRATIONS_ENTRIES.map((entry) => ({
+    prompt: entry.english,
+    answer: entry.igbo,
+    visualKey: "",
+    audioKey: CELEBRATIONS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+  })),
 };
 
 const SENTENCE_BUILDER_BANK: Record<string, SentenceBuilderSeed[]> = {
   greetings: buildGreetingSentenceSeeds(),
   "everyday-verbs": buildSentenceSeedsFromEntries(EVERYDAY_VERBS_ENTRIES),
-  "asking-questions": [
-    {
-      sourceSentence: "The dog is happy.",
-      targetWords: ["nkita", "di", "uto"],
-      distractors: ["mmiri", "ulo", "enyi"],
-    },
-    {
-      sourceSentence: "The child has water.",
-      targetWords: ["nwa", "nwere", "mmiri"],
-      distractors: ["ego", "uzo", "nri"],
-    },
-    {
-      sourceSentence: "The house is big.",
-      targetWords: ["ulo", "di", "ukwu"],
-      distractors: ["nwa", "anyi", "akwukwo"],
-    },
-    {
-      sourceSentence: "My friend has money.",
-      targetWords: ["enyi", "m", "nwere", "ego"],
-      distractors: ["mmiri", "ulo", "ha"],
-    },
-    {
-      sourceSentence: "The road has food stalls.",
-      targetWords: ["uzo", "nwere", "nri"],
-      distractors: ["nkita", "anya", "enyi"],
-    },
-  ],
-  "family-people": [
-    {
-      sourceSentence: "I can see you.",
-      targetWords: ["mu", "na", "ahu", "gi"],
-      distractors: ["ha", "nri", "ulo"],
-    },
-    {
-      sourceSentence: "We are friends.",
-      targetWords: ["anyi", "bu", "enyi"],
-      distractors: ["ego", "mmiri", "nwa"],
-    },
-    {
-      sourceSentence: "They are here.",
-      targetWords: ["ha", "no", "ebe", "a"],
-      distractors: ["ulo", "bia", "enyi"],
-    },
-    {
-      sourceSentence: "She is with us.",
-      targetWords: ["ya", "no", "na", "anyi"],
-      distractors: ["gi", "ha", "aku"],
-    },
-    {
-      sourceSentence: "You and me.",
-      targetWords: ["gi", "na", "m"],
-      distractors: ["ha", "nwa", "ulo"],
-    },
-  ],
-  "food-cooking": [
-    {
-      sourceSentence: "The food is ready.",
-      targetWords: ["nri", "adi", "njikere"],
-      distractors: ["mmiri", "ulo", "ego"],
-    },
-    {
-      sourceSentence: "The child is eating.",
-      targetWords: ["nwa", "na", "eri"],
-      distractors: ["ha", "ahu", "akwukwo"],
-    },
-    {
-      sourceSentence: "Water is in the house.",
-      targetWords: ["mmiri", "di", "na", "ulo"],
-      distractors: ["enyi", "ego", "nri"],
-    },
-    {
-      sourceSentence: "Bring food here.",
-      targetWords: ["weta", "nri", "ebe", "a"],
-      distractors: ["ga", "ha", "nwa"],
-    },
-    {
-      sourceSentence: "My friend cooked food.",
-      targetWords: ["enyi", "m", "siri", "nri"],
-      distractors: ["ulo", "ego", "gi"],
-    },
-  ],
+  "asking-questions": buildSentenceSeedsFromEntries(ASKING_QUESTIONS_ENTRIES),
+  "family-people": buildSentenceSeedsFromEntries(FAMILY_PEOPLE_ENTRIES),
+  "food-cooking": buildSentenceSeedsFromEntries(FOOD_COOKING_ENTRIES),
+  "numbers-money": buildSentenceSeedsFromEntries(NUMBERS_MONEY_ENTRIES),
+  "school-work": buildSentenceSeedsFromEntries(SCHOOL_WORK_ENTRIES),
+  transportation: buildSentenceSeedsFromEntries(TRANSPORTATION_ENTRIES),
+  emotions: buildSentenceSeedsFromEntries(EMOTIONS_ENTRIES),
+  health: buildSentenceSeedsFromEntries(HEALTH_ENTRIES),
+  "household-objects": buildSentenceSeedsFromEntries(HOUSEHOLD_OBJECTS_ENTRIES),
+  "weather-nature": buildSentenceSeedsFromEntries(WEATHER_NATURE_ENTRIES),
+  animals: buildSentenceSeedsFromEntries(ANIMALS_ENTRIES),
+  elders: buildSentenceSeedsFromEntries(ELDERS_ENTRIES),
+  celebrations: buildSentenceSeedsFromEntries(CELEBRATIONS_ENTRIES),
 };
 
 const QUESTION_BANK: Record<string, Question[]> = {
@@ -248,6 +275,46 @@ const QUESTION_BANK: Record<string, Question[]> = {
   "food-cooking": buildMixedQuestionSet(
     WORD_QUESTION_BANK["food-cooking"],
     SENTENCE_BUILDER_BANK["food-cooking"]
+  ),
+  "numbers-money": buildMixedQuestionSet(
+    WORD_QUESTION_BANK["numbers-money"],
+    SENTENCE_BUILDER_BANK["numbers-money"]
+  ),
+  "school-work": buildMixedQuestionSet(
+    WORD_QUESTION_BANK["school-work"],
+    SENTENCE_BUILDER_BANK["school-work"]
+  ),
+  transportation: buildMixedQuestionSet(
+    WORD_QUESTION_BANK.transportation,
+    SENTENCE_BUILDER_BANK.transportation
+  ),
+  emotions: buildMixedQuestionSet(
+    WORD_QUESTION_BANK.emotions,
+    SENTENCE_BUILDER_BANK.emotions
+  ),
+  health: buildMixedQuestionSet(
+    WORD_QUESTION_BANK.health,
+    SENTENCE_BUILDER_BANK.health
+  ),
+  "household-objects": buildMixedQuestionSet(
+    WORD_QUESTION_BANK["household-objects"],
+    SENTENCE_BUILDER_BANK["household-objects"]
+  ),
+  "weather-nature": buildMixedQuestionSet(
+    WORD_QUESTION_BANK["weather-nature"],
+    SENTENCE_BUILDER_BANK["weather-nature"]
+  ),
+  animals: buildMixedQuestionSet(
+    WORD_QUESTION_BANK.animals,
+    SENTENCE_BUILDER_BANK.animals
+  ),
+  elders: buildMixedQuestionSet(
+    WORD_QUESTION_BANK.elders,
+    SENTENCE_BUILDER_BANK.elders
+  ),
+  celebrations: buildMixedQuestionSet(
+    WORD_QUESTION_BANK.celebrations,
+    SENTENCE_BUILDER_BANK.celebrations
   ),
 };
 
@@ -290,16 +357,19 @@ const LESSON_DEFS = [
   { id: "asking-questions", title: "Asking Questions" },
   { id: "family-people", title: "Family and People" },
   { id: "food-cooking", title: "Food and Cooking" },
+  { id: "numbers-money", title: "Numbers and Money" },
+  { id: "school-work", title: "School and Work" },
+  { id: "transportation", title: "Transportation" },
+  { id: "emotions", title: "Emotions" },
+  { id: "health", title: "Health" },
+  { id: "household-objects", title: "Household Objects" },
+  { id: "weather-nature", title: "Weather and Nature" },
+  { id: "animals", title: "Animals" },
+  { id: "elders", title: "Elders" },
+  { id: "celebrations", title: "Celebrations" },
 ];
 
-const AUDIO_READY_LESSON_IDS = new Set<string>(["greetings", "everyday-verbs"]);
-
-const ACTIVE_QUESTION_BANK: Record<string, Question[]> = Object.fromEntries(
-  Object.entries(QUESTION_BANK).map(([lessonId, questions]) => [
-    lessonId,
-    AUDIO_READY_LESSON_IDS.has(lessonId) ? questions : [],
-  ])
-) as Record<string, Question[]>;
+const ACTIVE_QUESTION_BANK: Record<string, Question[]> = QUESTION_BANK;
 
 const INITIAL_LESSONS: Lesson[] = LESSON_DEFS.map((lesson) => ({
   ...lesson,

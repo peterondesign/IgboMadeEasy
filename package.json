@@ -9,6 +9,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "tts:replicate": "node scripts/generate-replicate-tts.mjs",
     "generate:greetings-translations": "node scripts/generate-greetings-translations.mjs"
   },
   "dependencies": {
