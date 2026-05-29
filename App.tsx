@@ -159,85 +159,85 @@ const WORD_QUESTION_BANK: Record<string, Question[]> = {
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: EVERYDAY_VERBS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(EVERYDAY_VERBS_AUDIO, entry.igbo),
   })),
   "asking-questions": ASKING_QUESTIONS_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: ASKING_QUESTIONS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(ASKING_QUESTIONS_AUDIO, entry.igbo),
   })),
   "family-people": FAMILY_PEOPLE_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: FAMILY_PEOPLE_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(FAMILY_PEOPLE_AUDIO, entry.igbo),
   })),
   "food-cooking": FOOD_COOKING_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: FOOD_COOKING_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(FOOD_COOKING_AUDIO, entry.igbo),
   })),
   "numbers-money": NUMBERS_MONEY_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: NUMBERS_MONEY_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(NUMBERS_MONEY_AUDIO, entry.igbo),
   })),
   "school-work": SCHOOL_WORK_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: SCHOOL_WORK_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(SCHOOL_WORK_AUDIO, entry.igbo),
   })),
   transportation: TRANSPORTATION_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: TRANSPORTATION_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(TRANSPORTATION_AUDIO, entry.igbo),
   })),
   emotions: EMOTIONS_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: EMOTIONS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(EMOTIONS_AUDIO, entry.igbo),
   })),
   health: HEALTH_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: HEALTH_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(HEALTH_AUDIO, entry.igbo),
   })),
   "household-objects": HOUSEHOLD_OBJECTS_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: HOUSEHOLD_OBJECTS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(HOUSEHOLD_OBJECTS_AUDIO, entry.igbo),
   })),
   "weather-nature": WEATHER_NATURE_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: WEATHER_NATURE_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(WEATHER_NATURE_AUDIO, entry.igbo),
   })),
   animals: ANIMALS_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: ANIMALS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(ANIMALS_AUDIO, entry.igbo),
   })),
   elders: ELDERS_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: ELDERS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(ELDERS_AUDIO, entry.igbo),
   })),
   celebrations: CELEBRATIONS_ENTRIES.map((entry) => ({
     prompt: entry.english,
     answer: entry.igbo,
     visualKey: "",
-    audioKey: CELEBRATIONS_AUDIO[entry.igbo] ? entry.igbo : undefined,
+    audioKey: resolveAudioKey(CELEBRATIONS_AUDIO, entry.igbo),
   })),
 };
 
@@ -1763,6 +1763,22 @@ function normalizeAnswer(value: string): string {
     .trim()
     .toLowerCase()
     .replace(/\s+/g, " ");
+}
+
+function resolveAudioKey(
+  audioMap: Record<string, number>,
+  candidate: string
+): string | undefined {
+  if (audioMap[candidate]) {
+    return candidate;
+  }
+
+  const normalizedCandidate = normalizeAnswer(candidate);
+  const matched = Object.keys(audioMap).find(
+    (key) => normalizeAnswer(key) === normalizedCandidate
+  );
+
+  return matched;
 }
 
 function toPercent(value: number): number {
