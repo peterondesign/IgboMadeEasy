@@ -1,5 +1,18 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { type ComponentType, useEffect, useMemo, useState } from "react";
+import {
+  DMSans_400Regular,
+  DMSans_700Bold,
+  useFonts,
+} from "@expo-google-fonts/dm-sans";
+import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
+import {
+  type ComponentType,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { StatusBar } from "react-native";
 import {
   Pressable,
@@ -9,56 +22,74 @@ import {
   Text,
   TextInput,
   View,
+  Image,
+  Modal,
 } from "react-native";
-import HeroIllustration from "./assets/hero.svg";
-import EyeIcon from "./assets/icons/eye.svg";
+import BackIcon from "./assets/icons/back-icon.svg";
+import HintIcon from "./assets/icons/hint-icon.svg";
+import SpeakerIcon from "./assets/icons/speaker-icon.svg";
 import CompletionIllustration from "./assets/illustrations/lesson-complete.svg";
+import FireIllustration from "./assets/illustrations/fire.svg";
+import PlantIllustration from "./assets/illustrations/plant.svg";
+import { GREETINGS_AUDIO, GREETINGS_PHRASES } from "./src/data/greetingsAudio";
+import GameGroup from "./src/groups/GameGroup";
+import HomeGroup from "./src/groups/HomeGroup";
+import LessonGroup from "./src/groups/LessonGroup";
 
 type ScreenName = "home" | "lessons" | "quiz" | "completed";
+type AppGroup = "home" | "lesson" | "game";
 type FeedbackState = "correct" | "wrong" | null;
 
 type Question = {
   prompt: string;
   answer: string;
   visualKey: string;
+  audioKey?: string;
+  sentenceBuilder?: {
+    sourceSentence: string;
+    targetWords: string[];
+    bankWords: string[];
+  };
+};
+
+type SentenceBuilderSeed = {
+  sourceSentence: string;
+  targetWords: string[];
+  distractors: string[];
+};
+
+type ChoiceOption = {
+  label: string;
+  translation: string;
 };
 
 type Lesson = {
   id: string;
   title: string;
-  color: string;
   totalQuestions: number;
   answeredQuestions: number;
+  completedOn: string | null;
+};
+
+type PersistedProgress = {
+  answeredByLesson: Record<string, number>;
+  completedOnByLesson: Record<string, string | null>;
 };
 
 const STORAGE_KEY = "igbo-made-easy.lesson-progress.v1";
+const GREETINGS_TRANSLATIONS = require("./assets/audio/greetings/translations.json") as Record<
+  string,
+  string
+>;
 
-const QUESTION_BANK: Record<string, Question[]> = {
-  nouns: [
-    { prompt: "Dog", answer: "nkita", visualKey: "nouns-dog" },
-    { prompt: "Water", answer: "mmiri", visualKey: "nouns-water" },
-    { prompt: "Child", answer: "nwa", visualKey: "nouns-child" },
-    { prompt: "Sun", answer: "anyu", visualKey: "nouns-sun" },
-    { prompt: "House", answer: "ulo", visualKey: "nouns-house" },
-    { prompt: "Road", answer: "uzo", visualKey: "nouns-road" },
-    { prompt: "Food", answer: "nri", visualKey: "nouns-food" },
-    { prompt: "Book", answer: "akwukwo", visualKey: "nouns-book" },
-    { prompt: "Friend", answer: "enyi", visualKey: "nouns-friend" },
-    { prompt: "Money", answer: "ego", visualKey: "nouns-money" },
-  ],
-  pronouns: [
-    { prompt: "I", answer: "mu", visualKey: "pronouns-i" },
-    { prompt: "You", answer: "gi", visualKey: "pronouns-you" },
-    { prompt: "He", answer: "ya", visualKey: "pronouns-he" },
-    { prompt: "She", answer: "ya", visualKey: "pronouns-she" },
-    { prompt: "We", answer: "anyi", visualKey: "pronouns-we" },
-    { prompt: "They", answer: "ha", visualKey: "pronouns-they" },
-    { prompt: "Me", answer: "m", visualKey: "pronouns-me" },
-    { prompt: "Us", answer: "anyi", visualKey: "pronouns-us" },
-    { prompt: "Them", answer: "ha", visualKey: "pronouns-them" },
-    { prompt: "My", answer: "m", visualKey: "pronouns-my" },
-  ],
-  verbs: [
+const WORD_QUESTION_BANK: Record<string, Question[]> = {
+  greetings: GREETINGS_PHRASES.map((phrase) => ({
+    prompt: "What do you hear?",
+    answer: phrase,
+    visualKey: "",
+    audioKey: phrase,
+  })),
+  "everyday-verbs": [
     { prompt: "Eat", answer: "ri", visualKey: "verbs-eat" },
     { prompt: "Go", answer: "ga", visualKey: "verbs-go" },
     { prompt: "Come", answer: "bia", visualKey: "verbs-come" },
@@ -70,6 +101,177 @@ const QUESTION_BANK: Record<string, Question[]> = {
     { prompt: "Work", answer: "ruo oru", visualKey: "verbs-work" },
     { prompt: "Play", answer: "gwuo", visualKey: "verbs-play" },
   ],
+  "asking-questions": [
+    { prompt: "Dog", answer: "nkita", visualKey: "nouns-dog" },
+    { prompt: "Water", answer: "mmiri", visualKey: "nouns-water" },
+    { prompt: "Child", answer: "nwa", visualKey: "nouns-child" },
+    { prompt: "Sun", answer: "anyu", visualKey: "nouns-sun" },
+    { prompt: "House", answer: "ulo", visualKey: "nouns-house" },
+    { prompt: "Road", answer: "uzo", visualKey: "nouns-road" },
+    { prompt: "Food", answer: "nri", visualKey: "nouns-food" },
+    { prompt: "Book", answer: "akwukwo", visualKey: "nouns-book" },
+    { prompt: "Friend", answer: "enyi", visualKey: "nouns-friend" },
+    { prompt: "Money", answer: "ego", visualKey: "nouns-money" },
+  ],
+  "family-people": [
+    { prompt: "I", answer: "mu", visualKey: "pronouns-i" },
+    { prompt: "You", answer: "gi", visualKey: "pronouns-you" },
+    { prompt: "He", answer: "ya", visualKey: "pronouns-he" },
+    { prompt: "She", answer: "ya", visualKey: "pronouns-she" },
+    { prompt: "We", answer: "anyi", visualKey: "pronouns-we" },
+    { prompt: "They", answer: "ha", visualKey: "pronouns-they" },
+    { prompt: "Me", answer: "m", visualKey: "pronouns-me" },
+    { prompt: "Us", answer: "anyi", visualKey: "pronouns-us" },
+    { prompt: "Them", answer: "ha", visualKey: "pronouns-them" },
+    { prompt: "My", answer: "m", visualKey: "pronouns-my" },
+  ],
+  "food-cooking": [
+    { prompt: "Dog", answer: "nkita", visualKey: "nouns-dog" },
+    { prompt: "Water", answer: "mmiri", visualKey: "nouns-water" },
+    { prompt: "Child", answer: "nwa", visualKey: "nouns-child" },
+    { prompt: "Sun", answer: "anyu", visualKey: "nouns-sun" },
+    { prompt: "House", answer: "ulo", visualKey: "nouns-house" },
+    { prompt: "Road", answer: "uzo", visualKey: "nouns-road" },
+    { prompt: "Food", answer: "nri", visualKey: "nouns-food" },
+    { prompt: "Book", answer: "akwukwo", visualKey: "nouns-book" },
+    { prompt: "Friend", answer: "enyi", visualKey: "nouns-friend" },
+    { prompt: "Money", answer: "ego", visualKey: "nouns-money" },
+  ],
+};
+
+const SENTENCE_BUILDER_BANK: Record<string, SentenceBuilderSeed[]> = {
+  greetings: buildGreetingSentenceSeeds(),
+  "everyday-verbs": [
+    {
+      sourceSentence: "I am eating food.",
+      targetWords: ["mu", "na", "eri", "nri"],
+      distractors: ["ha", "ulo", "enyi"],
+    },
+    {
+      sourceSentence: "We are going home.",
+      targetWords: ["anyi", "na", "aga", "ulo"],
+      distractors: ["mmiri", "ego", "nwa"],
+    },
+    {
+      sourceSentence: "Come here now.",
+      targetWords: ["bia", "ebe", "a", "ugbua"],
+      distractors: ["ga", "hu", "ra"],
+    },
+    {
+      sourceSentence: "They are reading books.",
+      targetWords: ["ha", "na", "agu", "akwukwo"],
+      distractors: ["dee", "uzo", "ego"],
+    },
+    {
+      sourceSentence: "You are working today.",
+      targetWords: ["gi", "na", "aru", "oru", "taa"],
+      distractors: ["bia", "nri", "mmiri"],
+    },
+  ],
+  "asking-questions": [
+    {
+      sourceSentence: "The dog is happy.",
+      targetWords: ["nkita", "di", "uto"],
+      distractors: ["mmiri", "ulo", "enyi"],
+    },
+    {
+      sourceSentence: "The child has water.",
+      targetWords: ["nwa", "nwere", "mmiri"],
+      distractors: ["ego", "uzo", "nri"],
+    },
+    {
+      sourceSentence: "The house is big.",
+      targetWords: ["ulo", "di", "ukwu"],
+      distractors: ["nwa", "anyi", "akwukwo"],
+    },
+    {
+      sourceSentence: "My friend has money.",
+      targetWords: ["enyi", "m", "nwere", "ego"],
+      distractors: ["mmiri", "ulo", "ha"],
+    },
+    {
+      sourceSentence: "The road has food stalls.",
+      targetWords: ["uzo", "nwere", "nri"],
+      distractors: ["nkita", "anya", "enyi"],
+    },
+  ],
+  "family-people": [
+    {
+      sourceSentence: "I can see you.",
+      targetWords: ["mu", "na", "ahu", "gi"],
+      distractors: ["ha", "nri", "ulo"],
+    },
+    {
+      sourceSentence: "We are friends.",
+      targetWords: ["anyi", "bu", "enyi"],
+      distractors: ["ego", "mmiri", "nwa"],
+    },
+    {
+      sourceSentence: "They are here.",
+      targetWords: ["ha", "no", "ebe", "a"],
+      distractors: ["ulo", "bia", "enyi"],
+    },
+    {
+      sourceSentence: "She is with us.",
+      targetWords: ["ya", "no", "na", "anyi"],
+      distractors: ["gi", "ha", "aku"],
+    },
+    {
+      sourceSentence: "You and me.",
+      targetWords: ["gi", "na", "m"],
+      distractors: ["ha", "nwa", "ulo"],
+    },
+  ],
+  "food-cooking": [
+    {
+      sourceSentence: "The food is ready.",
+      targetWords: ["nri", "adi", "njikere"],
+      distractors: ["mmiri", "ulo", "ego"],
+    },
+    {
+      sourceSentence: "The child is eating.",
+      targetWords: ["nwa", "na", "eri"],
+      distractors: ["ha", "ahu", "akwukwo"],
+    },
+    {
+      sourceSentence: "Water is in the house.",
+      targetWords: ["mmiri", "di", "na", "ulo"],
+      distractors: ["enyi", "ego", "nri"],
+    },
+    {
+      sourceSentence: "Bring food here.",
+      targetWords: ["weta", "nri", "ebe", "a"],
+      distractors: ["ga", "ha", "nwa"],
+    },
+    {
+      sourceSentence: "My friend cooked food.",
+      targetWords: ["enyi", "m", "siri", "nri"],
+      distractors: ["ulo", "ego", "gi"],
+    },
+  ],
+};
+
+const QUESTION_BANK: Record<string, Question[]> = {
+  greetings: buildMixedQuestionSet(
+    WORD_QUESTION_BANK.greetings,
+    SENTENCE_BUILDER_BANK.greetings
+  ),
+  "everyday-verbs": buildMixedQuestionSet(
+    WORD_QUESTION_BANK["everyday-verbs"],
+    SENTENCE_BUILDER_BANK["everyday-verbs"]
+  ),
+  "asking-questions": buildMixedQuestionSet(
+    WORD_QUESTION_BANK["asking-questions"],
+    SENTENCE_BUILDER_BANK["asking-questions"]
+  ),
+  "family-people": buildMixedQuestionSet(
+    WORD_QUESTION_BANK["family-people"],
+    SENTENCE_BUILDER_BANK["family-people"]
+  ),
+  "food-cooking": buildMixedQuestionSet(
+    WORD_QUESTION_BANK["food-cooking"],
+    SENTENCE_BUILDER_BANK["food-cooking"]
+  ),
 };
 
 const QUESTION_VISUALS: Record<string, ComponentType<any>> = {
@@ -106,24 +308,40 @@ const QUESTION_VISUALS: Record<string, ComponentType<any>> = {
 };
 
 const LESSON_DEFS = [
-  { id: "nouns", title: "Nouns", color: "#3B99FF" },
-  { id: "pronouns", title: "Pronouns", color: "#5D46D3" },
-  { id: "verbs", title: "Verbs", color: "#FF6A1A" },
+  { id: "greetings", title: "Greetings" },
+  { id: "everyday-verbs", title: "Everyday Verbs" },
+  { id: "asking-questions", title: "Asking Questions" },
+  { id: "family-people", title: "Family and People" },
+  { id: "food-cooking", title: "Food and Cooking" },
 ];
+
+const AUDIO_READY_LESSON_IDS = new Set<string>(["greetings"]);
+
+const ACTIVE_QUESTION_BANK: Record<string, Question[]> = Object.fromEntries(
+  Object.entries(QUESTION_BANK).map(([lessonId, questions]) => [
+    lessonId,
+    AUDIO_READY_LESSON_IDS.has(lessonId) ? questions : [],
+  ])
+) as Record<string, Question[]>;
 
 const INITIAL_LESSONS: Lesson[] = LESSON_DEFS.map((lesson) => ({
   ...lesson,
-  totalQuestions: QUESTION_BANK[lesson.id].length,
+  totalQuestions: ACTIVE_QUESTION_BANK[lesson.id].length,
   answeredQuestions: 0,
+  completedOn: null,
 }));
 
 export default function App() {
+  const [fontsLoaded] = useFonts({ DMSans_400Regular, DMSans_700Bold });
   const [screen, setScreen] = useState<ScreenName>("home");
   const [lessons, setLessons] = useState<Lesson[]>(INITIAL_LESSONS);
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState<FeedbackState>(null);
-  const [showAnswer, setShowAnswer] = useState(false);
+  const [isHintModalOpen, setIsHintModalOpen] = useState(false);
+  const activePlayerRef = useRef<ReturnType<typeof createAudioPlayer> | null>(
+    null
+  );
 
   useEffect(() => {
     const restoreProgress = async () => {
@@ -133,18 +351,30 @@ export default function App() {
           return;
         }
 
-        const parsed = JSON.parse(stored) as Record<string, number>;
+        const parsed = JSON.parse(stored) as unknown;
+
+        const answeredByLesson: Record<string, number> = isPersistedProgress(
+          parsed
+        )
+          ? parsed.answeredByLesson
+          : (parsed as Record<string, number>);
+        const completedOnByLesson: Record<string, string | null> =
+          isPersistedProgress(parsed) ? parsed.completedOnByLesson : {};
+
         setLessons((current) =>
           current.map((lesson) => {
-            const savedValue = parsed[lesson.id];
+            const savedValue = answeredByLesson[lesson.id];
             const nextAnswered =
               typeof savedValue === "number"
                 ? clamp(savedValue, 0, lesson.totalQuestions)
                 : lesson.answeredQuestions;
+            const savedCompletedOn = completedOnByLesson[lesson.id];
 
             return {
               ...lesson,
               answeredQuestions: nextAnswered,
+              completedOn:
+                typeof savedCompletedOn === "string" ? savedCompletedOn : null,
             };
           })
         );
@@ -157,9 +387,14 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const payload = Object.fromEntries(
-      lessons.map((lesson) => [lesson.id, lesson.answeredQuestions])
-    );
+    const payload: PersistedProgress = {
+      answeredByLesson: Object.fromEntries(
+        lessons.map((lesson) => [lesson.id, lesson.answeredQuestions])
+      ),
+      completedOnByLesson: Object.fromEntries(
+        lessons.map((lesson) => [lesson.id, lesson.completedOn])
+      ),
+    };
 
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload)).catch(() => {
       // Best effort persistence.
@@ -175,6 +410,10 @@ export default function App() {
     0
   );
   const overallProgress = totalQuestions === 0 ? 0 : totalAnswered / totalQuestions;
+  const todayKey = getTodayKey();
+  const streakCount = lessons.some((lesson) => lesson.completedOn === todayKey)
+    ? 1
+    : 0;
 
   const activeLesson =
     activeLessonId == null
@@ -186,7 +425,7 @@ export default function App() {
       return null;
     }
 
-    const questions = QUESTION_BANK[activeLesson.id] ?? [];
+    const questions = ACTIVE_QUESTION_BANK[activeLesson.id] ?? [];
     if (activeLesson.answeredQuestions >= activeLesson.totalQuestions) {
       return null;
     }
@@ -200,13 +439,49 @@ export default function App() {
     return questions[questionIndex] ?? null;
   }, [activeLesson]);
 
+  const hintEntries = useMemo(() => {
+    if (activeLessonId !== "greetings") {
+      return [];
+    }
+
+    return GREETINGS_PHRASES.map((word) => ({
+      word,
+      meaning: GREETINGS_TRANSLATIONS[word] ?? "Translation pending",
+    }));
+  }, [activeLessonId]);
+
+  const activeChoices = useMemo(() => {
+    if (
+      activeLessonId !== "greetings" ||
+      !activeQuestion ||
+      activeQuestion.sentenceBuilder
+    ) {
+      return [];
+    }
+
+    return buildGreetingChoices(activeQuestion.answer);
+  }, [activeLessonId, activeQuestion]);
+
+  useEffect(() => {
+    return () => {
+      if (activePlayerRef.current) {
+        activePlayerRef.current.remove();
+        activePlayerRef.current = null;
+      }
+    };
+  }, []);
+
   const startLesson = (lessonId: string) => {
     const lesson = lessons.find((item) => item.id === lessonId);
+
+    if (!lesson || lesson.totalQuestions === 0) {
+      return;
+    }
 
     setActiveLessonId(lessonId);
     setUserAnswer("");
     setFeedback(null);
-    setShowAnswer(false);
+    setIsHintModalOpen(false);
     setScreen(
       lesson && lesson.answeredQuestions >= lesson.totalQuestions
         ? "completed"
@@ -219,7 +494,7 @@ export default function App() {
     setActiveLessonId(null);
     setUserAnswer("");
     setFeedback(null);
-    setShowAnswer(false);
+    setIsHintModalOpen(false);
   };
 
   const restartActiveLesson = () => {
@@ -229,13 +504,15 @@ export default function App() {
 
     setLessons((currentLessons) =>
       currentLessons.map((lesson) =>
-        lesson.id === activeLessonId ? { ...lesson, answeredQuestions: 0 } : lesson
+        lesson.id === activeLessonId
+          ? { ...lesson, answeredQuestions: 0, completedOn: null }
+          : lesson
       )
     );
 
     setUserAnswer("");
     setFeedback(null);
-    setShowAnswer(false);
+    setIsHintModalOpen(false);
     setScreen("quiz");
   };
 
@@ -244,8 +521,37 @@ export default function App() {
     setActiveLessonId(null);
     setUserAnswer("");
     setFeedback(null);
-    setShowAnswer(false);
+    setIsHintModalOpen(false);
   };
+
+  const playActiveAudio = useCallback(async () => {
+    if (!activeQuestion?.audioKey) {
+      return;
+    }
+
+    const clip = GREETINGS_AUDIO[activeQuestion.audioKey];
+    if (!clip) {
+      return;
+    }
+
+    try {
+      if (activePlayerRef.current) {
+        activePlayerRef.current.remove();
+        activePlayerRef.current = null;
+      }
+
+      await setAudioModeAsync({
+        playsInSilentMode: true,
+        interruptionMode: "mixWithOthers",
+      });
+
+      const player = createAudioPlayer(clip, { keepAudioSessionActive: true });
+      activePlayerRef.current = player;
+      player.play();
+    } catch {
+      // Ignore audio playback errors.
+    }
+  }, [activeQuestion]);
 
   const checkCurrentAnswer = () => {
     if (!activeQuestion) {
@@ -287,12 +593,13 @@ export default function App() {
           return {
             ...lesson,
             answeredQuestions: nextAnswered,
+            completedOn: completedLesson ? todayKey : lesson.completedOn,
           };
         })
       );
 
       setUserAnswer("");
-      setShowAnswer(false);
+      setIsHintModalOpen(false);
       setFeedback(null);
 
       if (completedLesson) {
@@ -303,84 +610,88 @@ export default function App() {
     }
   };
 
-  if (screen === "lessons") {
+  if (!fontsLoaded) {
+    return null;
+  }
+
+  const currentGroup: AppGroup =
+    screen === "home" ? "home" : screen === "quiz" ? "game" : "lesson";
+
+  if (currentGroup === "home") {
+    return <HomeGroup onGetStarted={() => setScreen("lessons")} styles={styles} />;
+  }
+
+  if (currentGroup === "lesson") {
     return (
-      <LessonsScreen
-        onBack={() => setScreen("home")}
-        lessons={lessons}
-        overallProgress={overallProgress}
-        onStartLesson={startLesson}
+      <LessonGroup
+        screen={screen}
+        activeLessonTitle={activeLesson?.title ?? null}
+        renderLessons={() => (
+          <LessonsScreen
+            lessons={lessons}
+            overallProgress={overallProgress}
+            streakCount={streakCount}
+            onStartLesson={startLesson}
+          />
+        )}
+        renderCompleted={(lessonTitle) => (
+          <CompletedLessonScreen
+            lessonTitle={lessonTitle}
+            onRestart={restartActiveLesson}
+            onContinue={continueToAnotherLesson}
+          />
+        )}
       />
     );
   }
 
-  if (screen === "completed" && activeLesson != null) {
+  if (currentGroup === "game" && activeLesson != null && activeQuestion != null) {
     return (
-      <CompletedLessonScreen
-        lessonTitle={activeLesson.title}
-        onRestart={restartActiveLesson}
-        onContinue={continueToAnotherLesson}
-      />
-    );
-  }
-
-  if (screen === "quiz" && activeLesson != null && activeQuestion != null) {
-    return (
-      <QuizScreen
+      <GameGroup
         lesson={activeLesson}
         question={activeQuestion}
-        userAnswer={userAnswer}
-        onAnswerChange={setUserAnswer}
-        onBack={closeQuiz}
-        onCheckAnswer={checkCurrentAnswer}
-        feedback={feedback}
-        onContinue={continueFromFeedback}
-        showAnswer={showAnswer}
-        onToggleShowAnswer={() => setShowAnswer((state) => !state)}
+        renderQuiz={(lesson, question) => (
+          <QuizScreen
+            lesson={lesson}
+            question={question}
+            userAnswer={userAnswer}
+            onAnswerChange={setUserAnswer}
+            onBack={closeQuiz}
+            onCheckAnswer={checkCurrentAnswer}
+            feedback={feedback}
+            onContinue={continueFromFeedback}
+            showSpeaker={Boolean(question.audioKey)}
+            onPlayAudio={playActiveAudio}
+            isHintModalOpen={isHintModalOpen}
+            onOpenHint={() => setIsHintModalOpen(true)}
+            onCloseHint={() => setIsHintModalOpen(false)}
+            hintEntries={hintEntries}
+            choices={activeChoices}
+          />
+        )}
       />
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#111111" />
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.homeContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>Learn Igbo{"\n"}for free</Text>
-          <Text style={styles.subtitle}>
-            Igbo lessons, pronunciation, and daily practice.
-          </Text>
-        </View>
-
-        <View style={styles.heroWrap}>
-          <HeroIllustration width="100%" height="100%" />
-        </View>
-
-        <Pressable
-          style={styles.button}
-          accessibilityRole="button"
-          onPress={() => setScreen("lessons")}
-        >
-          <Text style={styles.buttonText}>Get Started</Text>
-        </Pressable>
-      </ScrollView>
-    </SafeAreaView>
+    <LessonsScreen
+      lessons={lessons}
+      overallProgress={overallProgress}
+      streakCount={streakCount}
+      onStartLesson={startLesson}
+    />
   );
 }
 
 function LessonsScreen({
-  onBack,
   lessons,
   overallProgress,
+  streakCount,
   onStartLesson,
 }: {
-  onBack: () => void;
   lessons: Lesson[];
   overallProgress: number;
+  streakCount: number;
   onStartLesson: (lessonId: string) => void;
 }) {
   return (
@@ -389,30 +700,36 @@ function LessonsScreen({
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.lessonsContent}
+        stickyHeaderIndices={[0]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.lessonsTopRow}>
-          <Pressable
-            onPress={onBack}
-            style={styles.backButton}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-          >
-            <Text style={styles.backButtonText}>Back</Text>
-          </Pressable>
+        <View style={styles.lessonsHeaderRow}>
+          <View style={styles.metricWrap}>
+            <FireIllustration width={20} height={20} />
+            <Text style={styles.metricText}>{streakCount}</Text>
+          </View>
 
-          <View style={styles.progressRing}>
-            <Text style={styles.progressText}>{toPercent(overallProgress)}%</Text>
+          <View style={styles.lessonsHeaderCenter}>
+            <Image
+              source={require("./assets/illustrations/logo-with-text.png")}
+              style={styles.lessonsHeaderLogo}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.metricWrap}>
+            <PlantIllustration width={20} height={20} />
+            <Text style={styles.metricText}>{toPercent(overallProgress)}%</Text>
           </View>
         </View>
 
-        <Text style={styles.lessonsTitle}>Lessons</Text>
-
         <View style={styles.lessonList}>
-          {lessons.map((lesson) => (
+          {lessons.map((lesson, index) => (
             <LessonCard
               key={lesson.id}
               lesson={lesson}
+              lessonNumber={index + 1}
+              isLocked={lesson.totalQuestions === 0}
               onStart={() => onStartLesson(lesson.id)}
             />
           ))}
@@ -431,8 +748,13 @@ function QuizScreen({
   onCheckAnswer,
   feedback,
   onContinue,
-  showAnswer,
-  onToggleShowAnswer,
+  showSpeaker,
+  onPlayAudio,
+  isHintModalOpen,
+  onOpenHint,
+  onCloseHint,
+  hintEntries,
+  choices,
 }: {
   lesson: Lesson;
   question: Question;
@@ -442,32 +764,150 @@ function QuizScreen({
   onCheckAnswer: () => void;
   feedback: FeedbackState;
   onContinue: () => void;
-  showAnswer: boolean;
-  onToggleShowAnswer: () => void;
+  showSpeaker: boolean;
+  onPlayAudio: () => void;
+  isHintModalOpen: boolean;
+  onOpenHint: () => void;
+  onCloseHint: () => void;
+  hintEntries: Array<{ word: string; meaning: string }>;
+  choices: ChoiceOption[];
 }) {
   const progress =
     lesson.totalQuestions === 0
       ? 0
       : lesson.answeredQuestions / lesson.totalQuestions;
-  const hasInput = userAnswer.trim().length > 0;
+  const isSentenceBuilder = question.sentenceBuilder != null;
+  const [slottedWords, setSlottedWords] = useState<string[]>([]);
+  const [dragFromIndex, setDragFromIndex] = useState<number | null>(null);
+
+  const sentenceBuilder = question.sentenceBuilder;
+  const sentenceTargetWords = sentenceBuilder?.targetWords ?? [];
+  const sentenceBankWords = sentenceBuilder?.bankWords ?? [];
+  const isMultipleChoice = showSpeaker && choices.length > 0;
+  const hasInput = isSentenceBuilder
+    ? slottedWords.every((word) => word.trim().length > 0)
+    : userAnswer.trim().length > 0;
   const QuestionVisual = QUESTION_VISUALS[question.visualKey];
+
+  const sentenceBankWordCounts = useMemo(
+    () => countWords(sentenceBankWords),
+    [sentenceBankWords]
+  );
+  const slottedWordCounts = useMemo(() => countWords(slottedWords), [slottedWords]);
+
+  const placeWord = useCallback(
+    (word: string) => {
+      setSlottedWords((current) => {
+        const next = [...current];
+
+        const firstOpenIndex = next.findIndex((slotWord) => slotWord.length === 0);
+        if (firstOpenIndex !== -1) {
+          next[firstOpenIndex] = word;
+          return next;
+        }
+
+        // Smart replacement: when full, replace the first incorrect slot.
+        const mismatchIndex = next.findIndex(
+          (slotWord, index) =>
+            normalizeAnswer(slotWord) !==
+            normalizeAnswer(sentenceTargetWords[index] ?? "")
+        );
+
+        if (mismatchIndex !== -1) {
+          next[mismatchIndex] = word;
+          return next;
+        }
+
+        next[next.length - 1] = word;
+        return next;
+      });
+
+      setDragFromIndex(null);
+    },
+    [sentenceTargetWords]
+  );
+
+  const handleSlotPress = useCallback(
+    (slotIndex: number) => {
+      if (dragFromIndex != null) {
+        if (dragFromIndex === slotIndex) {
+          setDragFromIndex(null);
+          return;
+        }
+
+        setSlottedWords((current) => {
+          const next = [...current];
+          [next[dragFromIndex], next[slotIndex]] = [
+            next[slotIndex],
+            next[dragFromIndex],
+          ];
+          return next;
+        });
+        setDragFromIndex(null);
+        return;
+      }
+
+      if (slottedWords[slotIndex]?.length) {
+        setSlottedWords((current) => {
+          const next = [...current];
+          next[slotIndex] = "";
+          return next;
+        });
+      }
+    },
+    [dragFromIndex, slottedWords]
+  );
+
+  const handleSlotLongPress = useCallback(
+    (slotIndex: number) => {
+      if (!slottedWords[slotIndex]?.length) {
+        return;
+      }
+
+      setDragFromIndex(slotIndex);
+    },
+    [slottedWords]
+  );
+
+  useEffect(() => {
+    if (!isSentenceBuilder) {
+      setSlottedWords([]);
+      setDragFromIndex(null);
+      return;
+    }
+
+    setSlottedWords(Array(sentenceTargetWords.length).fill(""));
+    setDragFromIndex(null);
+    onAnswerChange("");
+  }, [isSentenceBuilder, onAnswerChange, question.answer, sentenceTargetWords.length]);
+
+  useEffect(() => {
+    if (!isSentenceBuilder) {
+      return;
+    }
+
+    onAnswerChange(slottedWords.join(" ").trim());
+  }, [isSentenceBuilder, onAnswerChange, slottedWords]);
+
+  useEffect(() => {
+    if (showSpeaker) {
+      onPlayAudio();
+    }
+  }, [question.answer, showSpeaker, onPlayAudio]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#111111" />
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.quizFlowContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={styles.quizFlowContent}>
+        <View style={styles.quizTopRow}>
         <Pressable
           onPress={onBack}
           style={styles.quizBackIconButton}
           accessibilityRole="button"
           accessibilityLabel="Back to lessons"
         >
-          <Text style={styles.quizBackIcon}>‹</Text>
+          <BackIcon width={22} height={22} />
         </Pressable>
 
         <View style={styles.quizHeaderProgressTrack}>
@@ -475,42 +915,186 @@ function QuizScreen({
             style={[styles.quizHeaderProgressFill, { width: `${progress * 100}%` }]}
           />
         </View>
+        </View>
+
+        {showSpeaker && (
+          <Pressable
+            onPress={onPlayAudio}
+            style={styles.speakerButton}
+            accessibilityRole="button"
+            accessibilityLabel="Play audio"
+          >
+            <SpeakerIcon width={34} height={34} />
+          </Pressable>
+        )}
 
         <View style={styles.quizPromptRow}>
           <Text style={styles.quizPromptWord}>{question.prompt}</Text>
           <Pressable
-            onPress={onToggleShowAnswer}
-            style={styles.revealButton}
+            onPress={onOpenHint}
+            style={styles.hintIconButton}
+            hitSlop={12}
             accessibilityRole="button"
-            accessibilityLabel="Toggle answer hint"
+            accessibilityLabel="Open hint"
           >
-            <EyeIcon width={52} height={52} />
+            <HintIcon width={18} height={18} />
           </Pressable>
         </View>
 
-        <View style={styles.quizVisualWrap}>
-          {QuestionVisual ? (
-            <QuestionVisual width="100%" height="100%" />
-          ) : (
-            <Text style={styles.quizVisualFallback}>No visual</Text>
-          )}
-        </View>
+        {!showSpeaker && !isSentenceBuilder && (
+          <View style={styles.quizVisualWrap}>
+            {QuestionVisual ? (
+              <QuestionVisual width="100%" height="100%" />
+            ) : (
+              <Text style={styles.quizVisualFallback}>No visual</Text>
+            )}
+          </View>
+        )}
 
-        <View style={styles.answerInputWrap}>
-          <TextInput
-            value={userAnswer}
-            onChangeText={onAnswerChange}
-            style={styles.answerInput}
-            placeholder="Type Igbo translation"
-            placeholderTextColor="#617588"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          <View style={styles.answerLine} />
-          <View style={styles.answerLine} />
-        </View>
+        {isSentenceBuilder && sentenceBuilder ? (
+          <View style={styles.sentenceBuilderWrap}>
+            <View style={styles.sentenceSourceCard}>
+              <Text
+                style={[
+                  styles.sentenceSourceText,
+                  getDynamicSentencePromptStyle(sentenceBuilder.sourceSentence),
+                ]}
+                numberOfLines={2}
+                adjustsFontSizeToFit
+                minimumFontScale={0.72}
+              >
+                {sentenceBuilder.sourceSentence}
+              </Text>
+            </View>
 
-        {showAnswer && <Text style={styles.hintText}>Hint: {question.answer}</Text>}
+            <View style={styles.slotGrid}>
+              {sentenceTargetWords.map((_, slotIndex) => {
+                const slotWord = slottedWords[slotIndex] ?? "";
+                const isActive = dragFromIndex === slotIndex;
+
+                return (
+                  <Pressable
+                    key={`slot-${slotIndex}`}
+                    onPress={() => handleSlotPress(slotIndex)}
+                    onLongPress={() => handleSlotLongPress(slotIndex)}
+                    delayLongPress={170}
+                    hitSlop={10}
+                    style={[
+                      styles.slotChip,
+                      slotWord.length > 0 && styles.slotChipFilled,
+                      isActive && styles.slotChipActive,
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Sentence slot ${slotIndex + 1}`}
+                  >
+                    <Text
+                      style={[
+                        styles.slotChipText,
+                        slotWord.length > 0 && styles.slotChipTextFilled,
+                        getDynamicOptionTextStyle(
+                          slotWord.length > 0
+                            ? slotWord
+                            : sentenceTargetWords[slotIndex] ?? ""
+                        ),
+                      ]}
+                    >
+                      {slotWord.length > 0 ? slotWord : "_"}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+          
+
+          
+
+            <View style={styles.wordBankWrap}>
+              {sentenceBankWords.map((word, index) => {
+                const maxWordCount = sentenceBankWordCounts[word] ?? 0;
+                const usedWordCount = slottedWordCounts[word] ?? 0;
+                const isDisabled = usedWordCount >= maxWordCount;
+
+                return (
+                  <Pressable
+                    key={`bank-${word}-${index}`}
+                    onPress={() => placeWord(word)}
+                    disabled={isDisabled}
+                    hitSlop={10}
+                    style={[
+                      styles.wordBankChip,
+                      isDisabled && styles.wordBankChipDisabled,
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Use word ${word}`}
+                  >
+                    <Text
+                      style={[
+                        styles.wordBankChipText,
+                        isDisabled && styles.wordBankChipTextDisabled,
+                        getDynamicOptionTextStyle(word),
+                      ]}
+                    >
+                      {word}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        ) : isMultipleChoice ? (
+          <View style={styles.multipleChoiceList}>
+            {choices.map((choice) => {
+              const isSelected = userAnswer === choice.label;
+
+              return (
+                <Pressable
+                  key={choice.label}
+                  onPress={() => onAnswerChange(choice.label)}
+                  style={[
+                    styles.choiceCard,
+                    isSelected && styles.choiceCardSelected,
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Choose ${choice.label}`}
+                >
+                  <Text
+                    style={[
+                      styles.choiceLabel,
+                      isSelected && styles.choiceLabelSelected,
+                    ]}
+                  >
+                    {choice.label}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.choiceTranslation,
+                      isSelected && styles.choiceTranslationSelected,
+                    ]}
+                  >
+                    {choice.translation}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : (
+          <View style={styles.answerInputWrap}>
+            <TextInput
+              value={userAnswer}
+              onChangeText={onAnswerChange}
+              style={styles.answerInput}
+              placeholder="Type Igbo translation"
+              placeholderTextColor="#617588"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <View style={styles.answerLine} />
+            <View style={styles.answerLine} />
+          </View>
+        )}
+
+        {hasInput && feedback == null && <View style={styles.quizBottomSpacer} />}
 
         {hasInput && feedback == null && (
           <Pressable
@@ -521,7 +1105,7 @@ function QuizScreen({
             <Text style={styles.checkButtonText}>Check</Text>
           </Pressable>
         )}
-      </ScrollView>
+      </View>
 
       {feedback != null && (
         <View
@@ -557,6 +1141,12 @@ function QuizScreen({
             </Text>
           </View>
 
+          {feedback === "wrong" && (
+            <Text style={styles.feedbackAnswerText}>
+              The correct answer is "{question.answer}".
+            </Text>
+          )}
+
           <Pressable
             style={[
               styles.feedbackAction,
@@ -573,6 +1163,35 @@ function QuizScreen({
           </Pressable>
         </View>
       )}
+
+      <Modal
+        visible={isHintModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={onCloseHint}
+      >
+        <View style={styles.hintModalBackdrop}>
+          <View style={styles.hintModalCard}>
+            <Text style={styles.hintModalTitle}>Words and Meanings</Text>
+
+            <ScrollView
+              style={styles.hintModalList}
+              showsVerticalScrollIndicator={false}
+            >
+              {hintEntries.map((entry) => (
+                <View key={entry.word} style={styles.hintModalRow}>
+                  <Text style={styles.hintWord}>{entry.word}</Text>
+                  <Text style={styles.hintMeaning}>{entry.meaning}</Text>
+                </View>
+              ))}
+            </ScrollView>
+
+            <Pressable onPress={onCloseHint} style={styles.hintModalCloseButton}>
+              <Text style={styles.hintModalCloseText}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -589,13 +1208,9 @@ function CompletedLessonScreen({
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#111111" />
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.completedContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={styles.completedContent}>
+                <Text style={styles.completedSubtitle}>Lesson: {lessonTitle}</Text>
         <Text style={styles.completedTitle}>You completed this lesson</Text>
-        <Text style={styles.completedSubtitle}>{lessonTitle}</Text>
 
         <View style={styles.completedIllustrationWrap}>
           <CompletionIllustration width="100%" height="100%" />
@@ -608,16 +1223,20 @@ function CompletedLessonScreen({
         <Pressable style={styles.continueButton} onPress={onContinue}>
           <Text style={styles.continueButtonText}>Continue</Text>
         </Pressable>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
 
 function LessonCard({
   lesson,
+  lessonNumber,
+  isLocked,
   onStart,
 }: {
   lesson: Lesson;
+  lessonNumber: number;
+  isLocked: boolean;
   onStart: () => void;
 }) {
   const progress =
@@ -627,21 +1246,25 @@ function LessonCard({
 
   return (
     <Pressable
-      style={[styles.lessonCard, { backgroundColor: lesson.color }]}
+      style={[styles.lessonCard, isLocked && styles.lessonCardLocked]}
       onPress={onStart}
+      disabled={isLocked}
       accessibilityRole="button"
-      accessibilityLabel={`Start ${lesson.title} lesson`}
+      accessibilityLabel={
+        isLocked
+          ? `Lesson ${lessonNumber}: ${lesson.title} is locked until audio is available`
+          : `Start lesson ${lessonNumber}: ${lesson.title}`
+      }
     >
-      <View style={styles.lessonCardHeader}>
-        <Text style={styles.lessonCardTitle}>{lesson.title}</Text>
-        <Text style={styles.lessonCardMeta}>
-          {lesson.answeredQuestions}/{lesson.totalQuestions} • {toPercent(progress)}%
-        </Text>
+      <Text style={styles.lessonCardTitle}>{lessonNumber}. {lesson.title}</Text>
+      {isLocked && <Text style={styles.lessonCardMeta}>Audio coming soon</Text>}
+      <View style={styles.lessonCardProgressTrack}>
+        {progress > 0 && (
+          <View
+            style={[styles.lessonCardProgressFill, { width: `${progress * 100}%` }]}
+          />
+        )}
       </View>
-      <View style={styles.progressTrack}>
-        <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-      </View>
-      <Text style={styles.lessonStartText}>Tap to start</Text>
     </Pressable>
   );
 }
@@ -650,12 +1273,212 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(value, max));
 }
 
+function buildMixedQuestionSet(
+  wordQuestions: Question[],
+  sentenceSeeds: SentenceBuilderSeed[]
+): Question[] {
+  const sentenceQuestionCount = Math.min(
+    sentenceSeeds.length,
+    Math.floor(wordQuestions.length / 2)
+  );
+  const sentenceQuestionIndices = new Set(
+    pickRandomIndices(wordQuestions.length, sentenceQuestionCount)
+  );
+  let sentenceSeedIndex = 0;
+
+  return wordQuestions.map((question, index) => {
+    if (!sentenceQuestionIndices.has(index)) {
+      return question;
+    }
+
+    const derivedGreetingSeed = buildGreetingSentenceSeedFromQuestion(question);
+    const sentenceSeed =
+      derivedGreetingSeed ?? sentenceSeeds[sentenceSeedIndex] ?? null;
+    sentenceSeedIndex += derivedGreetingSeed ? 0 : 1;
+
+    if (!sentenceSeed) {
+      return question;
+    }
+
+    const sentenceAnswer = sentenceSeed.targetWords.join(" ");
+
+    return {
+      prompt: "Translate this sentence",
+      answer: sentenceAnswer,
+      visualKey: "",
+      audioKey: question.audioKey,
+      sentenceBuilder: {
+        sourceSentence: sentenceSeed.sourceSentence,
+        targetWords: sentenceSeed.targetWords,
+        bankWords: shuffleArray([
+          ...sentenceSeed.targetWords,
+          ...sentenceSeed.distractors,
+        ]),
+      },
+    };
+  });
+}
+
+function buildGreetingSentenceSeeds(): SentenceBuilderSeed[] {
+  const allGreetingWords = GREETINGS_PHRASES.flatMap((phrase) =>
+    tokenizeSentenceWords(phrase)
+  );
+
+  return GREETINGS_PHRASES.map((phrase) => {
+    const targetWords = tokenizeSentenceWords(phrase);
+    const distractorPool = allGreetingWords.filter(
+      (word) => !targetWords.includes(word)
+    );
+
+    return {
+      sourceSentence: GREETINGS_TRANSLATIONS[phrase] ?? "Translate this greeting",
+      targetWords,
+      distractors: shuffleArray(distractorPool).slice(0, 3),
+    };
+  });
+}
+
+function buildGreetingSentenceSeedFromQuestion(
+  question: Question
+): SentenceBuilderSeed | null {
+  if (!question.audioKey || !GREETINGS_TRANSLATIONS[question.answer]) {
+    return null;
+  }
+
+  const targetWords = tokenizeSentenceWords(question.answer);
+  const allGreetingWords = GREETINGS_PHRASES.flatMap((phrase) =>
+    tokenizeSentenceWords(phrase)
+  );
+  const distractorPool = allGreetingWords.filter(
+    (word) => !targetWords.includes(word)
+  );
+
+  return {
+    sourceSentence:
+      GREETINGS_TRANSLATIONS[question.answer] ?? "Translate this greeting",
+    targetWords,
+    distractors: shuffleArray(distractorPool).slice(0, 3),
+  };
+}
+
+function tokenizeSentenceWords(value: string): string[] {
+  return value
+    .replace(/[?.,!'";:]/g, "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function pickRandomIndices(totalCount: number, pickCount: number): number[] {
+  const allIndices = Array.from({ length: totalCount }, (_, index) => index);
+  return shuffleArray(allIndices).slice(0, Math.max(0, pickCount));
+}
+
+function getDynamicOptionTextStyle(word: string): {
+  fontSize: number;
+  lineHeight: number;
+} {
+  const length = word.trim().length;
+
+  if (length >= 12) {
+    return { fontSize: 14, lineHeight: 18 };
+  }
+
+  if (length >= 9) {
+    return { fontSize: 15, lineHeight: 19 };
+  }
+
+  if (length >= 6) {
+    return { fontSize: 17, lineHeight: 21 };
+  }
+
+  return { fontSize: 19, lineHeight: 23 };
+}
+
+function getDynamicSentencePromptStyle(sentence: string): {
+  fontSize: number;
+  lineHeight: number;
+} {
+  const length = sentence.trim().length;
+
+  if (length >= 38) {
+    return { fontSize: 16, lineHeight: 20 };
+  }
+
+  if (length >= 28) {
+    return { fontSize: 18, lineHeight: 22 };
+  }
+
+  return { fontSize: 20, lineHeight: 24 };
+}
+
+function countWords(words: string[]): Record<string, number> {
+  return words.reduce<Record<string, number>>((acc, word) => {
+    if (!word) {
+      return acc;
+    }
+
+    acc[word] = (acc[word] ?? 0) + 1;
+    return acc;
+  }, {});
+}
+
+function buildGreetingChoices(correctAnswer: string): ChoiceOption[] {
+  const pool = GREETINGS_PHRASES.filter((phrase) => phrase !== correctAnswer);
+  const distractors = shuffleArray(pool).slice(0, 3);
+
+  return shuffleArray([correctAnswer, ...distractors]).map((phrase) => ({
+    label: phrase,
+    translation: GREETINGS_TRANSLATIONS[phrase] ?? "Translation pending",
+  }));
+}
+
+function shuffleArray<T>(values: T[]): T[] {
+  const copy = [...values];
+
+  for (let index = copy.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+  }
+
+  return copy;
+}
+
 function normalizeAnswer(value: string): string {
-  return value.trim().toLowerCase().replace(/\s+/g, " ");
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[?.,!'";:]/g, "")
+    .replace(/…/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
 }
 
 function toPercent(value: number): number {
   return Math.round(value * 100);
+}
+
+function isPersistedProgress(value: unknown): value is PersistedProgress {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<PersistedProgress>;
+  return (
+    typeof candidate.answeredByLesson === "object" &&
+    candidate.answeredByLesson != null &&
+    typeof candidate.completedOnByLesson === "object" &&
+    candidate.completedOnByLesson != null
+  );
+}
+
+function getTodayKey(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = `${now.getMonth() + 1}`.padStart(2, "0");
+  const day = `${now.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 const styles = StyleSheet.create({
@@ -670,42 +1493,38 @@ const styles = StyleSheet.create({
   homeContent: {
     flexGrow: 1,
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 40,
+    justifyContent: "flex-start",
+    paddingHorizontal: 28,
+    paddingTop: 56,
+    paddingBottom: 0,
   },
-  header: {
+  homeTopContent: {
+    width: "100%",
     alignItems: "center",
-    marginTop: 24,
-    gap: 14,
+    marginTop: 44,
+    marginBottom: 36,
+    gap: 72,
   },
-  title: {
+  homeHeadline: {
     color: "#F7F7F7",
     textAlign: "center",
-    fontSize: 56,
-    lineHeight: 60,
-    fontWeight: "800",
-    letterSpacing: -1.6,
+    fontFamily: "DMSans_400Regular",
+    fontSize: 36,
+    lineHeight: 40,
   },
-  subtitle: {
-    color: "#B8B8B8",
-    textAlign: "center",
-    fontSize: 16,
-    lineHeight: 24,
-    maxWidth: 310,
-  },
-  heroWrap: {
-    width: "100%",
-    aspectRatio: 0.88,
-    maxWidth: 560,
+  homeHeroWrap: {
+    width: "105%",
+    aspectRatio: 0.72,
+    maxWidth: 820,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: -20,
+    marginBottom: -20,
   },
   button: {
     width: "100%",
-    maxWidth: 560,
-    minHeight: 88,
+    maxWidth: 620,
+    minHeight: 100,
     borderRadius: 28,
     backgroundColor: "#55BFF2",
     alignItems: "center",
@@ -718,160 +1537,162 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#111111",
-    fontSize: 30,
+    fontFamily: "DMSans_700Bold",
+    fontSize: 28,
     lineHeight: 36,
-    fontWeight: "800",
-    letterSpacing: -0.8,
   },
   lessonsContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 24,
+    paddingHorizontal: 18,
+    paddingTop: 16,
     paddingBottom: 28,
   },
-  lessonsTopRow: {
+  lessonsHeaderRow: {
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    backgroundColor: "#0D0F14",
+    paddingTop: 8,
+    paddingBottom: 10,
+    paddingHorizontal: 4,
+    zIndex: 2,
+    marginBottom: 18,
+  },
+  metricWrap: {
+    flex: 1,
+    minWidth: 0,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 24,
+    justifyContent: "center",
+    gap: 6,
   },
-  backButton: {
-    minWidth: 72,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+  metricText: {
+    color: "#FFFFFF",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 22,
+    lineHeight: 24,
   },
-  backButtonText: {
-    color: "#7E8A92",
-    fontSize: 28,
-    lineHeight: 34,
-    fontWeight: "400",
-    letterSpacing: -0.4,
-  },
-  lessonsTitle: {
-    color: "#8A8A8A",
-    fontSize: 46,
-    lineHeight: 52,
-    fontWeight: "300",
-    letterSpacing: -1.1,
-    marginBottom: 40,
-  },
-  progressRing: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    borderWidth: 4,
-    borderColor: "rgba(135, 149, 160, 0.7)",
-    borderStyle: "dashed",
+  lessonsHeaderCenter: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  progressText: {
-    color: "#FFFFFF",
-    fontSize: 34,
-    lineHeight: 40,
-    fontWeight: "800",
+  lessonsHeaderLogo: {
+    width: 92,
+    height: 54,
   },
   lessonList: {
-    gap: 28,
-    paddingTop: 4,
+    gap: 22,
+    paddingTop: 6,
   },
   lessonCard: {
-    minHeight: 200,
-    borderRadius: 28,
-    paddingHorizontal: 28,
-    paddingTop: 42,
-    paddingBottom: 28,
-    justifyContent: "space-between",
-  },
-  lessonCardHeader: {
-    gap: 8,
-    alignItems: "center",
-  },
-  lessonCardTitle: {
-    color: "#FFFFFF",
-    textAlign: "center",
-    fontSize: 44,
-    lineHeight: 50,
-    fontWeight: "800",
-  },
-  lessonCardMeta: {
-    color: "rgba(255, 255, 255, 0.9)",
-    textAlign: "center",
-    fontSize: 18,
-    lineHeight: 22,
-    fontWeight: "600",
-  },
-  progressTrack: {
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: "rgba(255, 255, 255, 0.28)",
+    minHeight: 106,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "#2A2F3A",
+    backgroundColor: "#1A1C21",
+    paddingHorizontal: 32,
+    paddingTop: 30,
+    paddingBottom: 22,
+    justifyContent: "center",
     overflow: "hidden",
   },
-  progressFill: {
-    height: "100%",
-    borderRadius: 11,
-    backgroundColor: "rgba(255, 255, 255, 0.55)",
+  lessonCardLocked: {
+    opacity: 0.72,
   },
-  lessonStartText: {
-    color: "rgba(255, 255, 255, 0.88)",
-    textAlign: "center",
-    fontSize: 16,
-    lineHeight: 20,
-    fontWeight: "600",
+  lessonCardTitle: {
+    color: "#F4F4F4",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 21,
+    lineHeight: 24,
+  },
+  lessonCardMeta: {
+    marginTop: 6,
+    color: "#99A6B4",
+    fontFamily: "DMSans_400Regular",
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  lessonCardProgressTrack: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 6,
+    backgroundColor: "transparent",
+    overflow: "hidden",
+  },
+  lessonCardProgressFill: {
+    height: "100%",
+    backgroundColor: "#4FC3FF",
   },
   quizFlowContent: {
-    flexGrow: 1,
+    flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 26,
-    paddingBottom: 260,
+    paddingTop: 16,
+    paddingBottom: 16,
+  },
+  quizTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
   },
   quizBackIconButton: {
-    width: 44,
-    height: 44,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: "#3A3B3F",
     alignItems: "center",
     justifyContent: "center",
   },
-  quizBackIcon: {
-    color: "#8E969C",
-    fontSize: 54,
-    lineHeight: 54,
-    marginTop: -10,
-  },
   quizHeaderProgressTrack: {
-    height: 46,
-    borderRadius: 23,
-    marginTop: 40,
-    backgroundColor: "#3A4B58",
+    flex: 1,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: "#45484D",
     overflow: "hidden",
   },
   quizHeaderProgressFill: {
     height: "100%",
-    borderRadius: 23,
+    borderRadius: 9,
     backgroundColor: "#9CD754",
   },
+  speakerButton: {
+    marginTop: 22,
+    width: 66,
+    height: 66,
+    borderRadius: 33,
+    alignSelf: "center",
+    backgroundColor: "#3A3B3F",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   quizPromptRow: {
-    marginTop: 86,
+    marginTop: 14,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    gap: 8,
   },
   quizPromptWord: {
     color: "#FFFFFF",
-    fontSize: 64,
-    lineHeight: 70,
-    fontWeight: "700",
+    fontFamily: "DMSans_400Regular",
+    fontSize: 24,
+    lineHeight: 28,
   },
-  revealButton: {
-    width: 98,
-    height: 98,
-    borderRadius: 18,
+  hintIconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#54BBF3",
+    backgroundColor: "#3A3B3F",
   },
   quizVisualWrap: {
-    marginTop: 70,
-    height: 250,
+    marginTop: 24,
+    height: 190,
     width: "100%",
   },
   quizVisualFallback: {
@@ -881,14 +1702,155 @@ const styles = StyleSheet.create({
     lineHeight: 28,
     marginTop: 100,
   },
+  sentenceBuilderWrap: {
+    marginTop: 14,
+    gap: 10,
+  },
+  sentenceSourceCard: {
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#2B313D",
+    backgroundColor: "#181C23",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  sentenceSourceText: {
+    color: "#F4F7FA",
+    textAlign: "center",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 24,
+    lineHeight: 28,
+  },
+  slotGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    justifyContent: "center",
+  },
+  slotChip: {
+    minWidth: 98,
+    minHeight: 52,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#2A2F3A",
+    borderStyle: "dashed",
+    backgroundColor: "#10141B",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 12,
+  },
+  slotChipFilled: {
+    borderStyle: "solid",
+    borderColor: "#4EC5FF",
+    backgroundColor: "#172634",
+  },
+  slotChipActive: {
+    borderColor: "#F7C654",
+    backgroundColor: "#2E2412",
+  },
+  slotChipText: {
+    color: "#5E6F83",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 20,
+    lineHeight: 24,
+  },
+  slotChipTextFilled: {
+    color: "#F2FAFF",
+  },
+  sentenceBuilderHelperText: {
+    color: "#7E91A6",
+    textAlign: "center",
+    fontFamily: "DMSans_400Regular",
+    fontSize: 12,
+    lineHeight: 16,
+    marginTop: -2,
+  },
+  sentenceHelperText: {
+    color: "#97A9BC",
+    textAlign: "center",
+    fontFamily: "DMSans_400Regular",
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  wordBankWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 10,
+  },
+  wordBankChip: {
+    minHeight: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "#2B313D",
+    backgroundColor: "#181C23",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 14,
+  },
+  wordBankChipDisabled: {
+    opacity: 0.35,
+  },
+  wordBankChipText: {
+    color: "#F3F7FB",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 16,
+    lineHeight: 20,
+  },
+  wordBankChipTextDisabled: {
+    color: "#8A97A6",
+  },
   answerInputWrap: {
-    marginTop: 64,
-    gap: 34,
+    marginTop: 24,
+    gap: 18,
+  },
+  multipleChoiceList: {
+    marginTop: 20,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  choiceCard: {
+    width: "48%",
+    minHeight: 112,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "#2B313D",
+    backgroundColor: "#181C23",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    justifyContent: "center",
+  },
+  choiceCardSelected: {
+    borderColor: "#4EC5FF",
+    backgroundColor: "#1C2E3B",
+  },
+  choiceLabel: {
+    color: "#F3F7FB",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 30,
+    lineHeight: 34,
+    textAlign: "center",
+  },
+  choiceLabelSelected: {
+    color: "#DDF5FF",
+  },
+  choiceTranslation: {
+    marginTop: 2,
+    color: "#97A7B8",
+    fontFamily: "DMSans_400Regular",
+    fontSize: 18,
+    lineHeight: 22,
+    textAlign: "center",
+  },
+  choiceTranslationSelected: {
+    color: "#AEDDFF",
   },
   answerInput: {
     color: "#E7F7FF",
-    fontSize: 34,
-    lineHeight: 40,
+    fontSize: 28,
+    lineHeight: 34,
     fontWeight: "500",
     paddingVertical: 0,
   },
@@ -904,18 +1866,23 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontWeight: "600",
   },
+  quizBottomSpacer: {
+    flex: 1,
+    minHeight: 10,
+  },
   checkButton: {
-    marginTop: 34,
-    minHeight: 84,
-    borderRadius: 26,
+    marginTop: 0,
+    marginBottom: 4,
+    minHeight: 68,
+    borderRadius: 20,
     backgroundColor: "#3CC1FF",
     alignItems: "center",
     justifyContent: "center",
   },
   checkButtonText: {
     color: "#0C1721",
-    fontSize: 34,
-    lineHeight: 40,
+    fontSize: 31,
+    lineHeight: 35,
     fontWeight: "800",
   },
   feedbackSheet: {
@@ -938,13 +1905,14 @@ const styles = StyleSheet.create({
   feedbackHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 18,
-    marginBottom: 24,
+    justifyContent: "center",
+    gap: 12,
+    marginBottom: 14,
   },
   feedbackIconCircle: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -956,13 +1924,13 @@ const styles = StyleSheet.create({
   },
   feedbackIconText: {
     color: "#FFFFFF",
-    fontSize: 44,
-    lineHeight: 48,
+    fontSize: 26,
+    lineHeight: 30,
     fontWeight: "700",
   },
   feedbackTitle: {
-    fontSize: 56,
-    lineHeight: 62,
+    fontSize: 34,
+    lineHeight: 38,
     fontWeight: "700",
   },
   feedbackTitleCorrect: {
@@ -971,9 +1939,17 @@ const styles = StyleSheet.create({
   feedbackTitleWrong: {
     color: "#EA2E35",
   },
+  feedbackAnswerText: {
+    textAlign: "center",
+    color: "#7A2124",
+    fontFamily: "DMSans_400Regular",
+    fontSize: 15,
+    lineHeight: 20,
+    marginBottom: 12,
+  },
   feedbackAction: {
-    minHeight: 88,
-    borderRadius: 30,
+    minHeight: 72,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -985,71 +1961,134 @@ const styles = StyleSheet.create({
   },
   feedbackActionText: {
     color: "#FFFFFF",
-    fontSize: 64,
-    lineHeight: 70,
+    fontSize: 38,
+    lineHeight: 42,
     fontWeight: "700",
+  },
+  hintModalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    paddingHorizontal: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  hintModalCard: {
+    width: "100%",
+    maxHeight: "80%",
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "#2A2F3A",
+    backgroundColor: "#15181E",
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  hintModalTitle: {
+    color: "#F5F7FA",
+    textAlign: "center",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 24,
+    lineHeight: 28,
+    marginBottom: 14,
+  },
+  hintModalList: {
+    maxHeight: 420,
+  },
+  hintModalRow: {
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#252A33",
+    gap: 4,
+  },
+  hintWord: {
+    color: "#FFFFFF",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 18,
+    lineHeight: 22,
+  },
+  hintMeaning: {
+    color: "#99A6B4",
+    fontFamily: "DMSans_400Regular",
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  hintModalCloseButton: {
+    marginTop: 18,
+    minHeight: 52,
+    borderRadius: 16,
+    backgroundColor: "#4FC3FF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  hintModalCloseText: {
+    color: "#07141E",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 20,
+    lineHeight: 24,
   },
   completedContent: {
     flexGrow: 1,
     alignItems: "center",
     paddingHorizontal: 24,
-    paddingTop: 42,
-    paddingBottom: 48,
+    justifyContent: "center",
+    paddingTop: 16,
+    paddingBottom: 20,
   },
   completedTitle: {
     color: "#F7F7F7",
     textAlign: "center",
-    fontSize: 68,
-    lineHeight: 74,
+    fontSize: 42,
+    lineHeight: 46,
     fontWeight: "800",
-    letterSpacing: -1.3,
-    maxWidth: 520,
+    letterSpacing: -0.6,
+    maxWidth: 420,
   },
   completedSubtitle: {
-    marginTop: 16,
+    marginTop: 8,
     color: "#7BCDF8",
     textAlign: "center",
-    fontSize: 28,
-    lineHeight: 34,
+    fontSize: 20,
+    lineHeight: 24,
     fontWeight: "600",
   },
   completedIllustrationWrap: {
     width: "100%",
-    maxWidth: 560,
-    height: 320,
-    marginTop: 24,
-    marginBottom: 34,
+    maxWidth: 330,
+    height: 180,
+    marginTop: 12,
+    marginBottom: 18,
   },
   restartButton: {
     width: "100%",
-    maxWidth: 560,
-    minHeight: 88,
-    borderRadius: 28,
-    borderWidth: 2,
-    borderColor: "#48C0F7",
+    maxWidth: 320,
+    minHeight: 56,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#3A97C5",
+    backgroundColor: "rgba(72, 192, 247, 0.08)",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 18,
+    marginTop: 48,
+    marginBottom: 48,
   },
   restartButtonText: {
-    color: "#48C0F7",
-    fontSize: 48,
-    lineHeight: 54,
-    fontWeight: "700",
+    color: "#7BBEDC",
+    fontSize: 22,
+    lineHeight: 26,
+    fontWeight: "600",
   },
   continueButton: {
     width: "100%",
-    maxWidth: 560,
-    minHeight: 88,
-    borderRadius: 28,
+    maxWidth: 320,
+    minHeight: 62,
+    borderRadius: 18,
     backgroundColor: "#48B8EE",
     alignItems: "center",
     justifyContent: "center",
   },
   continueButtonText: {
     color: "#0F1A22",
-    fontSize: 48,
-    lineHeight: 54,
+    fontSize: 24,
+    lineHeight: 28,
     fontWeight: "700",
   },
 });

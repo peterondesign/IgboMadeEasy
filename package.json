@@ -7,14 +7,19 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "generate:greetings-translations": "node scripts/generate-greetings-translations.mjs"
   },
   "dependencies": {
+    "@expo-google-fonts/dm-sans": "^0.4.2",
+    "@expo/metro-runtime": "~56.0.13",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "expo": "latest",
-    "react": "latest",
-    "react-native": "latest",
-    "react-native-svg": "latest"
+    "expo": "~56.0.6",
+    "expo-audio": "~56.0.11",
+    "expo-font": "~56.0.5",
+    "react": "19.2.3",
+    "react-native": "0.85.3",
+    "react-native-svg": "15.15.4"
   },
   "devDependencies": {
     "@types/react": "latest",
