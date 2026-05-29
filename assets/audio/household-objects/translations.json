@@ -1,8 +1,8 @@
 {
-  "ulo": "House",
-  "ime ulo": "Room",
-  "uzo": "Door",
-  "window": "Window",
+  "ụlọ": "House",
+  "ime ụlọ": "Room",
+  "ụzọ": "Door",
+  "windo": "Window",
   "oche": "Chair",
   "tebulu": "Table",
   "akwa": "Bed",
@@ -12,11 +12,16 @@
   "ngaji": "Spoon",
   "efere": "Plate",
   "iko": "Cup",
-  "azuza": "Broom",
-  "boketi": "Bucket",
+  "azịza": "Broom",
+  "bọketi": "Bucket",
   "ncha": "Soap",
   "akwa ejiji": "Cloth",
-  "oku": "Light",
+  "ọkụ": "Light",
   "igodo": "Key",
-  "mkpuchi": "Lock"
+  "mkpọchi": "Lock",
+  "mechie ụzọ na windo": "Close the door and window.",
+  "tinye efere na ngaji n'elu tebulu": "Put the plate and spoon on the table.",
+  "igodo dị n'akụkụ mkpọchi": "The key is beside the lock.",
+  "ọ na-ehicha ụlọ na azịza": "She sweeps the house with a broom.",
+  "nye m iko mmiri": "Give me a cup of water."
 }

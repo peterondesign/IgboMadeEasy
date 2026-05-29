@@ -119,13 +119,17 @@ type PersistedProgress = {
   completedOnByLesson: Record<string, string | null>;
 };
 
+type RemovableSubscription = {
+  remove: () => void;
+};
+
 const STORAGE_KEY = "igbo-made-easy.lesson-progress.v1";
 const GREETINGS_TRANSLATIONS = require("./assets/audio/greetings/translations.json") as Record<
   string,
   string
 >;
-const GAME_SOUND_SUCCESS = require("./assets/audio/game-sounds/success-sound.m4a");
-const GAME_SOUND_FAILURE = require("./assets/audio/game-sounds/try-again-sound.m4a");
+const GAME_SOUND_SUCCESS = require("./assets/audio/game-sounds/success-sound.mp3");
+const GAME_SOUND_FAILURE = require("./assets/audio/game-sounds/try-again-sound.mp3");
 const QUESTION_AUDIO: Record<string, number> = {
   ...ASKING_QUESTIONS_AUDIO,
   ...ANIMALS_AUDIO,
@@ -386,10 +390,15 @@ export default function App() {
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState<FeedbackState>(null);
   const [isHintModalOpen, setIsHintModalOpen] = useState(false);
-  const [audioPlaybackRate, setAudioPlaybackRate] = useState<0.25 | 1>(1);
+  const [audioPlaybackRate, setAudioPlaybackRate] = useState<0.5 | 1>(1);
+  const [isAudioLoading, setIsAudioLoading] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const isAudioLoadingRef = useRef(false);
+  const isAudioPlayingRef = useRef(false);
   const activePlayerRef = useRef<ReturnType<typeof createAudioPlayer> | null>(
     null
   );
+  const activePlayerSubscriptionRef = useRef<RemovableSubscription | null>(null);
   const feedbackPlayerRef = useRef<ReturnType<typeof createAudioPlayer> | null>(
     null
   );
@@ -491,15 +500,36 @@ export default function App() {
   }, [activeLesson]);
 
   const hintEntries = useMemo(() => {
-    if (activeLessonId !== "greetings") {
+    if (!activeQuestion) {
       return [];
     }
 
-    return GREETINGS_PHRASES.map((word) => ({
-      word,
-      meaning: GREETINGS_TRANSLATIONS[word] ?? "Translation pending",
-    }));
-  }, [activeLessonId]);
+    if (activeQuestion.sentenceBuilder) {
+      return [
+        {
+          word: activeQuestion.answer,
+          meaning: activeQuestion.sentenceBuilder.sourceSentence,
+        },
+      ];
+    }
+
+    if (activeLessonId === "greetings") {
+      return [
+        {
+          word: activeQuestion.answer,
+          meaning:
+            GREETINGS_TRANSLATIONS[activeQuestion.answer] ?? "Translation pending",
+        },
+      ];
+    }
+
+    return [
+      {
+        word: activeQuestion.answer,
+        meaning: activeQuestion.prompt,
+      },
+    ];
+  }, [activeLessonId, activeQuestion]);
 
   const activeChoices = useMemo(() => {
     if (!activeLessonId || !activeQuestion || activeQuestion.sentenceBuilder) {
@@ -511,6 +541,11 @@ export default function App() {
 
   useEffect(() => {
     return () => {
+      if (activePlayerSubscriptionRef.current) {
+        activePlayerSubscriptionRef.current.remove();
+        activePlayerSubscriptionRef.current = null;
+      }
+
       if (activePlayerRef.current) {
         activePlayerRef.current.remove();
         activePlayerRef.current = null;
@@ -525,7 +560,7 @@ export default function App() {
 
   const toggleAudioPlaybackRate = useCallback(() => {
     setAudioPlaybackRate((currentRate) => {
-      const nextRate: 0.25 | 1 = currentRate === 1 ? 0.25 : 1;
+      const nextRate: 0.5 | 1 = currentRate === 1 ? 0.5 : 1;
 
       if (activePlayerRef.current) {
         activePlayerRef.current.setPlaybackRate(nextRate);
@@ -611,7 +646,11 @@ export default function App() {
   };
 
   const playActiveAudio = useCallback(async () => {
-    if (!activeQuestion?.audioKey) {
+    if (
+      !activeQuestion?.audioKey ||
+      isAudioPlayingRef.current ||
+      isAudioLoadingRef.current
+    ) {
       return;
     }
 
@@ -621,6 +660,16 @@ export default function App() {
     }
 
     try {
+      setIsAudioLoading(true);
+      setIsAudioPlaying(false);
+      isAudioLoadingRef.current = true;
+      isAudioPlayingRef.current = false;
+
+      if (activePlayerSubscriptionRef.current) {
+        activePlayerSubscriptionRef.current.remove();
+        activePlayerSubscriptionRef.current = null;
+      }
+
       if (activePlayerRef.current) {
         activePlayerRef.current.remove();
         activePlayerRef.current = null;
@@ -633,12 +682,35 @@ export default function App() {
 
       const player = createAudioPlayer(clip, { keepAudioSessionActive: true });
       activePlayerRef.current = player;
+      player.loop = false;
+
+      activePlayerSubscriptionRef.current = player.addListener(
+        "playbackStatusUpdate",
+        (status) => {
+          setIsAudioLoading(!status.isLoaded || status.isBuffering);
+          setIsAudioPlaying(status.playing);
+          isAudioLoadingRef.current = !status.isLoaded || status.isBuffering;
+          isAudioPlayingRef.current = status.playing;
+        }
+      );
+
       player.setPlaybackRate(audioPlaybackRate);
       player.play();
     } catch {
+      setIsAudioLoading(false);
+      setIsAudioPlaying(false);
+      isAudioLoadingRef.current = false;
+      isAudioPlayingRef.current = false;
       // Ignore audio playback errors.
     }
   }, [activeQuestion, audioPlaybackRate]);
+
+  useEffect(() => {
+    setIsAudioLoading(false);
+    setIsAudioPlaying(false);
+    isAudioLoadingRef.current = false;
+    isAudioPlayingRef.current = false;
+  }, [activeQuestion?.answer]);
 
   const checkCurrentAnswer = () => {
     if (!activeQuestion) {
@@ -757,6 +829,8 @@ export default function App() {
             onPlayAudio={playActiveAudio}
             audioPlaybackRate={audioPlaybackRate}
             onToggleAudioPlaybackRate={toggleAudioPlaybackRate}
+            isAudioLoading={isAudioLoading}
+            isAudioPlaying={isAudioPlaying}
             isHintModalOpen={isHintModalOpen}
             onOpenHint={() => setIsHintModalOpen(true)}
             onCloseHint={() => setIsHintModalOpen(false)}
@@ -847,6 +921,8 @@ function QuizScreen({
   onPlayAudio,
   audioPlaybackRate,
   onToggleAudioPlaybackRate,
+  isAudioLoading,
+  isAudioPlaying,
   isHintModalOpen,
   onOpenHint,
   onCloseHint,
@@ -863,8 +939,10 @@ function QuizScreen({
   onContinue: () => void;
   showSpeaker: boolean;
   onPlayAudio: () => void;
-  audioPlaybackRate: 0.25 | 1;
+  audioPlaybackRate: 0.5 | 1;
   onToggleAudioPlaybackRate: () => void;
+  isAudioLoading: boolean;
+  isAudioPlaying: boolean;
   isHintModalOpen: boolean;
   onOpenHint: () => void;
   onCloseHint: () => void;
@@ -888,6 +966,7 @@ function QuizScreen({
       sentenceBankWords.length >= 8 ||
       (sentenceBuilder?.sourceSentence.length ?? 0) >= 34);
   const isMultipleChoice = choices.length > 0;
+  const isSpeakerDisabled = isAudioLoading || isAudioPlaying;
   const promptText = isMultipleChoice ? "What do you hear?" : question.prompt;
   const hasInput = isSentenceBuilder
     ? slottedWords.every((word) => word.trim().length > 0)
@@ -1031,22 +1110,42 @@ function QuizScreen({
           >
             <Pressable
               onPress={onPlayAudio}
-              style={styles.speakerButton}
+              style={[
+                styles.speakerButton,
+                isSpeakerDisabled && styles.speakerButtonDisabled,
+              ]}
+              disabled={isSpeakerDisabled}
               hitSlop={14}
               accessibilityRole="button"
-              accessibilityLabel="Play audio"
+              accessibilityLabel={
+                isAudioLoading
+                  ? "Audio loading"
+                  : isAudioPlaying
+                    ? "Audio playing"
+                    : "Play audio"
+              }
             >
-              <SpeakerIcon width={34} height={34} />
+              {isAudioLoading ? (
+                <View style={styles.speakerSkeletonGlyph} />
+              ) : (
+                <SpeakerIcon width={34} height={34} />
+              )}
             </Pressable>
 
             <Pressable
               onPress={onToggleAudioPlaybackRate}
-              style={styles.speedToggleButton}
+              style={[
+                styles.speedToggleButton,
+                isSpeakerDisabled && styles.speedToggleButtonDisabled,
+              ]}
+              disabled={isSpeakerDisabled}
               hitSlop={12}
               accessibilityRole="button"
               accessibilityLabel="Toggle playback speed"
             >
-              <Text style={styles.speedToggleText}>{audioPlaybackRate.toFixed(2)}x</Text>
+              <Text style={styles.speedToggleText}>
+                {audioPlaybackRate === 1 ? "1x" : "0.5x"}
+              </Text>
             </Pressable>
           </View>
         )}
@@ -1228,24 +1327,26 @@ function QuizScreen({
         {hasInput && feedback == null && <View style={styles.quizBottomSpacer} />}
 
         {hasInput && feedback == null && (
-          <Pressable
-            style={[
-              styles.checkButton,
-              isDenseSentenceLayout && styles.checkButtonCompact,
-            ]}
-            hitSlop={12}
-            accessibilityRole="button"
-            onPress={onCheckAnswer}
-          >
-            <Text
+          <View style={styles.checkButtonFixedWrap}>
+            <Pressable
               style={[
-                styles.checkButtonText,
-                isDenseSentenceLayout && styles.checkButtonTextCompact,
+                styles.checkButton,
+                isDenseSentenceLayout && styles.checkButtonCompact,
               ]}
+              hitSlop={12}
+              accessibilityRole="button"
+              onPress={onCheckAnswer}
             >
-              Check
-            </Text>
-          </Pressable>
+              <Text
+                style={[
+                  styles.checkButtonText,
+                  isDenseSentenceLayout && styles.checkButtonTextCompact,
+                ]}
+              >
+                Check
+              </Text>
+            </Pressable>
+          </View>
         )}
       </View>
 
@@ -1314,7 +1415,7 @@ function QuizScreen({
       >
         <View style={styles.hintModalBackdrop}>
           <View style={styles.hintModalCard}>
-            <Text style={styles.hintModalTitle}>Words and Meanings</Text>
+            <Text style={styles.hintModalTitle}>Hint</Text>
 
             <ScrollView
               style={styles.hintModalList}
@@ -1757,6 +1858,7 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
   },
   lessonsHeaderRow: {
+    display: "flex",
     flexDirection: "row",
     flexWrap: "nowrap",
     alignItems: "center",
@@ -1841,7 +1943,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 24,
     paddingTop: 16,
-    paddingBottom: 16,
+    paddingBottom: 112,
   },
   quizTopRow: {
     flexDirection: "row",
@@ -1878,6 +1980,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  speakerButtonDisabled: {
+    opacity: 0.7,
+  },
+  speakerSkeletonGlyph: {
+    width: 34,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: "#66717E",
+  },
   speakerControlsRow: {
     marginTop: 22,
     flexDirection: "row",
@@ -1899,6 +2010,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 10,
   },
+  speedToggleButtonDisabled: {
+    opacity: 0.6,
+  },
   speedToggleText: {
     color: "#DDE7F1",
     fontFamily: "DMSans_700Bold",
@@ -1918,12 +2032,12 @@ const styles = StyleSheet.create({
   quizPromptWord: {
     color: "#FFFFFF",
     fontFamily: "DMSans_400Regular",
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 22,
+    lineHeight: 26,
   },
   quizPromptWordCompact: {
-    fontSize: 20,
-    lineHeight: 24,
+    fontSize: 19,
+    lineHeight: 23,
   },
   hintIconButton: {
     width: 44,
@@ -2115,8 +2229,8 @@ const styles = StyleSheet.create({
   choiceLabel: {
     color: "#F3F7FB",
     fontFamily: "DMSans_700Bold",
-    fontSize: 30,
-    lineHeight: 34,
+    fontSize: 28,
+    lineHeight: 32,
     textAlign: "center",
   },
   choiceLabelSelected: {
@@ -2126,8 +2240,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
     color: "#97A7B8",
     fontFamily: "DMSans_400Regular",
-    fontSize: 18,
-    lineHeight: 22,
+    fontSize: 17,
+    lineHeight: 21,
     textAlign: "center",
   },
   choiceTranslationSelected: {
@@ -2153,8 +2267,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   quizBottomSpacer: {
-    flex: 1,
-    minHeight: 10,
+    minHeight: 4,
+  },
+  checkButtonFixedWrap: {
+    position: "absolute",
+    left: 24,
+    right: 24,
+    bottom: 16,
   },
   checkButton: {
     marginTop: 0,
