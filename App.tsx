@@ -1364,13 +1364,11 @@ function QuizScreen({
           </Pressable>
         </View>
 
-        <View style={styles.quizIllustrationSlot}>
-          {QuestionIllustration ? (
-            <QuestionIllustration width={40} height={40} />
-          ) : (
-            <View style={styles.quizIllustrationGhost} />
-          )}
-        </View>
+        {QuestionIllustration ? (
+          <View style={styles.quizIllustrationSlot}>
+            <QuestionIllustration width={120} height={120} />
+          </View>
+        ) : null}
 
         {isSentenceBuilder && sentenceBuilder ? (
           <View
@@ -2295,13 +2293,9 @@ const styles = StyleSheet.create({
   },
   quizIllustrationSlot: {
     marginTop: 10,
-    height: 40,
+    height: 120,
     alignItems: "center",
     justifyContent: "center",
-  },
-  quizIllustrationGhost: {
-    width: 40,
-    height: 40,
   },
   quizVisualWrap: {
     marginTop: 24,
