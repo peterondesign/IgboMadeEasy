@@ -75,6 +75,7 @@ import {
   WEATHER_NATURE_AUDIO,
   WEATHER_NATURE_ENTRIES,
 } from "./src/data/weatherNatureAudio";
+import { VISUAL_KEY_OVERRIDES_BY_IGBO } from "./src/data/illustrationOverrides";
 import GameGroup from "./src/groups/GameGroup";
 import HomeGroup from "./src/groups/HomeGroup";
 import LessonGroup from "./src/groups/LessonGroup";
@@ -128,6 +129,104 @@ const GREETINGS_TRANSLATIONS = require("./assets/audio/greetings/translations.js
   string,
   string
 >;
+const EVERYDAY_VERBS_TRANSLATIONS = require("./assets/audio/everyday-verbs/translations.json") as Record<
+  string,
+  string
+>;
+const ASKING_QUESTIONS_TRANSLATIONS = require("./assets/audio/asking-questions/translations.json") as Record<
+  string,
+  string
+>;
+const FAMILY_PEOPLE_TRANSLATIONS = require("./assets/audio/family-people/translations.json") as Record<
+  string,
+  string
+>;
+const FOOD_COOKING_TRANSLATIONS = require("./assets/audio/food-cooking/translations.json") as Record<
+  string,
+  string
+>;
+const NUMBERS_MONEY_TRANSLATIONS = require("./assets/audio/numbers-money/translations.json") as Record<
+  string,
+  string
+>;
+const SCHOOL_WORK_TRANSLATIONS = require("./assets/audio/school-work/translations.json") as Record<
+  string,
+  string
+>;
+const TRANSPORTATION_TRANSLATIONS = require("./assets/audio/transportation/translations.json") as Record<
+  string,
+  string
+>;
+const EMOTIONS_TRANSLATIONS = require("./assets/audio/emotions/translations.json") as Record<
+  string,
+  string
+>;
+const HEALTH_TRANSLATIONS = require("./assets/audio/health/translations.json") as Record<
+  string,
+  string
+>;
+const HOUSEHOLD_OBJECTS_TRANSLATIONS = require("./assets/audio/household-objects/translations.json") as Record<
+  string,
+  string
+>;
+const WEATHER_NATURE_TRANSLATIONS = require("./assets/audio/weather-nature/translations.json") as Record<
+  string,
+  string
+>;
+const ANIMALS_TRANSLATIONS = require("./assets/audio/animals/translations.json") as Record<
+  string,
+  string
+>;
+const ELDERS_TRANSLATIONS = require("./assets/audio/elders/translations.json") as Record<
+  string,
+  string
+>;
+const CELEBRATIONS_TRANSLATIONS = require("./assets/audio/celebrations/translations.json") as Record<
+  string,
+  string
+>;
+
+const LESSON_TRANSLATIONS: Record<string, Record<string, string>> = {
+  greetings: GREETINGS_TRANSLATIONS,
+  "everyday-verbs": EVERYDAY_VERBS_TRANSLATIONS,
+  "asking-questions": ASKING_QUESTIONS_TRANSLATIONS,
+  "family-people": FAMILY_PEOPLE_TRANSLATIONS,
+  "food-cooking": FOOD_COOKING_TRANSLATIONS,
+  "numbers-money": NUMBERS_MONEY_TRANSLATIONS,
+  "school-work": SCHOOL_WORK_TRANSLATIONS,
+  transportation: TRANSPORTATION_TRANSLATIONS,
+  emotions: EMOTIONS_TRANSLATIONS,
+  health: HEALTH_TRANSLATIONS,
+  "household-objects": HOUSEHOLD_OBJECTS_TRANSLATIONS,
+  "weather-nature": WEATHER_NATURE_TRANSLATIONS,
+  animals: ANIMALS_TRANSLATIONS,
+  elders: ELDERS_TRANSLATIONS,
+  celebrations: CELEBRATIONS_TRANSLATIONS,
+};
+
+const DEFAULT_VISUAL_KEY_BY_ENGLISH_PROMPT: Record<string, string> = {
+  Dog: "nouns-dog",
+  Water: "nouns-water",
+  Child: "nouns-child",
+  Sun: "nouns-sun",
+  House: "nouns-house",
+  Road: "nouns-road",
+  Food: "nouns-food",
+  Book: "nouns-book",
+  Friend: "nouns-friend",
+  Money: "nouns-money",
+  "to eat": "verbs-eat",
+  "to go": "verbs-go",
+  "to come": "verbs-come",
+  "to see": "verbs-see",
+  "to speak": "verbs-speak",
+  "to sleep": "verbs-sleep",
+  "to read": "verbs-read",
+  "to write": "verbs-write",
+  "to work": "verbs-work",
+  "to play": "verbs-play",
+};
+
 const GAME_SOUND_SUCCESS = require("./assets/audio/game-sounds/success-sound.mp3");
 const GAME_SOUND_FAILURE = require("./assets/audio/game-sounds/try-again-sound.mp3");
 const QUESTION_AUDIO: Record<string, number> = {
@@ -149,96 +248,156 @@ const QUESTION_AUDIO: Record<string, number> = {
 };
 
 const WORD_QUESTION_BANK: Record<string, Question[]> = {
-  greetings: GREETINGS_PHRASES.map((phrase) => ({
-    prompt: "What do you hear?",
-    answer: phrase,
-    visualKey: "",
-    audioKey: phrase,
-  })),
-  "everyday-verbs": EVERYDAY_VERBS_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(EVERYDAY_VERBS_AUDIO, entry.igbo),
-  })),
-  "asking-questions": ASKING_QUESTIONS_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(ASKING_QUESTIONS_AUDIO, entry.igbo),
-  })),
-  "family-people": FAMILY_PEOPLE_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(FAMILY_PEOPLE_AUDIO, entry.igbo),
-  })),
-  "food-cooking": FOOD_COOKING_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(FOOD_COOKING_AUDIO, entry.igbo),
-  })),
-  "numbers-money": NUMBERS_MONEY_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(NUMBERS_MONEY_AUDIO, entry.igbo),
-  })),
-  "school-work": SCHOOL_WORK_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(SCHOOL_WORK_AUDIO, entry.igbo),
-  })),
-  transportation: TRANSPORTATION_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(TRANSPORTATION_AUDIO, entry.igbo),
-  })),
-  emotions: EMOTIONS_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(EMOTIONS_AUDIO, entry.igbo),
-  })),
-  health: HEALTH_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(HEALTH_AUDIO, entry.igbo),
-  })),
-  "household-objects": HOUSEHOLD_OBJECTS_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(HOUSEHOLD_OBJECTS_AUDIO, entry.igbo),
-  })),
-  "weather-nature": WEATHER_NATURE_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(WEATHER_NATURE_AUDIO, entry.igbo),
-  })),
-  animals: ANIMALS_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(ANIMALS_AUDIO, entry.igbo),
-  })),
-  elders: ELDERS_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(ELDERS_AUDIO, entry.igbo),
-  })),
-  celebrations: CELEBRATIONS_ENTRIES.map((entry) => ({
-    prompt: entry.english,
-    answer: entry.igbo,
-    visualKey: "",
-    audioKey: resolveAudioKey(CELEBRATIONS_AUDIO, entry.igbo),
-  })),
+  greetings: GREETINGS_PHRASES.map((phrase) => {
+    const answer = toToneMarkedText("greetings", phrase);
+
+    return {
+      prompt: "What do you hear?",
+      answer,
+      visualKey: resolveVisualKey("What do you hear?", answer),
+      audioKey: resolveAudioKey(GREETINGS_AUDIO, answer),
+    };
+  }),
+  "everyday-verbs": EVERYDAY_VERBS_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("everyday-verbs", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(EVERYDAY_VERBS_AUDIO, answer),
+    };
+  }),
+  "asking-questions": ASKING_QUESTIONS_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("asking-questions", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(ASKING_QUESTIONS_AUDIO, answer),
+    };
+  }),
+  "family-people": FAMILY_PEOPLE_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("family-people", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(FAMILY_PEOPLE_AUDIO, answer),
+    };
+  }),
+  "food-cooking": FOOD_COOKING_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("food-cooking", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(FOOD_COOKING_AUDIO, answer),
+    };
+  }),
+  "numbers-money": NUMBERS_MONEY_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("numbers-money", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(NUMBERS_MONEY_AUDIO, answer),
+    };
+  }),
+  "school-work": SCHOOL_WORK_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("school-work", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(SCHOOL_WORK_AUDIO, answer),
+    };
+  }),
+  transportation: TRANSPORTATION_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("transportation", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(TRANSPORTATION_AUDIO, answer),
+    };
+  }),
+  emotions: EMOTIONS_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("emotions", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(EMOTIONS_AUDIO, answer),
+    };
+  }),
+  health: HEALTH_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("health", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(HEALTH_AUDIO, answer),
+    };
+  }),
+  "household-objects": HOUSEHOLD_OBJECTS_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("household-objects", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(HOUSEHOLD_OBJECTS_AUDIO, answer),
+    };
+  }),
+  "weather-nature": WEATHER_NATURE_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("weather-nature", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(WEATHER_NATURE_AUDIO, answer),
+    };
+  }),
+  animals: ANIMALS_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("animals", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(ANIMALS_AUDIO, answer),
+    };
+  }),
+  elders: ELDERS_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("elders", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(ELDERS_AUDIO, answer),
+    };
+  }),
+  celebrations: CELEBRATIONS_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("celebrations", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(CELEBRATIONS_AUDIO, answer),
+    };
+  }),
 };
 
 const SENTENCE_BUILDER_BANK: Record<string, SentenceBuilderSeed[]> = {
@@ -967,6 +1126,8 @@ function QuizScreen({
       (sentenceBuilder?.sourceSentence.length ?? 0) >= 34);
   const isMultipleChoice = choices.length > 0;
   const isSpeakerDisabled = isAudioLoading || isAudioPlaying;
+  const QuestionIllustration =
+    question.visualKey.length > 0 ? QUESTION_VISUALS[question.visualKey] : null;
   const promptText = isMultipleChoice ? "What do you hear?" : question.prompt;
   const hasInput = isSentenceBuilder
     ? slottedWords.every((word) => word.trim().length > 0)
@@ -1173,6 +1334,14 @@ function QuizScreen({
           >
             <HintIcon width={18} height={18} />
           </Pressable>
+        </View>
+
+        <View style={styles.quizIllustrationSlot}>
+          {QuestionIllustration ? (
+            <QuestionIllustration width={40} height={40} />
+          ) : (
+            <View style={styles.quizIllustrationGhost} />
+          )}
         </View>
 
         {isSentenceBuilder && sentenceBuilder ? (
@@ -1781,6 +1950,33 @@ function resolveAudioKey(
   return matched;
 }
 
+function toToneMarkedText(lessonId: string, candidate: string): string {
+  const translations = LESSON_TRANSLATIONS[lessonId];
+  if (!translations) {
+    return candidate;
+  }
+
+  if (translations[candidate]) {
+    return candidate;
+  }
+
+  const normalizedCandidate = normalizeAnswer(candidate);
+  const matched = Object.keys(translations).find(
+    (key) => normalizeAnswer(key) === normalizedCandidate
+  );
+
+  return matched ?? candidate;
+}
+
+function resolveVisualKey(prompt: string, answer: string): string {
+  const byAnswer = VISUAL_KEY_OVERRIDES_BY_IGBO[answer];
+  if (byAnswer) {
+    return byAnswer;
+  }
+
+  return DEFAULT_VISUAL_KEY_BY_ENGLISH_PROMPT[prompt] ?? "";
+}
+
 function toPercent(value: number): number {
   return Math.round(value * 100);
 }
@@ -1967,23 +2163,23 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   quizBackIconButton: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: "#3A3B3F",
     alignItems: "center",
     justifyContent: "center",
   },
   quizHeaderProgressTrack: {
     flex: 1,
-    height: 14,
-    borderRadius: 7,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: "#45484D",
     overflow: "hidden",
   },
   quizHeaderProgressFill: {
     height: "100%",
-    borderRadius: 9,
+    borderRadius: 4,
     backgroundColor: "#9CD754",
   },
   speakerButton: {
@@ -2048,20 +2244,30 @@ const styles = StyleSheet.create({
   quizPromptWord: {
     color: "#FFFFFF",
     fontFamily: "DMSans_400Regular",
-    fontSize: 22,
-    lineHeight: 26,
+    fontSize: 18,
+    lineHeight: 22,
   },
   quizPromptWordCompact: {
-    fontSize: 19,
-    lineHeight: 23,
+    fontSize: 17,
+    lineHeight: 21,
   },
   hintIconButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#3A3B3F",
+  },
+  quizIllustrationSlot: {
+    marginTop: 10,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  quizIllustrationGhost: {
+    width: 40,
+    height: 40,
   },
   quizVisualWrap: {
     marginTop: 24,
@@ -2101,8 +2307,8 @@ const styles = StyleSheet.create({
     color: "#F4F7FA",
     textAlign: "center",
     fontFamily: "DMSans_700Bold",
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 20,
+    lineHeight: 24,
   },
   slotGrid: {
     flexDirection: "row",
@@ -2245,8 +2451,8 @@ const styles = StyleSheet.create({
   choiceLabel: {
     color: "#F3F7FB",
     fontFamily: "DMSans_700Bold",
-    fontSize: 28,
-    lineHeight: 32,
+    fontSize: 22,
+    lineHeight: 26,
     textAlign: "center",
   },
   choiceLabelSelected: {
@@ -2256,8 +2462,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
     color: "#97A7B8",
     fontFamily: "DMSans_400Regular",
-    fontSize: 17,
-    lineHeight: 21,
+    fontSize: 13,
+    lineHeight: 17,
     textAlign: "center",
   },
   choiceTranslationSelected: {
@@ -2431,14 +2637,14 @@ const styles = StyleSheet.create({
   hintWord: {
     color: "#FFFFFF",
     fontFamily: "DMSans_700Bold",
-    fontSize: 18,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 20,
   },
   hintMeaning: {
     color: "#99A6B4",
     fontFamily: "DMSans_400Regular",
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: 14,
+    lineHeight: 18,
   },
   hintModalCloseButton: {
     marginTop: 18,

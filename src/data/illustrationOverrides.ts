@@ -1,0 +1,118 @@
+export const VISUAL_KEY_OVERRIDES_BY_IGBO: Record<string, string> = {
+  // greetings
+  "A bụ m si…": "custom-greetings-a-bu-m-si",
+  "Achọrọ m mmiri": "custom-greetings-achoro-m-mmiri",
+  "Agụụ na-agụ m": "custom-greetings-aguu-na-agu-m",
+  "Amaghị m": "custom-greetings-amaghi-m",
+  "Ana m amụ Igbo": "custom-greetings-ana-m-amu-igbo",
+  "Aha m bụ Udoka": "custom-greetings-aha-m-bu-udoka",
+  "Biko kwuo ya ọzọ": "custom-greetings-biko-kwuo-ya-ozo",
+  "Bịa ebe a": "custom-greetings-bia-ebe-a",
+  // everyday-verbs
+  "a na m aga oru kwa ututu": "custom-everyday-verbs-a-na-m-aga-oru-kwa-ututu",
+  "o biarutere n'ulo mgbe e mesiri": "custom-everyday-verbs-o-biarutere-n-ulo-mgbe-e-mesiri",
+  "ha na-eri osikapa maka nri mgbede": "custom-everyday-verbs-ha-na-eri-osikapa-maka-nri-mgbede",
+  "o na-anu mmiri mgbe egwuregwu bol gachara": "custom-everyday-verbs-o-na-anu-mmiri-mgbe-egwuregwu-bol-gachara",
+  "anyi na-ehi ura n'oge izu": "custom-everyday-verbs-anyi-na-ehi-ura-n-oge-izu",
+  "i na-eje ije ngwa ngwa nke ukwuu": "custom-everyday-verbs-i-na-eje-ije-ngwa-ngwa-nke-ukwuu",
+  "umuaka na-agba oso": "custom-everyday-verbs-umuaka-na-agba-oso",
+  // asking-questions
+  "gịnị bụ aha gị": "custom-asking-questions-gini-bu-aha-gi",
+  "ebee ka ị na-aga": "custom-asking-questions-ebee-ka-i-na-aga",
+  "onye bụ onye ahụ": "custom-asking-questions-onye-bu-onye-ahu",
+  "gịnị mere i ji akwa ákwá": "custom-asking-questions-gini-mere-i-ji-akwa-akwa",
+  // family-people
+  "nna": "custom-family-people-nna",
+  "nne": "custom-family-people-nne",
+  "nwanne nwoke": "custom-family-people-nwanne-nwoke",
+  "nwanne nwanyị": "custom-family-people-nwanne-nwanyi",
+  // food-cooking
+  "nri": "custom-food-cooking-nri",
+  "mmiri": "custom-food-cooking-mmiri",
+  "ofe": "custom-food-cooking-ofe",
+  "osikapa": "custom-food-cooking-osikapa",
+  // numbers-money
+  "otu": "custom-numbers-money-otu",
+  "abụọ": "custom-numbers-money-abuo",
+  "atọ": "custom-numbers-money-ato",
+  "anọ": "custom-numbers-money-ano",
+  "ise": "custom-numbers-money-ise",
+  "isii": "custom-numbers-money-isii",
+  "asaa": "custom-numbers-money-asaa",
+  // school-work
+  "ụlọ akwụkwọ": "custom-school-work-ulo-akwukwo",
+  "klaasị": "custom-school-work-klaasi",
+  "onye nkuzi": "custom-school-work-onye-nkuzi",
+  "nwata akwụkwọ": "custom-school-work-nwata-akwukwo",
+  "akwụkwọ": "custom-school-work-akwukwo",
+  "mkpịsị ide": "custom-school-work-mkpisi-ide",
+  "gụọ": "custom-school-work-guo",
+  // transportation
+  "ụzọ": "custom-transportation-uzo",
+  "ụgbọ ala": "custom-transportation-ugbo-ala",
+  "ụgbọ njem": "custom-transportation-ugbo-njem",
+  "ọkàdà": "custom-transportation-okada",
+  "igwe kwụ otu ebe": "custom-transportation-igwe-kwu-otu-ebe",
+  "taksi": "custom-transportation-taksi",
+  "onye na-anya ụgbọ ala": "custom-transportation-onye-na-anya-ugbo-ala",
+  // emotions
+  "anụrị": "custom-emotions-anuri",
+  "mwute": "custom-emotions-mwute",
+  "iwe": "custom-emotions-iwe",
+  "egwu": "custom-emotions-egwu",
+  "udo": "custom-emotions-udo",
+  "obi ụtọ": "custom-emotions-obi-uto",
+  "ike agwụla": "custom-emotions-ike-agwula",
+  // health
+  "ahụike": "custom-health-ahuike",
+  "ụlọ ọgwụ": "custom-health-ulo-ogwu",
+  "dibia": "custom-health-dibia",
+  "onye nọọsụ": "custom-health-onye-noosu",
+  "ọgwụ": "custom-health-ogwu",
+  "ọrịa": "custom-health-oria",
+  "mgbu": "custom-health-mgbu",
+  // household-objects
+  "ụlọ": "custom-household-objects-ulo",
+  "ime ụlọ": "custom-household-objects-ime-ulo",
+  "windo": "custom-household-objects-windo",
+  "oche": "custom-household-objects-oche",
+  "tebulu": "custom-household-objects-tebulu",
+  "akwa": "custom-household-objects-akwa",
+  // weather-nature
+  "ihu igwe": "custom-weather-nature-ihu-igwe",
+  "mmiri ozuzo": "custom-weather-nature-mmiri-ozuzo",
+  "anyanwụ": "custom-weather-nature-anyanwu",
+  "igwe ojii": "custom-weather-nature-igwe-ojii",
+  "ifufe": "custom-weather-nature-ifufe",
+  "oke ifufe": "custom-weather-nature-oke-ifufe",
+  "oyi": "custom-weather-nature-oyi",
+  // animals
+  "anụmanụ": "custom-animals-anumanu",
+  "nkịta": "custom-animals-nkita",
+  "pụsị": "custom-animals-pusi",
+  "ewu": "custom-animals-ewu",
+  "ehi": "custom-animals-ehi",
+  "ọkụkọ": "custom-animals-okuko",
+  "nnụnụ": "custom-animals-nnunu",
+  // elders
+  "okenye": "custom-elders-okenye",
+  "nna ochie": "custom-elders-nna-ochie",
+  "nne ochie": "custom-elders-nne-ochie",
+  "okenye nwoke": "custom-elders-okenye-nwoke",
+  "okenye nwanyị": "custom-elders-okenye-nwanyi",
+  "nsọpụrụ": "custom-elders-nsopuru",
+  "ngọzi": "custom-elders-ngozi",
+  // celebrations
+  "emume": "custom-celebrations-emume",
+  "oriri": "custom-celebrations-oriri",
+  "agbamakwụkwọ": "custom-celebrations-agbamakwukwo",
+  "ụbọchị ọmụmụ": "custom-celebrations-ubochi-omumu",
+  "ịgụ aha nwa": "custom-celebrations-igu-aha-nwa",
+  "iri ji ọhụrụ": "custom-celebrations-iri-ji-ohuru",
+  "egwú": "custom-celebrations-egwu",
+};
+
+export const ILLUSTRATION_OVERRIDE_COUNT = 96;
+
+export const ILLUSTRATION_ASSET_NAMING_GUIDE =
+  "Create SVGs in assets/questions/ with names matching the custom-* keys, then add them to QUESTION_VISUALS in App.tsx.";
