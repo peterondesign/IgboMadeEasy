@@ -227,6 +227,15 @@ const DEFAULT_VISUAL_KEY_BY_ENGLISH_PROMPT: Record<string, string> = {
   "to play": "verbs-play",
 };
 
+const NORMALIZED_VISUAL_KEY_OVERRIDES_BY_IGBO: Record<string, string> =
+  Object.entries(VISUAL_KEY_OVERRIDES_BY_IGBO).reduce<Record<string, string>>(
+    (acc, [igbo, visualKey]) => {
+      acc[normalizeAnswer(igbo)] = visualKey;
+      return acc;
+    },
+    {}
+  );
+
 const GAME_SOUND_SUCCESS = require("./assets/audio/game-sounds/success-sound.mp3");
 const GAME_SOUND_FAILURE = require("./assets/audio/game-sounds/try-again-sound.mp3");
 const QUESTION_AUDIO: Record<string, number> = {
@@ -481,37 +490,56 @@ const QUESTION_BANK: Record<string, Question[]> = {
   ),
 };
 
+function toSvgComponent(moduleValue: any): ComponentType<any> {
+  return (moduleValue?.default ?? moduleValue) as ComponentType<any>;
+}
+
 const QUESTION_VISUALS: Record<string, ComponentType<any>> = {
-  "nouns-dog": require("./assets/questions/nouns-dog.svg").default,
-  "nouns-water": require("./assets/questions/nouns-water.svg").default,
-  "nouns-child": require("./assets/questions/nouns-child.svg").default,
-  "nouns-sun": require("./assets/questions/nouns-sun.svg").default,
-  "nouns-house": require("./assets/questions/nouns-house.svg").default,
-  "nouns-road": require("./assets/questions/nouns-road.svg").default,
-  "nouns-food": require("./assets/questions/nouns-food.svg").default,
-  "nouns-book": require("./assets/questions/nouns-book.svg").default,
-  "nouns-friend": require("./assets/questions/nouns-friend.svg").default,
-  "nouns-money": require("./assets/questions/nouns-money.svg").default,
-  "pronouns-i": require("./assets/questions/pronouns-i.svg").default,
-  "pronouns-you": require("./assets/questions/pronouns-you.svg").default,
-  "pronouns-he": require("./assets/questions/pronouns-he.svg").default,
-  "pronouns-she": require("./assets/questions/pronouns-she.svg").default,
-  "pronouns-we": require("./assets/questions/pronouns-we.svg").default,
-  "pronouns-they": require("./assets/questions/pronouns-they.svg").default,
-  "pronouns-me": require("./assets/questions/pronouns-me.svg").default,
-  "pronouns-us": require("./assets/questions/pronouns-us.svg").default,
-  "pronouns-them": require("./assets/questions/pronouns-them.svg").default,
-  "pronouns-my": require("./assets/questions/pronouns-my.svg").default,
-  "verbs-eat": require("./assets/questions/verbs-eat.svg").default,
-  "verbs-go": require("./assets/questions/verbs-go.svg").default,
-  "verbs-come": require("./assets/questions/verbs-come.svg").default,
-  "verbs-see": require("./assets/questions/verbs-see.svg").default,
-  "verbs-speak": require("./assets/questions/verbs-speak.svg").default,
-  "verbs-sleep": require("./assets/questions/verbs-sleep.svg").default,
-  "verbs-read": require("./assets/questions/verbs-read.svg").default,
-  "verbs-write": require("./assets/questions/verbs-write.svg").default,
-  "verbs-work": require("./assets/questions/verbs-work.svg").default,
-  "verbs-play": require("./assets/questions/verbs-play.svg").default,
+  "nouns-dog": toSvgComponent(require("./assets/questions/nouns-dog.svg")),
+  "nouns-water": toSvgComponent(require("./assets/questions/nouns-water.svg")),
+  "nouns-child": toSvgComponent(require("./assets/questions/nouns-child.svg")),
+  "nouns-sun": toSvgComponent(require("./assets/questions/nouns-sun.svg")),
+  "nouns-house": toSvgComponent(require("./assets/questions/nouns-house.svg")),
+  "nouns-road": toSvgComponent(require("./assets/questions/nouns-road.svg")),
+  "nouns-food": toSvgComponent(require("./assets/questions/nouns-food.svg")),
+  "nouns-book": toSvgComponent(require("./assets/questions/nouns-book.svg")),
+  "nouns-friend": toSvgComponent(require("./assets/questions/nouns-friend.svg")),
+  "nouns-money": toSvgComponent(require("./assets/questions/nouns-money.svg")),
+  "pronouns-i": toSvgComponent(require("./assets/questions/pronouns-i.svg")),
+  "pronouns-you": toSvgComponent(require("./assets/questions/pronouns-you.svg")),
+  "pronouns-he": toSvgComponent(require("./assets/questions/pronouns-he.svg")),
+  "pronouns-she": toSvgComponent(require("./assets/questions/pronouns-she.svg")),
+  "pronouns-we": toSvgComponent(require("./assets/questions/pronouns-we.svg")),
+  "pronouns-they": toSvgComponent(require("./assets/questions/pronouns-they.svg")),
+  "pronouns-me": toSvgComponent(require("./assets/questions/pronouns-me.svg")),
+  "pronouns-us": toSvgComponent(require("./assets/questions/pronouns-us.svg")),
+  "pronouns-them": toSvgComponent(require("./assets/questions/pronouns-them.svg")),
+  "pronouns-my": toSvgComponent(require("./assets/questions/pronouns-my.svg")),
+  "verbs-eat": toSvgComponent(require("./assets/questions/verbs-eat.svg")),
+  "verbs-go": toSvgComponent(require("./assets/questions/verbs-go.svg")),
+  "verbs-come": toSvgComponent(require("./assets/questions/verbs-come.svg")),
+  "verbs-see": toSvgComponent(require("./assets/questions/verbs-see.svg")),
+  "verbs-speak": toSvgComponent(require("./assets/questions/verbs-speak.svg")),
+  "verbs-sleep": toSvgComponent(require("./assets/questions/verbs-sleep.svg")),
+  "verbs-read": toSvgComponent(require("./assets/questions/verbs-read.svg")),
+  "verbs-write": toSvgComponent(require("./assets/questions/verbs-write.svg")),
+  "verbs-work": toSvgComponent(require("./assets/questions/verbs-work.svg")),
+  "verbs-play": toSvgComponent(require("./assets/questions/verbs-play.svg")),
+  "custom-everyday-verbs-a-na-m-aga-oru-kwa-ututu": toSvgComponent(require("./assets/questions/custom-everyday-verbs-a-na-m-aga-oru-kwa-ututu.svg")),
+  "custom-everyday-verbs-anyi-na-ehi-ura-n-oge-izu": toSvgComponent(require("./assets/questions/custom-everyday-verbs-anyi-na-ehi-ura-n-oge-izu.svg")),
+  "custom-everyday-verbs-ha-na-eri-osikapa-maka-nri-mgbede": toSvgComponent(require("./assets/questions/custom-everyday-verbs-ha-na-eri-osikapa-maka-nri-mgbede.svg")),
+  "custom-everyday-verbs-i-na-eje-ije-ngwa-ngwa-nke-ukwuu": toSvgComponent(require("./assets/questions/custom-everyday-verbs-i-na-eje-ije-ngwa-ngwa-nke-ukwuu.svg")),
+  "custom-everyday-verbs-o-biarutere-n-ulo-mgbe-e-mesiri": toSvgComponent(require("./assets/questions/custom-everyday-verbs-o-biarutere-n-ulo-mgbe-e-mesiri.svg")),
+  "custom-everyday-verbs-o-na-anu-mmiri-mgbe-egwuregwu-bol-gachara": toSvgComponent(require("./assets/questions/custom-everyday-verbs-o-na-anu-mmiri-mgbe-egwuregwu-bol-gachara.svg")),
+  "custom-everyday-verbs-umuaka-na-agba-oso": toSvgComponent(require("./assets/questions/custom-everyday-verbs-umuaka-na-agba-oso.svg")),
+  "custom-greetings-a-bu-m-si": toSvgComponent(require("./assets/questions/custom-greetings-a-bu-m-si.svg")),
+  "custom-greetings-achoro-m-mmiri": toSvgComponent(require("./assets/questions/custom-greetings-achoro-m-mmiri.svg")),
+  "custom-greetings-aguu-na-agu-m": toSvgComponent(require("./assets/questions/custom-greetings-aguu-na-agu-m.svg")),
+  "custom-greetings-aha-m-bu-udoka": toSvgComponent(require("./assets/questions/custom-greetings-aha-m-bu-udoka.svg")),
+  "custom-greetings-amaghi-m": toSvgComponent(require("./assets/questions/custom-greetings-amaghi-m.svg")),
+  "custom-greetings-ana-m-amu-igbo": toSvgComponent(require("./assets/questions/custom-greetings-ana-m-amu-igbo.svg")),
+  "custom-greetings-bia-ebe-a": toSvgComponent(require("./assets/questions/custom-greetings-bia-ebe-a.svg")),
+  "custom-greetings-biko-kwuo-ya-ozo": toSvgComponent(require("./assets/questions/custom-greetings-biko-kwuo-ya-ozo.svg")),
 };
 
 const LESSON_DEFS = [
@@ -1972,6 +2000,12 @@ function resolveVisualKey(prompt: string, answer: string): string {
   const byAnswer = VISUAL_KEY_OVERRIDES_BY_IGBO[answer];
   if (byAnswer) {
     return byAnswer;
+  }
+
+  const byNormalizedAnswer =
+    NORMALIZED_VISUAL_KEY_OVERRIDES_BY_IGBO[normalizeAnswer(answer)];
+  if (byNormalizedAnswer) {
+    return byNormalizedAnswer;
   }
 
   return DEFAULT_VISUAL_KEY_BY_ENGLISH_PROMPT[prompt] ?? "";

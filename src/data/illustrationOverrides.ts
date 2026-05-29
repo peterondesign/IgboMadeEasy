@@ -1,13 +1,13 @@
 export const VISUAL_KEY_OVERRIDES_BY_IGBO: Record<string, string> = {
   // greetings
-  "A bụ m si…": "custom-greetings-a-bu-m-si",
-  "Achọrọ m mmiri": "custom-greetings-achoro-m-mmiri",
-  "Agụụ na-agụ m": "custom-greetings-aguu-na-agu-m",
-  "Amaghị m": "custom-greetings-amaghi-m",
-  "Ana m amụ Igbo": "custom-greetings-ana-m-amu-igbo",
-  "Aha m bụ Udoka": "custom-greetings-aha-m-bu-udoka",
-  "Biko kwuo ya ọzọ": "custom-greetings-biko-kwuo-ya-ozo",
-  "Bịa ebe a": "custom-greetings-bia-ebe-a",
+  "A bụ m si…": "nouns-dog",
+  "Achọrọ m mmiri": "nouns-water",
+  "Agụụ na-agụ m": "nouns-food",
+  "Amaghị m": "nouns-book",
+  "Ana m amụ Igbo": "nouns-friend",
+  "Aha m bụ Udoka": "nouns-child",
+  "Biko kwuo ya ọzọ": "nouns-road",
+  "Bịa ebe a": "nouns-house",
   // everyday-verbs
   "a na m aga oru kwa ututu": "custom-everyday-verbs-a-na-m-aga-oru-kwa-ututu",
   "o biarutere n'ulo mgbe e mesiri": "custom-everyday-verbs-o-biarutere-n-ulo-mgbe-e-mesiri",
