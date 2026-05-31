@@ -1,0 +1,134 @@
+[
+  {
+    "speaker": "dad",
+    "igboText": "Nwa m nwanyị, agụụ na-agụ m.",
+    "englishText": "My daughter, I'm hungry.",
+    "statement": "Dad says he is hungry.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-aguu-na-agu-m",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Gịnị ka ị chọrọ iri, Papa?",
+    "englishText": "What do you want to eat, Dad?",
+    "statement": "The daughter asks what Dad wants to eat.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-gini-ka-i-choro-iri-papa",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Echere m na m ga-esi ofe egusi.",
+    "englishText": "I think I'll make egusi soup.",
+    "statement": "Dad says he will make egusi soup.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-m-ga-esi-ofe-egusi",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Anyị nwere mmiri?",
+    "englishText": "Do we have water?",
+    "statement": "The daughter asks if they have water.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-anyi-nwere-mmiri",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ee, mmiri dị na kichin.",
+    "englishText": "Yes, there's water in the kitchen.",
+    "statement": "Dad says water is in the kitchen.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-mmiri-di-na-kichin",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Anyị nwekwara ose na ji akwọ.",
+    "englishText": "We also have pepper and pounded yam.",
+    "statement": "The daughter says they also have pepper and pounded yam.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-anyi-nwekwara-ose-na-ji-akwo",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ọ dị mma. Anyị ga-esi osikapa kwa?",
+    "englishText": "Good. Should we cook rice too?",
+    "statement": "Dad asks if they should cook rice too.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-anyi-ga-esi-osikapa-kwa",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Eleghị anya.",
+    "englishText": "Maybe.",
+    "statement": "The daughter says maybe.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-elegi-anya",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ka anyị gaa kichin malite isi nri.",
+    "englishText": "Let's go to the kitchen and start cooking.",
+    "statement": "Dad says they should go to the kitchen and start cooking.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-ka-anyi-gaa-kichin-malite-isi-nri",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Papa, lee tebụl!",
+    "englishText": "Dad, look at the table!",
+    "statement": "The daughter tells Dad to look at the table.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-papa-lee-tebul",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Gịnị ka m ga-ahụ?",
+    "englishText": "What will I see?",
+    "statement": "Dad asks what he will see.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-gini-ka-m-ga-ahu",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Mama esiela ofe egusi, osikapa, na ji akwọ!",
+    "englishText": "Mum has already cooked egusi soup, rice, and pounded yam!",
+    "statement": "The daughter says Mum has already cooked everything.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-food-cooking-mama-esiela-ofe-egusi-osikapa-na-ji-akwo",
+    "voice": "female"
+  }
+]

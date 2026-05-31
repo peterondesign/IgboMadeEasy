@@ -1,0 +1,145 @@
+[
+  {
+    "speaker": "dad",
+    "igboText": "Nwa m nwanyị, enwere m nnukwu akụkọ!",
+    "englishText": "My daughter, I have big news!",
+    "statement": "Dad says he has big news.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-enwe-m-nnukwu-akuko",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Gịnị ka ọ bụ, Papa?",
+    "englishText": "What is it, Dad?",
+    "statement": "The daughter asks what it is.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-gini-ka-o-bu-papa",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Enyi m ga-alụ nwunye n'izu a.",
+    "englishText": "My friend is getting married this week.",
+    "statement": "Dad says his friend is getting married this week.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-enyi-m-ga-alu-nwunye-nizu-a",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Nwanne m nwoke nwere ike iweta enyi ya?",
+    "englishText": "Can my brother bring his friend?",
+    "statement": "The daughter asks if her brother can bring his friend.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-nwanne-m-nwoke-nwere-ike-iweta-enyi-ya",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ee, ọ nwere ike.",
+    "englishText": "Yes, he can.",
+    "statement": "Dad says yes, he can.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-ee-o-nwere-ike",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Nwanne m nwanyị nwere ike iweta enyi ya kwa?",
+    "englishText": "Can my sister bring her friend too?",
+    "statement": "The daughter asks if her sister can bring her friend too.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-nwanne-m-nwanyi-nwere-ike-iweta-enyi-ya-kwa",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ee, ọ nwere ike.",
+    "englishText": "Yes, she can.",
+    "statement": "Dad says yes, she can.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-ee-o-nwere-ike-kwa",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Mama nwere ike iweta enyi ya?",
+    "englishText": "Can Mum bring her friend?",
+    "statement": "The daughter asks if Mum can bring her friend.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-mama-nwere-ike-iweta-enyi-ya",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ee.",
+    "englishText": "Yes.",
+    "statement": "Dad says yes.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-ee",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Papa, ị nwere ike iweta enyi gị kwa?",
+    "englishText": "Dad, can you bring your friend too?",
+    "statement": "The daughter asks if Dad can bring his friend too.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-papa-i-nwere-ike-iweta-enyi-gi-kwa",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ee.",
+    "englishText": "Yes.",
+    "statement": "Dad says yes again.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-ee-ozo",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ònye ka a kpọrọ?",
+    "englishText": "Who has been invited?",
+    "statement": "The daughter asks who has been invited.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-onye-ka-a-kporo",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "A kpọrọ obodo niile!",
+    "englishText": "The whole village has been invited!",
+    "statement": "Dad says the whole village has been invited.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-family-people-a-kporo-obodo-niile",
+    "voice": "male"
+  }
+]

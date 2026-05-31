@@ -20,6 +20,7 @@ import CompletionIllustration from "../../assets/illustrations/lesson-complete.s
 import FireIllustration from "../../assets/illustrations/fire.svg";
 import PlantIllustration from "../../assets/illustrations/plant.svg";
 import { QUESTION_VISUALS } from "./questionVisuals";
+import StoryMode, { type StoryModeQuestion } from "./storyMode";
 import { styles } from "./styles";
 
 type Question = {
@@ -27,6 +28,7 @@ type Question = {
   answer: string;
   visualKey: string;
   audioKey?: string;
+  storyMode?: StoryModeQuestion;
   sentenceBuilder?: {
     sourceSentence: string;
     targetWords: string[];
@@ -395,6 +397,8 @@ export function QuizScreen({
     lesson.totalQuestions === 0
       ? 0
       : lesson.answeredQuestions / lesson.totalQuestions;
+  const storyMode = question.storyMode;
+  const isStoryMode = storyMode != null;
   const isSentenceBuilder = question.sentenceBuilder != null;
   const [slottedWords, setSlottedWords] = useState<string[]>([]);
   const [dragFromIndex, setDragFromIndex] = useState<number | null>(null);
@@ -415,6 +419,7 @@ export function QuizScreen({
   const hasInput = isSentenceBuilder
     ? slottedWords.every((word) => word.trim().length > 0)
     : userAnswer.trim().length > 0;
+  const isAutoContinuingStory = isStoryMode && feedback === "correct";
 
   const sentenceBankWordCounts = useMemo(
     () => countWords(sentenceBankWords),
@@ -519,7 +524,19 @@ export function QuizScreen({
     if (showSpeaker) {
       onPlayAudio();
     }
-  }, [question.answer, showSpeaker, onPlayAudio]);
+  }, [question.audioKey, question.answer, question.storyMode?.igboText, showSpeaker, onPlayAudio]);
+
+  useEffect(() => {
+    if (!isAutoContinuingStory) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      onContinue();
+    }, 900);
+
+    return () => clearTimeout(timeoutId);
+  }, [isAutoContinuingStory, onContinue, question.answer]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -593,38 +610,46 @@ export function QuizScreen({
           </View>
         )}
 
-        <View
-          style={[
-            styles.quizPromptRow,
-            isDenseSentenceLayout && styles.quizPromptRowCompact,
-          ]}
-        >
-          <Text
-            style={[
-              styles.quizPromptWord,
-              isDenseSentenceLayout && styles.quizPromptWordCompact,
-            ]}
-          >
-            {promptText}
-          </Text>
-          <Pressable
-            onPress={onOpenHint}
-            style={styles.hintIconButton}
-            hitSlop={14}
-            accessibilityRole="button"
-            accessibilityLabel="Open hint"
-          >
-            <HintIcon width={18} height={18} />
-          </Pressable>
-        </View>
+        {isStoryMode && storyMode ? (
+          <StoryMode
+            story={storyMode}
+            selectedAnswer={userAnswer}
+            onSelectAnswer={onAnswerChange}
+          />
+        ) : (
+          <>
+            <View
+              style={[
+                styles.quizPromptRow,
+                isDenseSentenceLayout && styles.quizPromptRowCompact,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.quizPromptWord,
+                  isDenseSentenceLayout && styles.quizPromptWordCompact,
+                ]}
+              >
+                {promptText}
+              </Text>
+              <Pressable
+                onPress={onOpenHint}
+                style={styles.hintIconButton}
+                hitSlop={14}
+                accessibilityRole="button"
+                accessibilityLabel="Open hint"
+              >
+                <HintIcon width={18} height={18} />
+              </Pressable>
+            </View>
 
-        {QuestionIllustration ? (
-          <View style={styles.quizIllustrationSlot}>
-            <QuestionIllustration width={120} height={120} />
-          </View>
-        ) : null}
+            {QuestionIllustration ? (
+              <View style={styles.quizIllustrationSlot}>
+                <QuestionIllustration width={120} height={120} />
+              </View>
+            ) : null}
 
-        {isSentenceBuilder && sentenceBuilder ? (
+            {isSentenceBuilder && sentenceBuilder ? (
           <View
             style={[
               styles.sentenceBuilderWrap,
@@ -735,40 +760,42 @@ export function QuizScreen({
               })}
             </View>
           </View>
-        ) : isMultipleChoice ? (
-          <View style={styles.multipleChoiceList}>
-            {choices.map((choice) => {
-              const isSelected = userAnswer === choice.label;
+            ) : isMultipleChoice ? (
+              <View style={styles.multipleChoiceList}>
+                {choices.map((choice) => {
+                  const isSelected = userAnswer === choice.label;
 
-              return (
-                <Pressable
-                  key={`${choice.label}-${choice.translation}`}
-                  onPress={() => onAnswerChange(choice.label)}
-                  style={[styles.choiceCard, isSelected && styles.choiceCardSelected]}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Choose ${choice.label}`}
-                >
-                  <Text
-                    style={[
-                      styles.choiceLabel,
-                      isSelected && styles.choiceLabelSelected,
-                    ]}
-                  >
-                    {choice.label}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.choiceTranslation,
-                      isSelected && styles.choiceTranslationSelected,
-                    ]}
-                  >
-                    {choice.translation}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ) : null}
+                  return (
+                    <Pressable
+                      key={`${choice.label}-${choice.translation}`}
+                      onPress={() => onAnswerChange(choice.label)}
+                      style={[styles.choiceCard, isSelected && styles.choiceCardSelected]}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Choose ${choice.label}`}
+                    >
+                      <Text
+                        style={[
+                          styles.choiceLabel,
+                          isSelected && styles.choiceLabelSelected,
+                        ]}
+                      >
+                        {choice.label}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.choiceTranslation,
+                          isSelected && styles.choiceTranslationSelected,
+                        ]}
+                      >
+                        {choice.translation}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            ) : null}
+          </>
+        )}
 
         {hasInput && feedback == null && <View style={styles.quizBottomSpacer} />}
 
@@ -842,45 +869,53 @@ export function QuizScreen({
               feedback === "correct"
                 ? styles.feedbackActionCorrect
                 : styles.feedbackActionWrong,
+              isAutoContinuingStory && styles.feedbackActionDisabled,
             ]}
             onPress={onContinue}
+            disabled={isAutoContinuingStory}
             accessibilityRole="button"
           >
             <Text style={styles.feedbackActionText}>
-              {feedback === "correct" ? "Continue" : "Got it"}
+              {feedback === "correct"
+                ? isAutoContinuingStory
+                  ? "Next..."
+                  : "Continue"
+                : "Continue"}
             </Text>
           </Pressable>
         </View>
       )}
 
-      <Modal
-        visible={isHintModalOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={onCloseHint}
-      >
-        <View style={styles.hintModalBackdrop}>
-          <View style={styles.hintModalCard}>
-            <Text style={styles.hintModalTitle}>Hint</Text>
+      {!isStoryMode ? (
+        <Modal
+          visible={isHintModalOpen}
+          transparent
+          animationType="fade"
+          onRequestClose={onCloseHint}
+        >
+          <View style={styles.hintModalBackdrop}>
+            <View style={styles.hintModalCard}>
+              <Text style={styles.hintModalTitle}>Hint</Text>
 
-            <ScrollView
-              style={styles.hintModalList}
-              showsVerticalScrollIndicator={false}
-            >
-              {hintEntries.map((entry) => (
-                <View key={entry.word} style={styles.hintModalRow}>
-                  <Text style={styles.hintWord}>{entry.word}</Text>
-                  <Text style={styles.hintMeaning}>{entry.meaning}</Text>
-                </View>
-              ))}
-            </ScrollView>
+              <ScrollView
+                style={styles.hintModalList}
+                showsVerticalScrollIndicator={false}
+              >
+                {hintEntries.map((entry) => (
+                  <View key={entry.word} style={styles.hintModalRow}>
+                    <Text style={styles.hintWord}>{entry.word}</Text>
+                    <Text style={styles.hintMeaning}>{entry.meaning}</Text>
+                  </View>
+                ))}
+              </ScrollView>
 
-            <Pressable onPress={onCloseHint} style={styles.hintModalCloseButton}>
-              <Text style={styles.hintModalCloseText}>Close</Text>
-            </Pressable>
+              <Pressable onPress={onCloseHint} style={styles.hintModalCloseButton}>
+                <Text style={styles.hintModalCloseText}>Close</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      ) : null}
     </SafeAreaView>
   );
 }

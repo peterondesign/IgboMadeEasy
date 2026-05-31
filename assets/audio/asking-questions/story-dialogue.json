@@ -1,0 +1,134 @@
+[
+  {
+    "speaker": "dad",
+    "igboText": "Nwa m nwanyị, ị dị njikere taa?",
+    "englishText": "My daughter, are you ready today?",
+    "statement": "Dad asks if she is ready today.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-i-di-njikere-taa",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ee, Papa, adị m njikere.",
+    "englishText": "Yes, Dad, I am ready.",
+    "statement": "The daughter says she is ready.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-ee-papa-adi-m-njikere",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ebee ka i na-aga?",
+    "englishText": "Where are you going?",
+    "statement": "Dad asks where she is going.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-ebee-ka-i-na-aga",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ana m aga ụlọ akwụkwọ.",
+    "englishText": "I am going to school.",
+    "statement": "The daughter says she is going to school.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-ana-m-aga-ulo-akwukwo",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Gịnị ka i chọrọ ka m zụta?",
+    "englishText": "What do you want me to buy?",
+    "statement": "Dad asks what she wants him to buy.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-gini-ka-i-choro-ka-m-zuta",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Biko, zụtara m mkpịsị ide ọhụrụ.",
+    "englishText": "Please buy me a new pen.",
+    "statement": "The daughter asks for a new pen.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-zutara-m-mkpisi-ide-ohuru",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ego ole ka nke ahụ bụ?",
+    "englishText": "How much is that?",
+    "statement": "Dad asks how much it costs.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-ego-ole-ka-nke-ahu-bu",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ọ dị ọnụ ala, Papa.",
+    "englishText": "It is cheap, Dad.",
+    "statement": "The daughter says it is cheap.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-o-di-onu-ala-papa",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ònye ga-aga ahịa?",
+    "englishText": "Who will go to the market?",
+    "statement": "Dad asks who will go to the market.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-onye-ga-aga-ahia",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Anyị abụọ ga-aga.",
+    "englishText": "Both of us will go.",
+    "statement": "The daughter says both of them will go.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-anyi-abuo-ga-aga",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Mgbe ole ka anyị ga-alọ?",
+    "englishText": "When will we return?",
+    "statement": "Dad asks when they will return.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-mgbe-ole-ka-anyi-ga-alo",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Anyị ga-alọ tupu anyasị.",
+    "englishText": "We will return before evening.",
+    "statement": "The daughter says they will return before evening.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-asking-questions-anyi-ga-alo-tupu-anyasi",
+    "voice": "female"
+  }
+]

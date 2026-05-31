@@ -2,8 +2,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const MODEL = "google/gemini-3.1-flash-tts";
-const VOICE = "Algenib";
-const STYLE_PROMPT = "Say the following. In a Nigerian Igbo accent";
+const MALE_VOICE = process.env.REPLICATE_TTS_MALE_VOICE || "Algenib";
+const FEMALE_VOICE = process.env.REPLICATE_TTS_FEMALE_VOICE || "Despina";
+const MALE_STYLE_PROMPT =
+  "Say the following in a Nigerian Igbo accent with a warm fatherly tone.";
+const FEMALE_STYLE_PROMPT =
+  "Say the following in a Nigerian Igbo accent with a warm young female tone.";
 const LANGUAGE_CODE = "en-US";
 
 const ROOT = process.cwd();
@@ -17,8 +21,13 @@ async function main() {
   }
 
   const existingAudioTargets = await loadMappedAudioTargets();
+  const storyAudioTargets = await loadStoryAudioTargets();
   const generatedLessonTargets = await loadGeneratedLessonTargets();
-  const targets = [...existingAudioTargets, ...generatedLessonTargets];
+  const targets = [
+    ...existingAudioTargets,
+    ...storyAudioTargets,
+    ...generatedLessonTargets,
+  ];
   const pendingTargets = [];
 
   for (const target of targets) {
@@ -46,7 +55,7 @@ async function main() {
     const label = `[${index + 1}/${pendingTargets.length}] ${target.lesson}: ${target.text}`;
     console.log(`\n${label}`);
 
-    const outputUrl = await runPrediction(apiKey, target.text);
+    const outputUrl = await runPrediction(apiKey, target);
     if (!outputUrl) {
       throw new Error(`No output URL returned for: ${target.text}`);
     }
@@ -93,11 +102,48 @@ async function loadMappedAudioTargets() {
         lesson,
         text,
         outputPath: path.join(ROOT, asset.replace(/^(\.\.\/)+/, "")),
+        voiceProfile: "male",
       });
     }
   }
 
   return allTargets;
+}
+
+async function loadStoryAudioTargets() {
+  const audioRoot = path.join(ROOT, "assets/audio");
+  const lessonEntries = await fs.readdir(audioRoot, { withFileTypes: true });
+  const targets = [];
+
+  for (const lessonEntry of lessonEntries) {
+    if (!lessonEntry.isDirectory()) {
+      continue;
+    }
+
+    const lesson = lessonEntry.name;
+    const storyFilePath = path.join(audioRoot, lesson, "story-dialogue.json");
+
+    if (!(await fileExists(storyFilePath))) {
+      continue;
+    }
+
+    const entries = JSON.parse(await fs.readFile(storyFilePath, "utf8"));
+
+    for (const entry of entries) {
+      if (!entry?.igboText || !entry?.audioKey) {
+        continue;
+      }
+
+      targets.push({
+        lesson: `${lesson}-story`,
+        text: entry.igboText,
+        outputPath: path.join(ROOT, `assets/audio/${lesson}/story/${entry.audioKey}.wav`),
+        voiceProfile: entry.voice === "female" ? "female" : "male",
+      });
+    }
+  }
+
+  return targets;
 }
 
 async function loadGeneratedLessonTargets() {
@@ -127,6 +173,7 @@ async function loadGeneratedLessonTargets() {
           ROOT,
           `assets/audio/${lesson}/${slugifyAscii(igboText)}.wav`
         ),
+        voiceProfile: "male",
       });
     }
   }
@@ -134,7 +181,17 @@ async function loadGeneratedLessonTargets() {
   return targets;
 }
 
-async function runPrediction(apiKey, text) {
+async function runPrediction(apiKey, target) {
+  const voice = target.voiceProfile === "female" ? FEMALE_VOICE : MALE_VOICE;
+  const prompt =
+    target.voiceProfile === "female"
+      ? FEMALE_STYLE_PROMPT
+      : MALE_STYLE_PROMPT;
+  const prefix =
+    target.voiceProfile === "female"
+      ? "[like an Igbo woman]"
+      : "[like an Igbo man]";
+
   const response = await fetch(
     `https://api.replicate.com/v1/models/${MODEL}/predictions`,
     {
@@ -146,9 +203,9 @@ async function runPrediction(apiKey, text) {
       },
       body: JSON.stringify({
         input: {
-          text: `[like an Igbo man] ${text}`,
-          voice: VOICE,
-          prompt: STYLE_PROMPT,
+          text: `${prefix} ${target.text}`,
+          voice,
+          prompt,
           language_code: LANGUAGE_CODE,
         },
       }),

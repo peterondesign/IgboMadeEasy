@@ -1,0 +1,15 @@
+export const FAMILY_PEOPLE_STORY_AUDIO: Record<string, number> = {
+  "story-family-people-enwe-m-nnukwu-akuko": require("../../assets/audio/family-people/story/story-family-people-enwe-m-nnukwu-akuko.wav"),
+  "story-family-people-gini-ka-o-bu-papa": require("../../assets/audio/family-people/story/story-family-people-gini-ka-o-bu-papa.wav"),
+  "story-family-people-enyi-m-ga-alu-nwunye-nizu-a": require("../../assets/audio/family-people/story/story-family-people-enyi-m-ga-alu-nwunye-nizu-a.wav"),
+  "story-family-people-nwanne-m-nwoke-nwere-ike-iweta-enyi-ya": require("../../assets/audio/family-people/story/story-family-people-nwanne-m-nwoke-nwere-ike-iweta-enyi-ya.wav"),
+  "story-family-people-ee-o-nwere-ike": require("../../assets/audio/family-people/story/story-family-people-ee-o-nwere-ike.wav"),
+  "story-family-people-nwanne-m-nwanyi-nwere-ike-iweta-enyi-ya-kwa": require("../../assets/audio/family-people/story/story-family-people-nwanne-m-nwanyi-nwere-ike-iweta-enyi-ya-kwa.wav"),
+  "story-family-people-ee-o-nwere-ike-kwa": require("../../assets/audio/family-people/story/story-family-people-ee-o-nwere-ike-kwa.wav"),
+  "story-family-people-mama-nwere-ike-iweta-enyi-ya": require("../../assets/audio/family-people/story/story-family-people-mama-nwere-ike-iweta-enyi-ya.wav"),
+  "story-family-people-ee": require("../../assets/audio/family-people/story/story-family-people-ee.wav"),
+  "story-family-people-papa-i-nwere-ike-iweta-enyi-gi-kwa": require("../../assets/audio/family-people/story/story-family-people-papa-i-nwere-ike-iweta-enyi-gi-kwa.wav"),
+  "story-family-people-ee-ozo": require("../../assets/audio/family-people/story/story-family-people-ee-ozo.wav"),
+  "story-family-people-onye-ka-a-kporo": require("../../assets/audio/family-people/story/story-family-people-onye-ka-a-kporo.wav"),
+  "story-family-people-a-kporo-obodo-niile": require("../../assets/audio/family-people/story/story-family-people-a-kporo-obodo-niile.wav"),
+};

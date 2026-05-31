@@ -1,0 +1,134 @@
+[
+  {
+    "speaker": "dad",
+    "igboText": "Ụtụtụ ọma, nwa m nwanyị!",
+    "englishText": "Good morning, my daughter!",
+    "statement": "Dad says good night to his daughter.",
+    "correctAnswer": false,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-ututu-oma-nwa-m-nwanyi",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ụtụtụ ọma, Papa!",
+    "englishText": "Good morning, Dad!",
+    "statement": "The daughter greets her dad back.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-ututu-oma-papa",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Kedu ka ị mere?",
+    "englishText": "How are you?",
+    "statement": "Dad is asking how she is.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-kedu-ka-i-mere",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Adị m mma.",
+    "englishText": "I'm fine.",
+    "statement": "The daughter says she is angry.",
+    "correctAnswer": false,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-adi-m-mma",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Nnọọ, nwa m nwanyị!",
+    "englishText": "Welcome, my daughter!",
+    "statement": "Dad welcomes his daughter.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-nnoo-nwa-m-nwanyi",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Papa, gịnị mere ị ji ekele m otu a?",
+    "englishText": "Dad, why are you greeting me like this?",
+    "statement": "The daughter asks why Dad is greeting her like that.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-papa-gini-mere-i-ji-ekele-m-otu-a",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "N'ihi na enwere m nnukwu nsogbu.",
+    "englishText": "Because I have a big problem.",
+    "statement": "Dad says he has no problem.",
+    "correctAnswer": false,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-nihi-na-enwe-m-nnukwu-nsogbu",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Nsogbu gịnị?",
+    "englishText": "What problem?",
+    "statement": "The daughter asks what the problem is.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-nsogbu-gini",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Agụụ na-agụ m nke ukwuu!",
+    "englishText": "I'm very hungry!",
+    "statement": "Dad says he is very hungry.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-aguu-na-agu-m-nke-ukwuu",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "(Na-achị ọchị) Ọ bụ naanị nke ahụ?",
+    "englishText": "(laughs) Is that all?",
+    "statement": "The daughter is upset and walks away.",
+    "correctAnswer": false,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-na-achi-ochi-o-bu-naani-nke-ahu",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ee. Anyị nwere ike iri nri?",
+    "englishText": "Yes. Can we eat?",
+    "statement": "Dad asks if they can eat.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-ee-anyi-nwere-ike-iri-nri",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ee, ka anyị rie!",
+    "englishText": "Yes, let's eat!",
+    "statement": "The daughter says they should eat.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-greetings-ee-ka-anyi-rie",
+    "voice": "female"
+  }
+]

@@ -1,0 +1,189 @@
+[
+  {
+    "speaker": "dad",
+    "igboText": "Nwa m nwanyị, gịnị ka i mere ụnyaahụ?",
+    "englishText": "My daughter, what did you do yesterday?",
+    "statement": "Dad asks what she did yesterday.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-gini-ka-i-mere-unyaahu",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Asara m uwe.",
+    "englishText": "I washed clothes.",
+    "statement": "The daughter says she washed clothes.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-asara-m-uwe",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Nke ahụ dị mma.",
+    "englishText": "That's good.",
+    "statement": "Dad says that is good.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-nke-ahu-di-mma",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Esiri m nri.",
+    "englishText": "I cooked food.",
+    "statement": "The daughter says she cooked food.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-esiri-m-nri",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Eziokwu?",
+    "englishText": "Really?",
+    "statement": "Dad is surprised and asks if it is true.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-eziokwu",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Agụrụ m akwụkwọ.",
+    "englishText": "I read a book.",
+    "statement": "The daughter says she read a book.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-aguru-m-akwukwo",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Gịnị ọzọ?",
+    "englishText": "What else?",
+    "statement": "Dad asks what else she did.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-gini-ozo",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Asara m efere.",
+    "englishText": "I washed the dishes.",
+    "statement": "The daughter says she washed the dishes.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-asara-m-efere",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ọ dị ihe ọzọ?",
+    "englishText": "Anything else?",
+    "statement": "Dad asks if there is anything else.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-o-di-ihe-ozo",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ejeere m ahịa.",
+    "englishText": "I went to the market.",
+    "statement": "The daughter says she went to the market.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-ejeere-m-ahia",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ihe ndị ahụ niile?",
+    "englishText": "All of that?",
+    "statement": "Dad asks if she did all those things.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-ihe-ndi-ahu-niile",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ee. Ejegharịkwara m ileta enyi m.",
+    "englishText": "Yes. I also visited my friend.",
+    "statement": "The daughter says she also visited her friend.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-ee-ejegharikwara-m-ileta-enyi-m",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "N'otu ụbọchị?",
+    "englishText": "In one day?",
+    "statement": "Dad asks if all of it happened in one day.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-notu-ubochi",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ee, Papa.",
+    "englishText": "Yes, Dad.",
+    "statement": "The daughter confirms: yes, Dad.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-ee-papa",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ugbu a, ama m ihe m ga-eme izu a!",
+    "englishText": "Now I know what I'll do this week!",
+    "statement": "Dad says he now knows what he will do this week.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-ugbua-ama-m-ihe-m-ga-eme-izu-a",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Gịnị mere?",
+    "englishText": "Why?",
+    "statement": "The daughter asks why.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-gini-mere",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ọ bụrụ na ị nwere ike ime ihe ndị ahụ niile n'otu ụbọchị, m nwekwara ike ime ọrụ m n'izu a!",
+    "englishText": "If you can do all that in one day, I can do my tasks this week too!",
+    "statement": "Dad says he cannot do his tasks this week.",
+    "correctAnswer": false,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-everyday-verbs-oburu-na-i-nwere-ike-ime-ihe-ndi-ahu-niile",
+    "voice": "male"
+  }
+]

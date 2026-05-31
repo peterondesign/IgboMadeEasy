@@ -1,0 +1,134 @@
+[
+  {
+    "speaker": "dad",
+    "igboText": "Nwa m nwanyị, kedu ka ị ga-esi gaa obodo ahụ?",
+    "englishText": "My daughter, how are you going to that town?",
+    "statement": "Dad asks how she will go to that town.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-kedu-ka-i-ga-esi-gaa-obodo-ahu",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Papa, m ga...",
+    "englishText": "Dad, I will...",
+    "statement": "The daughter says she will go somehow.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-papa-m-ga",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ị ga-eji ụgbọ ala?",
+    "englishText": "Will you use a car?",
+    "statement": "Dad asks if she will use a car.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-i-ga-eji-ugbo-ala",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Mba, Papa.",
+    "englishText": "No, Dad.",
+    "statement": "The daughter says no to using a car.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-mba-papa",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ị ga-eji bọs?",
+    "englishText": "Will you take a bus?",
+    "statement": "Dad asks if she will take a bus.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-i-ga-eji-bos",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Mba.",
+    "englishText": "No.",
+    "statement": "The daughter says no.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-mba",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ị ga-agba ígwè?",
+    "englishText": "Will you ride a bicycle?",
+    "statement": "Dad asks if she will ride a bicycle.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-i-ga-agba-igwe",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Mba.",
+    "englishText": "No.",
+    "statement": "The daughter says no again.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-mba-ozo",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ị ga-abanye taksi na onye na-anya ụgbọ ala?",
+    "englishText": "Will you take a taxi with a driver?",
+    "statement": "Dad asks if she will take a taxi.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-i-ga-abanye-taksi",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Mba, Papa!",
+    "englishText": "No, Dad!",
+    "statement": "The daughter says no, Dad.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-mba-papa-kwa",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Mgbe ahụ, kedu ka ị ga-esi gaa?",
+    "englishText": "Then how are you going?",
+    "statement": "Dad asks how she will go then.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-mgbe-ahu-kedu-ka-i-ga-esi-gaa",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ana m eje ije. Obodo ahụ dị nso nke ukwuu!",
+    "englishText": "I'm walking. The town is very close!",
+    "statement": "The daughter says she is walking because the town is very close.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-transportation-ana-m-eje-ije-obodo-ahu-di-nso",
+    "voice": "female"
+  }
+]

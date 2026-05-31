@@ -1,0 +1,134 @@
+[
+  {
+    "speaker": "dad",
+    "igboText": "Nwa m nwanyị, enwere m nnukwu mpako. N'oge na-adịghị anya, ị ga-agụsị akwụkwọ.",
+    "englishText": "My daughter, I am very proud. Soon, you will graduate.",
+    "statement": "Dad says he is very proud and she will graduate soon.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-na-enwe-m-nnukwu-mpako-i-ga-agusi-akwukwo",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Obi dị m ụtọ kwa! Agaghị m agụ akwụkwọ kwa ụbọchị ọzọ.",
+    "englishText": "I'm happy too! I won't have to read every day anymore.",
+    "statement": "The daughter says she is happy and won't read every day anymore.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-obi-di-m-uto-agaghi-m-agu-kwa-ubochi-ozo",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Nke ahụ bụ eziokwu.",
+    "englishText": "That's true.",
+    "statement": "Dad says that is true.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-nke-ahu-bu-eziokwu",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Agaghị m ede ihe ukwuukwa.",
+    "englishText": "I won't have to write so much either.",
+    "statement": "The daughter says she will not have to write so much.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-agaghi-m-ede-ihe-ukwuu-kwa",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ee.",
+    "englishText": "Yes.",
+    "statement": "Dad agrees.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-ee",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ọzọkwa, agaghịzi enwe ọrụ ụlọ!",
+    "englishText": "And no more homework!",
+    "statement": "The daughter says there will be no more homework.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-agaghi-zi-enwe-oru-ulo",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Hmm.",
+    "englishText": "Hmm.",
+    "statement": "Dad responds with hmm.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-hmm",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "N'ikpeazụ, adị m n'efu!",
+    "englishText": "I'm finally free!",
+    "statement": "The daughter says she is finally free.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-nikpeazu-adi-m-nefu",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ma n'oge na-adịghị anya, ị ga-aga ụlọ ọrụ.",
+    "englishText": "But soon, you'll be going to an office.",
+    "statement": "Dad says she will soon go to an office.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-i-ga-aga-ulo-oru",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Ụlọ ọrụ?",
+    "englishText": "An office?",
+    "statement": "The daughter asks about an office.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-ulo-oru",
+    "voice": "female"
+  },
+  {
+    "speaker": "dad",
+    "igboText": "Ee. Ị ga-ede akụkọ, nwee onye isi, ma soro ndị ọrụ ibe rụọ ọrụ.",
+    "englishText": "Yes. You'll write reports, have a boss, and work with colleagues.",
+    "statement": "Dad says she will write reports, have a boss, and work with colleagues.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-i-ga-ede-akuko-hunye-onye-isi-soro-ndi-oru-ibe",
+    "voice": "male"
+  },
+  {
+    "speaker": "daughter",
+    "igboText": "Chere... ma eleghị anya, ụlọ akwụkwọ adịghị njọ nke ukwuu.",
+    "englishText": "Wait... maybe school wasn't that bad after all.",
+    "statement": "The daughter says maybe school was not that bad after all.",
+    "correctAnswer": true,
+    "dadSvgPath": "assets/illustrations/story-dad.svg",
+    "daughterSvgPath": "assets/illustrations/story-daughter.svg",
+    "audioKey": "story-school-work-ma-eleghi-anya-ulo-akwukwo-adighi-njo",
+    "voice": "female"
+  }
+]

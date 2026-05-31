@@ -35,6 +35,7 @@ import {
   ASKING_QUESTIONS_AUDIO,
   ASKING_QUESTIONS_ENTRIES,
 } from "./src/data/askingQuestionsAudio";
+import { ASKING_QUESTIONS_STORY_AUDIO } from "./src/data/askingQuestionsStoryAudio";
 import { ANIMALS_AUDIO, ANIMALS_ENTRIES } from "./src/data/animalsAudio";
 import {
   CELEBRATIONS_AUDIO,
@@ -46,14 +47,17 @@ import {
   EVERYDAY_VERBS_AUDIO,
   EVERYDAY_VERBS_ENTRIES,
 } from "./src/data/everydayVerbsAudio";
+import { EVERYDAY_VERBS_STORY_AUDIO } from "./src/data/everydayVerbsStoryAudio";
 import {
   FAMILY_PEOPLE_AUDIO,
   FAMILY_PEOPLE_ENTRIES,
 } from "./src/data/familyPeopleAudio";
+import { FAMILY_PEOPLE_STORY_AUDIO } from "./src/data/familyPeopleStoryAudio";
 import {
   FOOD_COOKING_AUDIO,
   FOOD_COOKING_ENTRIES,
 } from "./src/data/foodCookingAudio";
+import { FOOD_COOKING_STORY_AUDIO } from "./src/data/foodCookingStoryAudio";
 import { GREETINGS_AUDIO, GREETINGS_PHRASES } from "./src/data/greetingsAudio";
 import { HEALTH_AUDIO, HEALTH_ENTRIES } from "./src/data/healthAudio";
 import {
@@ -68,14 +72,17 @@ import {
   SCHOOL_WORK_AUDIO,
   SCHOOL_WORK_ENTRIES,
 } from "./src/data/schoolWorkAudio";
+import { SCHOOL_WORK_STORY_AUDIO } from "./src/data/schoolWorkStoryAudio";
 import {
   TRANSPORTATION_AUDIO,
   TRANSPORTATION_ENTRIES,
 } from "./src/data/transportationAudio";
+import { TRANSPORTATION_STORY_AUDIO } from "./src/data/transportationStoryAudio";
 import {
   WEATHER_NATURE_AUDIO,
   WEATHER_NATURE_ENTRIES,
 } from "./src/data/weatherNatureAudio";
+import { GREETINGS_STORY_AUDIO } from "./src/data/greetingsStoryAudio";
 import { VISUAL_KEY_OVERRIDES_BY_IGBO } from "./src/data/illustrationOverrides";
 import GameGroup from "./src/groups/GameGroup";
 import HomeGroup from "./src/groups/HomeGroup";
@@ -97,11 +104,29 @@ type ScreenName = "home" | "lessons" | "quiz" | "completed";
 type AppGroup = "home" | "lesson" | "game";
 type FeedbackState = "correct" | "wrong" | null;
 
+type StorySpeaker = "dad" | "daughter";
+
+type StoryModeQuestion = {
+  speaker: StorySpeaker;
+  igboText: string;
+  englishText: string;
+  statement: string;
+  correctAnswer: boolean;
+  dadSvgPath: string;
+  daughterSvgPath: string;
+};
+
+type StoryDialogueEntry = StoryModeQuestion & {
+  audioKey: string;
+  voice: "male" | "female";
+};
+
 type Question = {
   prompt: string;
   answer: string;
   visualKey: string;
   audioKey?: string;
+  storyMode?: StoryModeQuestion;
   sentenceBuilder?: {
     sourceSentence: string;
     targetWords: string[];
@@ -140,6 +165,13 @@ type RemovableSubscription = {
 const STORAGE_KEY = "igbo-made-easy.lesson-progress.v1";
 const PREMIUM_UNLOCK_STORAGE_KEY = "igbo-made-easy.premium-unlock.v1";
 const PREMIUM_EMAIL_STORAGE_KEY = "igbo-made-easy.premium-email.v1";
+const GREETINGS_STORY_DIALOGUE = require("./assets/audio/greetings/story-dialogue.json") as StoryDialogueEntry[];
+const EVERYDAY_VERBS_STORY_DIALOGUE = require("./assets/audio/everyday-verbs/story-dialogue.json") as StoryDialogueEntry[];
+const ASKING_QUESTIONS_STORY_DIALOGUE = require("./assets/audio/asking-questions/story-dialogue.json") as StoryDialogueEntry[];
+const FOOD_COOKING_STORY_DIALOGUE = require("./assets/audio/food-cooking/story-dialogue.json") as StoryDialogueEntry[];
+const FAMILY_PEOPLE_STORY_DIALOGUE = require("./assets/audio/family-people/story-dialogue.json") as StoryDialogueEntry[];
+const SCHOOL_WORK_STORY_DIALOGUE = require("./assets/audio/school-work/story-dialogue.json") as StoryDialogueEntry[];
+const TRANSPORTATION_STORY_DIALOGUE = require("./assets/audio/transportation/story-dialogue.json") as StoryDialogueEntry[];
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -260,6 +292,7 @@ const GAME_SOUND_SUCCESS = require("./assets/audio/game-sounds/success-sound.mp3
 const GAME_SOUND_FAILURE = require("./assets/audio/game-sounds/try-again-sound.mp3");
 const QUESTION_AUDIO: Record<string, number> = {
   ...ASKING_QUESTIONS_AUDIO,
+  ...ASKING_QUESTIONS_STORY_AUDIO,
   ...ANIMALS_AUDIO,
   ...CELEBRATIONS_AUDIO,
   ...ELDERS_AUDIO,
@@ -269,11 +302,17 @@ const QUESTION_AUDIO: Record<string, number> = {
   ...HOUSEHOLD_OBJECTS_AUDIO,
   ...NUMBERS_MONEY_AUDIO,
   ...SCHOOL_WORK_AUDIO,
+  ...SCHOOL_WORK_STORY_AUDIO,
   ...TRANSPORTATION_AUDIO,
+  ...TRANSPORTATION_STORY_AUDIO,
   ...WEATHER_NATURE_AUDIO,
   ...EVERYDAY_VERBS_AUDIO,
+  ...EVERYDAY_VERBS_STORY_AUDIO,
   ...FAMILY_PEOPLE_AUDIO,
+  ...FAMILY_PEOPLE_STORY_AUDIO,
   ...FOOD_COOKING_AUDIO,
+  ...FOOD_COOKING_STORY_AUDIO,
+  ...GREETINGS_STORY_AUDIO,
 };
 
 const WORD_QUESTION_BANK: Record<string, Question[]> = {
@@ -448,63 +487,93 @@ const SENTENCE_BUILDER_BANK: Record<string, SentenceBuilderSeed[]> = {
 };
 
 const QUESTION_BANK: Record<string, Question[]> = {
-  greetings: buildMixedQuestionSet(
+  greetings: buildLessonQuestionSet(
+    "greetings",
+    "Greetings",
     WORD_QUESTION_BANK.greetings,
     SENTENCE_BUILDER_BANK.greetings
   ),
-  "everyday-verbs": buildMixedQuestionSet(
+  "everyday-verbs": buildLessonQuestionSet(
+    "everyday-verbs",
+    "Everyday Verbs",
     WORD_QUESTION_BANK["everyday-verbs"],
     SENTENCE_BUILDER_BANK["everyday-verbs"]
   ),
-  "asking-questions": buildMixedQuestionSet(
+  "asking-questions": buildLessonQuestionSet(
+    "asking-questions",
+    "Asking Questions",
     WORD_QUESTION_BANK["asking-questions"],
     SENTENCE_BUILDER_BANK["asking-questions"]
   ),
-  "family-people": buildMixedQuestionSet(
+  "family-people": buildLessonQuestionSet(
+    "family-people",
+    "Family and People",
     WORD_QUESTION_BANK["family-people"],
     SENTENCE_BUILDER_BANK["family-people"]
   ),
-  "food-cooking": buildMixedQuestionSet(
+  "food-cooking": buildLessonQuestionSet(
+    "food-cooking",
+    "Food and Cooking",
     WORD_QUESTION_BANK["food-cooking"],
     SENTENCE_BUILDER_BANK["food-cooking"]
   ),
-  "numbers-money": buildMixedQuestionSet(
+  "numbers-money": buildLessonQuestionSet(
+    "numbers-money",
+    "Numbers and Money",
     WORD_QUESTION_BANK["numbers-money"],
     SENTENCE_BUILDER_BANK["numbers-money"]
   ),
-  "school-work": buildMixedQuestionSet(
+  "school-work": buildLessonQuestionSet(
+    "school-work",
+    "School and Work",
     WORD_QUESTION_BANK["school-work"],
     SENTENCE_BUILDER_BANK["school-work"]
   ),
-  transportation: buildMixedQuestionSet(
+  transportation: buildLessonQuestionSet(
+    "transportation",
+    "Transportation",
     WORD_QUESTION_BANK.transportation,
     SENTENCE_BUILDER_BANK.transportation
   ),
-  emotions: buildMixedQuestionSet(
+  emotions: buildLessonQuestionSet(
+    "emotions",
+    "Emotions",
     WORD_QUESTION_BANK.emotions,
     SENTENCE_BUILDER_BANK.emotions
   ),
-  health: buildMixedQuestionSet(
+  health: buildLessonQuestionSet(
+    "health",
+    "Health",
     WORD_QUESTION_BANK.health,
     SENTENCE_BUILDER_BANK.health
   ),
-  "household-objects": buildMixedQuestionSet(
+  "household-objects": buildLessonQuestionSet(
+    "household-objects",
+    "Household Objects",
     WORD_QUESTION_BANK["household-objects"],
     SENTENCE_BUILDER_BANK["household-objects"]
   ),
-  "weather-nature": buildMixedQuestionSet(
+  "weather-nature": buildLessonQuestionSet(
+    "weather-nature",
+    "Weather and Nature",
     WORD_QUESTION_BANK["weather-nature"],
     SENTENCE_BUILDER_BANK["weather-nature"]
   ),
-  animals: buildMixedQuestionSet(
+  animals: buildLessonQuestionSet(
+    "animals",
+    "Animals",
     WORD_QUESTION_BANK.animals,
     SENTENCE_BUILDER_BANK.animals
   ),
-  elders: buildMixedQuestionSet(
+  elders: buildLessonQuestionSet(
+    "elders",
+    "Elders",
     WORD_QUESTION_BANK.elders,
     SENTENCE_BUILDER_BANK.elders
   ),
-  celebrations: buildMixedQuestionSet(
+  celebrations: buildLessonQuestionSet(
+    "celebrations",
+    "Celebrations",
     WORD_QUESTION_BANK.celebrations,
     SENTENCE_BUILDER_BANK.celebrations
   ),
@@ -1168,7 +1237,13 @@ export default function App() {
     }
 
     const normalizedInput = normalizeAnswer(userAnswer);
-    const normalizedExpected = normalizeAnswer(activeQuestion.answer);
+    const normalizedExpected = normalizeAnswer(
+      activeQuestion.storyMode
+        ? activeQuestion.storyMode.correctAnswer
+          ? "True"
+          : "False"
+        : activeQuestion.answer
+    );
     const nextFeedback: FeedbackState =
       normalizedInput === normalizedExpected ? "correct" : "wrong";
     setFeedback(nextFeedback);
@@ -1290,7 +1365,7 @@ export default function App() {
             onCheckAnswer={checkCurrentAnswer}
             feedback={feedback}
             onContinue={continueFromFeedback}
-            showSpeaker={Boolean(question.audioKey)}
+            showSpeaker={Boolean(question.audioKey || question.storyMode)}
             onPlayAudio={playActiveAudio}
             audioPlaybackRate={audioPlaybackRate}
             onToggleAudioPlaybackRate={toggleAudioPlaybackRate}
@@ -1334,6 +1409,115 @@ export default function App() {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(value, max));
+}
+
+function buildLessonQuestionSet(
+  lessonId: string,
+  _lessonTitle: string,
+  wordQuestions: Question[],
+  sentenceSeeds: SentenceBuilderSeed[]
+): Question[] {
+  const mixedQuestions = buildMixedQuestionSet(wordQuestions, sentenceSeeds);
+  const storyQuestions = buildStoryQuestions(lessonId);
+
+  return [
+    ...storyQuestions,
+    ...mixedQuestions,
+  ];
+}
+
+function buildStoryQuestions(lessonId: string): Question[] {
+  if (lessonId === "greetings") {
+    return buildBalancedStoryQuestionSet(GREETINGS_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "everyday-verbs") {
+    return buildBalancedStoryQuestionSet(EVERYDAY_VERBS_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "asking-questions") {
+    return buildBalancedStoryQuestionSet(ASKING_QUESTIONS_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "food-cooking") {
+    return buildBalancedStoryQuestionSet(FOOD_COOKING_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "family-people") {
+    return buildBalancedStoryQuestionSet(FAMILY_PEOPLE_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "school-work") {
+    return buildBalancedStoryQuestionSet(SCHOOL_WORK_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "transportation") {
+    return buildBalancedStoryQuestionSet(TRANSPORTATION_STORY_DIALOGUE);
+  }
+
+  return [];
+}
+
+function buildBalancedStoryQuestionSet(entries: StoryDialogueEntry[]): Question[] {
+  if (entries.length === 0) {
+    return [];
+  }
+
+  const truthAssignments = buildBalancedTruthAssignments(entries.length);
+
+  return entries.map((entry, index) => {
+    const shouldBeTrue = truthAssignments[index];
+    const speakerLabel = entry.speaker === "dad" ? "Dad" : "Daughter";
+
+    const statement = shouldBeTrue
+      ? entry.statement
+      : buildMismatchedStoryStatement(entries, index, speakerLabel);
+
+    return {
+      prompt: "Story mode",
+      answer: shouldBeTrue ? "True" : "False",
+      visualKey: "",
+      audioKey: entry.audioKey,
+      storyMode: {
+        speaker: entry.speaker,
+        igboText: entry.igboText,
+        englishText: entry.englishText,
+        statement,
+        correctAnswer: shouldBeTrue,
+        dadSvgPath: entry.dadSvgPath,
+        daughterSvgPath: entry.daughterSvgPath,
+      },
+    };
+  });
+}
+
+function buildBalancedTruthAssignments(count: number): boolean[] {
+  const half = Math.floor(count / 2);
+  const hasExtra = count % 2 === 1;
+  const useExtraTrue = hasExtra ? Math.random() < 0.5 : false;
+  const trueCount = half + (useExtraTrue ? 1 : 0);
+  const falseCount = count - trueCount;
+
+  return shuffleArray([
+    ...Array(trueCount).fill(true),
+    ...Array(falseCount).fill(false),
+  ]);
+}
+
+function buildMismatchedStoryStatement(
+  entries: StoryDialogueEntry[],
+  sourceIndex: number,
+  speakerLabel: string
+): string {
+  if (entries.length <= 1) {
+    return `True or false: ${speakerLabel} says, "${entries[sourceIndex]?.englishText ?? ""}"`;
+  }
+
+  const mismatchPool = entries.filter((_, index) => index !== sourceIndex);
+  const randomMismatch =
+    mismatchPool[Math.floor(Math.random() * mismatchPool.length)] ?? entries[sourceIndex];
+
+  return `True or false: ${speakerLabel} says, "${randomMismatch.englishText}"`;
 }
 
 function buildMixedQuestionSet(
@@ -1531,7 +1715,7 @@ function countWords(words: string[]): Record<string, number> {
 
 function buildLessonChoices(lessonId: string, question: Question): ChoiceOption[] {
   const lessonQuestions = (ACTIVE_QUESTION_BANK[lessonId] ?? []).filter(
-    (item) => !item.sentenceBuilder
+    (item) => !item.sentenceBuilder && !item.storyMode
   );
   const uniquePool = lessonQuestions.filter(
     (item, index, array) =>
