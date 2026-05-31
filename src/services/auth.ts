@@ -13,7 +13,15 @@ type StoredAuthSession = {
   refreshToken?: string;
   idToken?: string;
   userSub: string;
+  userEmail?: string;
+  userName?: string;
   expiresAt?: number;
+};
+
+type Auth0UserProfile = {
+  sub: string;
+  email?: string;
+  name?: string;
 };
 
 type AuthConfig = {
@@ -143,13 +151,15 @@ export async function loginWithAuth0(): Promise<StoredAuthSession | null> {
     throw new Error(`Auth0 login returned no access token.${redirectDebugSuffix}`);
   }
 
-  const userSub = await fetchUserSub(config.domain, tokenResponse.accessToken);
+  const profile = await fetchUserProfile(config.domain, tokenResponse.accessToken);
 
   const session: StoredAuthSession = {
     accessToken: tokenResponse.accessToken,
     refreshToken: tokenResponse.refreshToken,
     idToken: tokenResponse.idToken,
-    userSub,
+    userSub: profile.sub,
+    userEmail: profile.email,
+    userName: profile.name,
     expiresAt: tokenResponse.issuedAt
       ? tokenResponse.issuedAt + (tokenResponse.expiresIn ?? 0)
       : undefined,
@@ -176,7 +186,10 @@ export async function clearStoredAuthSession(): Promise<void> {
   await SecureStore.deleteItemAsync(AUTH_STORAGE_KEY);
 }
 
-async function fetchUserSub(domain: string, accessToken: string): Promise<string> {
+async function fetchUserProfile(
+  domain: string,
+  accessToken: string
+): Promise<Auth0UserProfile> {
   const response = await fetch(`https://${domain}/userinfo`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -187,12 +200,12 @@ async function fetchUserSub(domain: string, accessToken: string): Promise<string
     throw new Error("Unable to fetch Auth0 user profile.");
   }
 
-  const profile = (await response.json()) as { sub?: string };
+  const profile = (await response.json()) as Auth0UserProfile;
   if (!profile.sub) {
     throw new Error("Auth0 profile missing sub claim.");
   }
 
-  return profile.sub;
+  return profile;
 }
 
 export type { StoredAuthSession };

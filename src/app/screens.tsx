@@ -8,7 +8,6 @@ import {
   SafeAreaView,
   ScrollView,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import BackIcon from "../../assets/icons/back-icon.svg";
@@ -50,6 +49,8 @@ type ChoiceOption = {
   label: string;
   translation: string;
 };
+
+type PremiumPlan = "annual" | "monthly";
 
 function normalizeAnswer(value: string): string {
   return value
@@ -178,14 +179,11 @@ export function LessonsScreen({
   hasPremiumAccess,
   isAuthBusy,
   onLoginPress,
-  isUpgradeModalOpen,
   signupEmail,
-  onSignupEmailChange,
-  onCloseUpgradeModal,
-  onUpgradeSubmit,
   onLogoutPress,
   onRestorePurchasesPress,
   onOpenStreakScreen,
+  onOpenProfileScreen,
   onStartLesson,
 }: {
   lessons: Lesson[];
@@ -195,18 +193,14 @@ export function LessonsScreen({
   hasPremiumAccess: boolean;
   isAuthBusy: boolean;
   onLoginPress: () => void;
-  isUpgradeModalOpen: boolean;
   signupEmail: string;
-  onSignupEmailChange: (value: string) => void;
-  onCloseUpgradeModal: () => void;
-  onUpgradeSubmit: () => void;
   onLogoutPress: () => void;
   onRestorePurchasesPress: () => void;
   onOpenStreakScreen: () => void;
+  onOpenProfileScreen: () => void;
   onStartLesson: (lessonId: string) => void;
 }) {
   const canAccessPremiumLessons = hasPremiumAccess;
-  const [isAccountPopoverOpen, setIsAccountPopoverOpen] = useState(false);
   const avatarInitial = signupEmail.trim().charAt(0).toUpperCase() || "P";
 
   return (
@@ -219,6 +213,18 @@ export function LessonsScreen({
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.lessonsHeaderRow}>
+          {hasPremiumAccess ? (
+            <Pressable
+              style={styles.tinyLogoutButton}
+              onPress={onLogoutPress}
+              disabled={isAuthBusy}
+              accessibilityRole="button"
+              accessibilityLabel="Log out"
+            >
+              <BackIcon width={14} height={14} />
+            </Pressable>
+          ) : null}
+
           <View style={styles.lessonsHeaderCenter}>
             <Image
               source={require("../../assets/illustrations/logo-with-text.png")}
@@ -266,18 +272,29 @@ export function LessonsScreen({
 
       <View style={styles.fixedFooter}>
         {!hasPremiumAccess ? (
-          <Pressable
-            style={styles.loginFooterButton}
-            onPress={onLoginPress}
-            disabled={isAuthBusy}
-            accessibilityRole="button"
-            accessibilityLabel="Upgrade to Premium"
-          >
-            <LoginIcon width={18} height={18} />
-            <Text style={styles.loginFooterButtonText}>
-              {isAuthBusy ? "Working..." : "Upgrade to Premium"}
-            </Text>
-          </Pressable>
+          <View style={styles.loginFooterRow}>
+            <Pressable
+              style={styles.loginFooterButton}
+              onPress={onLoginPress}
+              disabled={isAuthBusy}
+              accessibilityRole="button"
+              accessibilityLabel="Upgrade to Premium"
+            >
+              <LoginIcon width={18} height={18} />
+              <Text style={styles.loginFooterButtonText}>
+                {isAuthBusy ? "Working..." : "Upgrade to Premium"}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.footerProfileButton}
+              onPress={onOpenProfileScreen}
+              accessibilityRole="button"
+              accessibilityLabel="Open profile"
+            >
+              <Text style={styles.footerProfileText}>{avatarInitial}</Text>
+            </Pressable>
+          </View>
         ) : (
           <View style={styles.premiumFooterRow}>
             <View style={styles.premiumBadgeChip}>
@@ -286,88 +303,15 @@ export function LessonsScreen({
 
             <Pressable
               style={styles.avatarButton}
-              onPress={() => setIsAccountPopoverOpen((value) => !value)}
+              onPress={onOpenProfileScreen}
               accessibilityRole="button"
-              accessibilityLabel="Open account menu"
+              accessibilityLabel="Open profile"
             >
               <Text style={styles.avatarText}>{avatarInitial}</Text>
             </Pressable>
           </View>
         )}
-
-        {hasPremiumAccess && isAccountPopoverOpen ? (
-          <View style={styles.accountPopover}>
-            <Text style={styles.accountPopoverEmail}>
-              {signupEmail || "Premium member"}
-            </Text>
-            <Pressable
-              style={styles.accountPopoverSecondaryButton}
-              onPress={() => {
-                setIsAccountPopoverOpen(false);
-                onRestorePurchasesPress();
-              }}
-            >
-              <Text style={styles.accountPopoverSecondaryText}>
-                Restore Purchases
-              </Text>
-            </Pressable>
-            <Pressable
-              style={styles.accountPopoverLogout}
-              onPress={() => {
-                setIsAccountPopoverOpen(false);
-                onLogoutPress();
-              }}
-            >
-              <Text style={styles.accountPopoverLogoutText}>Log out</Text>
-            </Pressable>
-          </View>
-        ) : null}
       </View>
-
-      <Modal
-        visible={isUpgradeModalOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={onCloseUpgradeModal}
-      >
-        <View style={styles.hintModalBackdrop}>
-          <View style={styles.upgradeModalCard}>
-            <Text style={styles.upgradeModalTitle}>Upgrade to Premium</Text>
-            <Text style={styles.upgradeModalText}>
-              Enter your email, then continue straight to Apple Pay.
-            </Text>
-
-            <TextInput
-              style={styles.upgradeEmailInput}
-              placeholder="you@example.com"
-              placeholderTextColor="#7F8B99"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={signupEmail}
-              onChangeText={onSignupEmailChange}
-            />
-
-            <Pressable
-              style={styles.upgradeSubmitButton}
-              onPress={onUpgradeSubmit}
-              disabled={isAuthBusy}
-            >
-              <Text style={styles.upgradeSubmitText}>
-                {isAuthBusy ? "Working..." : "Continue to Apple Pay"}
-              </Text>
-            </Pressable>
-
-            <Pressable
-              style={styles.upgradeCancelButton}
-              onPress={onCloseUpgradeModal}
-              disabled={isAuthBusy}
-            >
-              <Text style={styles.upgradeCancelText}>Cancel</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
 
       {isAuthBusy ? (
         <View style={styles.loadingOverlay} pointerEvents="auto">
@@ -377,6 +321,173 @@ export function LessonsScreen({
           </View>
         </View>
       ) : null}
+    </SafeAreaView>
+  );
+}
+
+export function ProfileScreen({
+  userDisplayName,
+  userEmail,
+  onBack,
+  onLogout,
+  onRestorePurchases,
+  isAuthBusy,
+}: {
+  userDisplayName?: string;
+  userEmail?: string;
+  onBack: () => void;
+  onLogout: () => void;
+  onRestorePurchases: () => void;
+  isAuthBusy: boolean;
+}) {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#111111" />
+      <View style={styles.profileScreenContainer}>
+        <View style={styles.profileScreenTopRow}>
+          <Pressable
+            style={styles.quizBackIconButton}
+            onPress={onBack}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <BackIcon width={18} height={18} />
+          </Pressable>
+
+          <Text style={styles.profileScreenTitle}>Profile</Text>
+
+          <View style={styles.premiumScreenTopSpacer} />
+        </View>
+
+        <View style={styles.profileCard}>
+          <Text style={styles.profileEmailLabel}>Signed in as</Text>
+          <Text style={styles.profileEmailValue}>
+            {userDisplayName || userEmail || "Anonymous user"}
+          </Text>
+          {userDisplayName && userEmail ? (
+            <Text style={styles.profileEmailLabel}>{userEmail}</Text>
+          ) : null}
+
+          <Pressable
+            style={styles.profileSecondaryButton}
+            onPress={onRestorePurchases}
+            disabled={isAuthBusy}
+          >
+            <Text style={styles.profileSecondaryButtonText}>Restore Purchases</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.profileLogoutButton}
+            onPress={onLogout}
+            disabled={isAuthBusy}
+          >
+            <Text style={styles.profileLogoutButtonText}>
+              {isAuthBusy ? "Working..." : "Log out"}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+export function PremiumScreen({
+  onBack,
+  onContinue,
+  onRestorePurchases,
+  isAuthBusy,
+}: {
+  onBack: () => void;
+  onContinue: (plan: PremiumPlan) => void;
+  onRestorePurchases: () => void;
+  isAuthBusy: boolean;
+}) {
+  const [selectedPlan, setSelectedPlan] = useState<PremiumPlan>("annual");
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#111111" />
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.premiumScreenContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.premiumScreenTopRow}>
+          <Pressable
+            style={styles.quizBackIconButton}
+            onPress={onBack}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <BackIcon width={18} height={18} />
+          </Pressable>
+
+          <Text style={styles.premiumScreenTitle}>Igbo Easy Premium</Text>
+
+          <View style={styles.premiumScreenTopSpacer} />
+        </View>
+
+        <Text style={styles.premiumScreenSubtitle}>
+          Unlock all lessons, story mode audio, and full quiz access.
+        </Text>
+
+        <Pressable
+          style={[
+            styles.premiumPlanCard,
+            selectedPlan === "annual" ? styles.premiumPlanCardSelected : null,
+          ]}
+          onPress={() => setSelectedPlan("annual")}
+          accessibilityRole="button"
+          accessibilityLabel="Choose yearly premium plan"
+        >
+          <View style={styles.premiumPlanRow}>
+            <Text style={styles.premiumPlanName}>Yearly</Text>
+            <Text style={styles.premiumPlanPrice}>$79.99/year</Text>
+          </View>
+          <Text style={styles.premiumPlanMeta}>Best value for full access</Text>
+          <Text style={styles.premiumPlanMeta}>Includes Family Sharing</Text>
+        </Pressable>
+
+        <Pressable
+          style={[
+            styles.premiumPlanCard,
+            selectedPlan === "monthly" ? styles.premiumPlanCardSelected : null,
+          ]}
+          onPress={() => setSelectedPlan("monthly")}
+          accessibilityRole="button"
+          accessibilityLabel="Choose monthly premium plan"
+        >
+          <View style={styles.premiumPlanRow}>
+            <Text style={styles.premiumPlanName}>Monthly</Text>
+            <Text style={styles.premiumPlanPrice}>$7.99/month</Text>
+          </View>
+          <Text style={styles.premiumPlanMeta}>Flexible monthly billing</Text>
+        </Pressable>
+
+        <Pressable
+          style={styles.premiumRestoreButton}
+          onPress={onRestorePurchases}
+          disabled={isAuthBusy}
+        >
+          <Text style={styles.premiumRestoreText}>Restore Purchases</Text>
+        </Pressable>
+      </ScrollView>
+
+      <View style={styles.premiumBottomBar}>
+        <Pressable
+          style={styles.premiumContinueButton}
+          onPress={() => onContinue(selectedPlan)}
+          disabled={isAuthBusy}
+        >
+          <Text style={styles.premiumContinueText}>
+            {isAuthBusy
+              ? "Working..."
+              : selectedPlan === "annual"
+                ? "Continue - $79.99/year"
+                : "Continue - $7.99/month"}
+          </Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }

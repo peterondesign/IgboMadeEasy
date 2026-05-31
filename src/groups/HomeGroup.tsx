@@ -25,7 +25,7 @@ export default function HomeGroup({ onGetStarted, styles }: HomeGroupProps) {
             accessibilityRole="button"
             onPress={onGetStarted}
           >
-            <Text style={styles.buttonText}>Get Started</Text>
+            <Text style={styles.buttonText}>Log in</Text>
           </Pressable>
         </View>
 

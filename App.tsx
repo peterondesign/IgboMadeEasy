@@ -90,18 +90,35 @@ import LessonGroup from "./src/groups/LessonGroup";
 import {
   CompletedLessonScreen,
   LessonsScreen,
+  ProfileScreen,
+  PremiumScreen,
   QuizScreen,
   StreakScreen,
 } from "./src/app/screens";
 import { styles } from "./src/app/styles";
 import {
+  getLastPremiumAccessReason,
   logoutPremiumAccess,
+  PREMIUM_ANNUAL_PRODUCT_ID,
+  PREMIUM_MONTHLY_PRODUCT_ID,
   purchasePremiumAccess,
   restorePremiumPurchases,
   restorePremiumStatus,
 } from "./src/services/premiumPurchase";
+import {
+  clearStoredAuthSession,
+  getStoredAuthSession,
+  loginWithAuth0,
+} from "./src/services/auth";
 
-type ScreenName = "home" | "lessons" | "quiz" | "completed" | "streak";
+type ScreenName =
+  | "home"
+  | "lessons"
+  | "quiz"
+  | "completed"
+  | "streak"
+  | "premium"
+  | "profile";
 type AppGroup = "home" | "lesson" | "game";
 type FeedbackState = "correct" | "wrong" | null;
 
@@ -174,10 +191,6 @@ const FOOD_COOKING_STORY_DIALOGUE = require("./assets/audio/food-cooking/story-d
 const FAMILY_PEOPLE_STORY_DIALOGUE = require("./assets/audio/family-people/story-dialogue.json") as StoryDialogueEntry[];
 const SCHOOL_WORK_STORY_DIALOGUE = require("./assets/audio/school-work/story-dialogue.json") as StoryDialogueEntry[];
 const TRANSPORTATION_STORY_DIALOGUE = require("./assets/audio/transportation/story-dialogue.json") as StoryDialogueEntry[];
-
-function isValidEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-}
 
 const GREETINGS_TRANSLATIONS = require("./assets/audio/greetings/translations.json") as Record<
   string,
@@ -753,8 +766,13 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
   const [isAuthBusy, setIsAuthBusy] = useState(false);
-  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [signupEmail, setSignupEmail] = useState("");
+  const [authUserName, setAuthUserName] = useState<string | undefined>(
+    undefined
+  );
+  const [authUserEmail, setAuthUserEmail] = useState<string | undefined>(
+    undefined
+  );
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const isAudioLoadingRef = useRef(false);
@@ -777,7 +795,6 @@ export default function App() {
 
         const unlocked = savedPremium === "true";
         setHasPremiumAccess(unlocked);
-        setIsLoggedIn(unlocked);
 
         if (savedEmail) {
           setSignupEmail(savedEmail);
@@ -785,7 +802,6 @@ export default function App() {
           try {
             const hasActiveSubscription = await restorePremiumStatus(savedEmail);
             setHasPremiumAccess(hasActiveSubscription);
-            setIsLoggedIn(hasActiveSubscription);
 
             await AsyncStorage.setItem(
               PREMIUM_UNLOCK_STORAGE_KEY,
@@ -797,11 +813,27 @@ export default function App() {
         }
       } catch {
         setHasPremiumAccess(false);
-        setIsLoggedIn(false);
       }
     };
 
     void restorePremiumState();
+  }, []);
+
+  useEffect(() => {
+    const restoreAuthState = async () => {
+      try {
+        const session = await getStoredAuthSession();
+        setIsLoggedIn(Boolean(session?.accessToken));
+        setAuthUserName(session?.userName);
+        setAuthUserEmail(session?.userEmail);
+      } catch {
+        setIsLoggedIn(false);
+        setAuthUserName(undefined);
+        setAuthUserEmail(undefined);
+      }
+    };
+
+    void restoreAuthState();
   }, []);
 
   useEffect(() => {
@@ -1058,8 +1090,33 @@ export default function App() {
       return;
     }
 
-    setIsUpgradeModalOpen(true);
+    setScreen("premium");
   }, [hasPremiumAccess, isAuthBusy]);
+
+  const handleAuthLogin = useCallback(async () => {
+    if (isAuthBusy) {
+      return;
+    }
+
+    try {
+      const session = await loginWithAuth0();
+      if (!session) {
+        return;
+      }
+
+      setIsLoggedIn(true);
+      setAuthUserName(session.userName);
+      setAuthUserEmail(session.userEmail);
+      setScreen("lessons");
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "Login failed. Try again.";
+
+      Alert.alert("Login unavailable", message);
+    }
+  }, [isAuthBusy]);
 
   const handleLogout = useCallback(async () => {
     if (isAuthBusy) {
@@ -1073,40 +1130,51 @@ export default function App() {
         PREMIUM_UNLOCK_STORAGE_KEY,
         PREMIUM_EMAIL_STORAGE_KEY,
       ]);
+      await clearStoredAuthSession();
       await logoutPremiumAccess();
       setSignupEmail("");
       setIsLoggedIn(false);
       setHasPremiumAccess(false);
-      setIsUpgradeModalOpen(false);
+      setAuthUserName(undefined);
+      setAuthUserEmail(undefined);
+      setScreen("home");
     } finally {
       setIsAuthBusy(false);
     }
   }, [isAuthBusy]);
 
-  const handleUpgradeSubmit = useCallback(async () => {
-    const trimmedEmail = signupEmail.trim().toLowerCase();
-    if (!isValidEmail(trimmedEmail)) {
-      Alert.alert("Enter a valid email", "Please provide a valid email address.");
-      return;
-    }
-
+  const handlePremiumPurchase = useCallback(async (plan: "annual" | "monthly") => {
     setIsAuthBusy(true);
 
     try {
-      await AsyncStorage.setItem(PREMIUM_EMAIL_STORAGE_KEY, trimmedEmail);
-      const hasPremium = await purchasePremiumAccess(trimmedEmail);
+      const trimmedEmail = signupEmail.trim().toLowerCase();
+      const productId =
+        plan === "annual"
+          ? PREMIUM_ANNUAL_PRODUCT_ID
+          : PREMIUM_MONTHLY_PRODUCT_ID;
+      const hasPremium = await purchasePremiumAccess(trimmedEmail || undefined, productId);
 
       if (!hasPremium) {
         throw new Error(
-          "Purchase completed but premium entitlement is not active yet."
+          "Purchase completed but premium access is not active yet."
         );
       }
 
-      setSignupEmail(trimmedEmail);
+      if (__DEV__) {
+        Alert.alert(
+          "Premium debug",
+          `Access matched by ${getLastPremiumAccessReason()}`
+        );
+      }
+
+      if (trimmedEmail) {
+        await AsyncStorage.setItem(PREMIUM_EMAIL_STORAGE_KEY, trimmedEmail);
+        setSignupEmail(trimmedEmail);
+      }
       setHasPremiumAccess(true);
       setIsLoggedIn(true);
-      setIsUpgradeModalOpen(false);
       await AsyncStorage.setItem(PREMIUM_UNLOCK_STORAGE_KEY, "true");
+      setScreen("lessons");
       Alert.alert("Premium active", "Your subscription is now active.");
     } catch (error) {
       const message =
@@ -1128,20 +1196,11 @@ export default function App() {
       return;
     }
 
-    const trimmedEmail = signupEmail.trim().toLowerCase();
-    if (!isValidEmail(trimmedEmail)) {
-      Alert.alert(
-        "Email required",
-        "Enter the same email you used for Premium, then tap Restore Purchases again."
-      );
-      setIsUpgradeModalOpen(true);
-      return;
-    }
-
     setIsAuthBusy(true);
 
     try {
-      const restored = await restorePremiumPurchases(trimmedEmail);
+      const trimmedEmail = signupEmail.trim().toLowerCase();
+      const restored = await restorePremiumPurchases(trimmedEmail || undefined);
 
       if (!restored) {
         Alert.alert(
@@ -1151,9 +1210,17 @@ export default function App() {
         return;
       }
 
+      if (__DEV__) {
+        Alert.alert(
+          "Premium debug",
+          `Access matched by ${getLastPremiumAccessReason()}`
+        );
+      }
+
       setHasPremiumAccess(true);
       setIsLoggedIn(true);
       await AsyncStorage.setItem(PREMIUM_UNLOCK_STORAGE_KEY, "true");
+      setScreen("lessons");
       Alert.alert("Premium restored", "Your Premium access is active again.");
     } catch (error) {
       const message =
@@ -1306,11 +1373,13 @@ export default function App() {
     return null;
   }
 
+  const profileEmailForUi = authUserEmail ?? signupEmail;
+
   const currentGroup: AppGroup =
     screen === "home" ? "home" : screen === "quiz" ? "game" : "lesson";
 
   if (currentGroup === "home") {
-    return <HomeGroup onGetStarted={() => setScreen("lessons")} styles={styles} />;
+    return <HomeGroup onGetStarted={handleAuthLogin} styles={styles} />;
   }
 
   if (currentGroup === "lesson") {
@@ -1325,6 +1394,22 @@ export default function App() {
               streakCount={streakCount}
               onBack={() => setScreen("lessons")}
             />
+          ) : screen === "premium" ? (
+            <PremiumScreen
+              onBack={() => setScreen("lessons")}
+              onContinue={handlePremiumPurchase}
+              onRestorePurchases={handleRestorePurchases}
+              isAuthBusy={isAuthBusy}
+            />
+          ) : screen === "profile" ? (
+            <ProfileScreen
+              userDisplayName={authUserName}
+              userEmail={profileEmailForUi || undefined}
+              onBack={() => setScreen("lessons")}
+              onLogout={handleLogout}
+              onRestorePurchases={handleRestorePurchases}
+              isAuthBusy={isAuthBusy}
+            />
           ) : (
             <LessonsScreen
               lessons={lessons}
@@ -1334,18 +1419,11 @@ export default function App() {
               hasPremiumAccess={hasPremiumAccess}
               isAuthBusy={isAuthBusy}
               onLoginPress={handleLoginPress}
-              isUpgradeModalOpen={isUpgradeModalOpen}
-              signupEmail={signupEmail}
-              onSignupEmailChange={setSignupEmail}
-              onCloseUpgradeModal={() => {
-                if (!isAuthBusy) {
-                  setIsUpgradeModalOpen(false);
-                }
-              }}
-              onUpgradeSubmit={handleUpgradeSubmit}
+              signupEmail={profileEmailForUi}
               onLogoutPress={handleLogout}
               onRestorePurchasesPress={handleRestorePurchases}
               onOpenStreakScreen={() => setScreen("streak")}
+              onOpenProfileScreen={() => setScreen("profile")}
               onStartLesson={startLesson}
             />
           )
@@ -1402,18 +1480,11 @@ export default function App() {
       hasPremiumAccess={hasPremiumAccess}
       isAuthBusy={isAuthBusy}
       onLoginPress={handleLoginPress}
-      isUpgradeModalOpen={isUpgradeModalOpen}
-      signupEmail={signupEmail}
-      onSignupEmailChange={setSignupEmail}
-      onCloseUpgradeModal={() => {
-        if (!isAuthBusy) {
-          setIsUpgradeModalOpen(false);
-        }
-      }}
-      onUpgradeSubmit={handleUpgradeSubmit}
+      signupEmail={profileEmailForUi}
       onLogoutPress={handleLogout}
       onRestorePurchasesPress={handleRestorePurchases}
       onOpenStreakScreen={() => setScreen("streak")}
+      onOpenProfileScreen={() => setScreen("profile")}
       onStartLesson={startLesson}
     />
   );
