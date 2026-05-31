@@ -2,6 +2,7 @@
   "expo": {
     "name": "IgboMadeEasy",
     "slug": "igbo-made-easy",
+    "owner": "petedgt",
     "scheme": "igbomadeeasy",
     "version": "1.0.0",
     "icon": "./assets/IgboMadeEasy_Logo.png",
@@ -40,7 +41,10 @@
     },
     "plugins": [
       "expo-font",
-      "expo-audio"
+      "expo-audio",
+      "expo-secure-store",
+      "expo-web-browser",
+      "react-native-purchases"
     ]
   }
 }

@@ -13,6 +13,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { Alert } from "react-native";
 import { StatusBar } from "react-native";
 import {
   Pressable,
@@ -79,6 +80,18 @@ import { VISUAL_KEY_OVERRIDES_BY_IGBO } from "./src/data/illustrationOverrides";
 import GameGroup from "./src/groups/GameGroup";
 import HomeGroup from "./src/groups/HomeGroup";
 import LessonGroup from "./src/groups/LessonGroup";
+import {
+  CompletedLessonScreen,
+  LessonsScreen,
+  QuizScreen,
+} from "./src/app/screens";
+import { styles } from "./src/app/styles";
+import {
+  logoutPremiumAccess,
+  purchasePremiumAccess,
+  restorePremiumPurchases,
+  restorePremiumStatus,
+} from "./src/services/premiumPurchase";
 
 type ScreenName = "home" | "lessons" | "quiz" | "completed";
 type AppGroup = "home" | "lesson" | "game";
@@ -125,6 +138,13 @@ type RemovableSubscription = {
 };
 
 const STORAGE_KEY = "igbo-made-easy.lesson-progress.v1";
+const PREMIUM_UNLOCK_STORAGE_KEY = "igbo-made-easy.premium-unlock.v1";
+const PREMIUM_EMAIL_STORAGE_KEY = "igbo-made-easy.premium-email.v1";
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
 const GREETINGS_TRANSLATIONS = require("./assets/audio/greetings/translations.json") as Record<
   string,
   string
@@ -659,6 +679,11 @@ export default function App() {
   const [feedback, setFeedback] = useState<FeedbackState>(null);
   const [isHintModalOpen, setIsHintModalOpen] = useState(false);
   const [audioPlaybackRate, setAudioPlaybackRate] = useState<0.5 | 1>(1);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
+  const [isAuthBusy, setIsAuthBusy] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [signupEmail, setSignupEmail] = useState("");
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const isAudioLoadingRef = useRef(false);
@@ -670,6 +695,43 @@ export default function App() {
   const feedbackPlayerRef = useRef<ReturnType<typeof createAudioPlayer> | null>(
     null
   );
+
+  useEffect(() => {
+    const restorePremiumState = async () => {
+      try {
+        const [savedPremium, savedEmail] = await Promise.all([
+          AsyncStorage.getItem(PREMIUM_UNLOCK_STORAGE_KEY),
+          AsyncStorage.getItem(PREMIUM_EMAIL_STORAGE_KEY),
+        ]);
+
+        const unlocked = savedPremium === "true";
+        setHasPremiumAccess(unlocked);
+        setIsLoggedIn(unlocked);
+
+        if (savedEmail) {
+          setSignupEmail(savedEmail);
+
+          try {
+            const hasActiveSubscription = await restorePremiumStatus(savedEmail);
+            setHasPremiumAccess(hasActiveSubscription);
+            setIsLoggedIn(hasActiveSubscription);
+
+            await AsyncStorage.setItem(
+              PREMIUM_UNLOCK_STORAGE_KEY,
+              hasActiveSubscription ? "true" : "false"
+            );
+          } catch {
+            // Keep locally cached premium state if remote status cannot load.
+          }
+        }
+      } catch {
+        setHasPremiumAccess(false);
+        setIsLoggedIn(false);
+      }
+    };
+
+    void restorePremiumState();
+  }, []);
 
   useEffect(() => {
     const restoreProgress = async () => {
@@ -862,8 +924,10 @@ export default function App() {
 
   const startLesson = (lessonId: string) => {
     const lesson = lessons.find((item) => item.id === lessonId);
+    const lessonIndex = lessons.findIndex((item) => item.id === lessonId);
+    const isPremiumLocked = lessonIndex >= 5 && !hasPremiumAccess;
 
-    if (!lesson || lesson.totalQuestions === 0) {
+    if (!lesson || lesson.totalQuestions === 0 || isPremiumLocked) {
       return;
     }
 
@@ -912,6 +976,124 @@ export default function App() {
     setFeedback(null);
     setIsHintModalOpen(false);
   };
+
+  const handleLoginPress = useCallback(() => {
+    if (isAuthBusy) {
+      return;
+    }
+
+    if (hasPremiumAccess) {
+      Alert.alert("Premium", "Your premium access is already active.");
+      return;
+    }
+
+    setIsUpgradeModalOpen(true);
+  }, [hasPremiumAccess, isAuthBusy]);
+
+  const handleLogout = useCallback(async () => {
+    if (isAuthBusy) {
+      return;
+    }
+
+    setIsAuthBusy(true);
+
+    try {
+      await AsyncStorage.multiRemove([
+        PREMIUM_UNLOCK_STORAGE_KEY,
+        PREMIUM_EMAIL_STORAGE_KEY,
+      ]);
+      await logoutPremiumAccess();
+      setSignupEmail("");
+      setIsLoggedIn(false);
+      setHasPremiumAccess(false);
+      setIsUpgradeModalOpen(false);
+    } finally {
+      setIsAuthBusy(false);
+    }
+  }, [isAuthBusy]);
+
+  const handleUpgradeSubmit = useCallback(async () => {
+    const trimmedEmail = signupEmail.trim().toLowerCase();
+    if (!isValidEmail(trimmedEmail)) {
+      Alert.alert("Enter a valid email", "Please provide a valid email address.");
+      return;
+    }
+
+    setIsAuthBusy(true);
+
+    try {
+      await AsyncStorage.setItem(PREMIUM_EMAIL_STORAGE_KEY, trimmedEmail);
+      const hasPremium = await purchasePremiumAccess(trimmedEmail);
+
+      if (!hasPremium) {
+        throw new Error(
+          "Purchase completed but premium entitlement is not active yet."
+        );
+      }
+
+      setSignupEmail(trimmedEmail);
+      setHasPremiumAccess(true);
+      setIsLoggedIn(true);
+      setIsUpgradeModalOpen(false);
+      await AsyncStorage.setItem(PREMIUM_UNLOCK_STORAGE_KEY, "true");
+      Alert.alert("Premium active", "Your subscription is now active.");
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "Upgrade failed. Try again.";
+      const friendlyMessage =
+        message.includes("No subscription products are currently available")
+          ? "No Apple subscription product is available yet. Configure RevenueCat offering + App Store product, then try again."
+          : message;
+      Alert.alert("Upgrade unavailable", friendlyMessage);
+    } finally {
+      setIsAuthBusy(false);
+    }
+  }, [signupEmail]);
+
+  const handleRestorePurchases = useCallback(async () => {
+    if (isAuthBusy) {
+      return;
+    }
+
+    const trimmedEmail = signupEmail.trim().toLowerCase();
+    if (!isValidEmail(trimmedEmail)) {
+      Alert.alert(
+        "Email required",
+        "Enter the same email you used for Premium, then tap Restore Purchases again."
+      );
+      setIsUpgradeModalOpen(true);
+      return;
+    }
+
+    setIsAuthBusy(true);
+
+    try {
+      const restored = await restorePremiumPurchases(trimmedEmail);
+
+      if (!restored) {
+        Alert.alert(
+          "Nothing to restore",
+          "No active premium purchase was found for this account."
+        );
+        return;
+      }
+
+      setHasPremiumAccess(true);
+      setIsLoggedIn(true);
+      await AsyncStorage.setItem(PREMIUM_UNLOCK_STORAGE_KEY, "true");
+      Alert.alert("Premium restored", "Your Premium access is active again.");
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "Restore failed. Try again.";
+      Alert.alert("Restore unavailable", message);
+    } finally {
+      setIsAuthBusy(false);
+    }
+  }, [isAuthBusy, signupEmail]);
 
   const playActiveAudio = useCallback(async () => {
     if (
@@ -1064,6 +1246,21 @@ export default function App() {
             lessons={lessons}
             overallProgress={overallProgress}
             streakCount={streakCount}
+            isLoggedIn={isLoggedIn}
+            hasPremiumAccess={hasPremiumAccess}
+            isAuthBusy={isAuthBusy}
+            onLoginPress={handleLoginPress}
+            isUpgradeModalOpen={isUpgradeModalOpen}
+            signupEmail={signupEmail}
+            onSignupEmailChange={setSignupEmail}
+            onCloseUpgradeModal={() => {
+              if (!isAuthBusy) {
+                setIsUpgradeModalOpen(false);
+              }
+            }}
+            onUpgradeSubmit={handleUpgradeSubmit}
+            onLogoutPress={handleLogout}
+            onRestorePurchasesPress={handleRestorePurchases}
             onStartLesson={startLesson}
           />
         )}
@@ -1115,676 +1312,23 @@ export default function App() {
       lessons={lessons}
       overallProgress={overallProgress}
       streakCount={streakCount}
+      isLoggedIn={isLoggedIn}
+      hasPremiumAccess={hasPremiumAccess}
+      isAuthBusy={isAuthBusy}
+      onLoginPress={handleLoginPress}
+      isUpgradeModalOpen={isUpgradeModalOpen}
+      signupEmail={signupEmail}
+      onSignupEmailChange={setSignupEmail}
+      onCloseUpgradeModal={() => {
+        if (!isAuthBusy) {
+          setIsUpgradeModalOpen(false);
+        }
+      }}
+      onUpgradeSubmit={handleUpgradeSubmit}
+      onLogoutPress={handleLogout}
+      onRestorePurchasesPress={handleRestorePurchases}
       onStartLesson={startLesson}
     />
-  );
-}
-
-function LessonsScreen({
-  lessons,
-  overallProgress,
-  streakCount,
-  onStartLesson,
-}: {
-  lessons: Lesson[];
-  overallProgress: number;
-  streakCount: number;
-  onStartLesson: (lessonId: string) => void;
-}) {
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#111111" />
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.lessonsContent}
-        stickyHeaderIndices={[0]}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.lessonsHeaderRow}>
-          <View style={styles.metricWrap}>
-            <FireIllustration width={20} height={20} />
-            <Text style={styles.metricText}>{streakCount}</Text>
-          </View>
-
-          <View style={styles.lessonsHeaderCenter}>
-            <Image
-              source={require("./assets/illustrations/logo-with-text.png")}
-              style={styles.lessonsHeaderLogo}
-              resizeMode="contain"
-            />
-          </View>
-
-          <View style={styles.metricWrap}>
-            <PlantIllustration width={20} height={20} />
-            <Text style={styles.metricText}>{toPercent(overallProgress)}%</Text>
-          </View>
-        </View>
-
-        <View style={styles.lessonList}>
-          {lessons.map((lesson, index) => (
-            <LessonCard
-              key={lesson.id}
-              lesson={lesson}
-              lessonNumber={index + 1}
-              isLocked={lesson.totalQuestions === 0}
-              onStart={() => onStartLesson(lesson.id)}
-            />
-          ))}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-function QuizScreen({
-  lesson,
-  question,
-  userAnswer,
-  onAnswerChange,
-  onBack,
-  onCheckAnswer,
-  feedback,
-  onContinue,
-  showSpeaker,
-  onPlayAudio,
-  audioPlaybackRate,
-  onToggleAudioPlaybackRate,
-  isAudioLoading,
-  isAudioPlaying,
-  isHintModalOpen,
-  onOpenHint,
-  onCloseHint,
-  hintEntries,
-  choices,
-}: {
-  lesson: Lesson;
-  question: Question;
-  userAnswer: string;
-  onAnswerChange: (value: string) => void;
-  onBack: () => void;
-  onCheckAnswer: () => void;
-  feedback: FeedbackState;
-  onContinue: () => void;
-  showSpeaker: boolean;
-  onPlayAudio: () => void;
-  audioPlaybackRate: 0.5 | 1;
-  onToggleAudioPlaybackRate: () => void;
-  isAudioLoading: boolean;
-  isAudioPlaying: boolean;
-  isHintModalOpen: boolean;
-  onOpenHint: () => void;
-  onCloseHint: () => void;
-  hintEntries: Array<{ word: string; meaning: string }>;
-  choices: ChoiceOption[];
-}) {
-  const progress =
-    lesson.totalQuestions === 0
-      ? 0
-      : lesson.answeredQuestions / lesson.totalQuestions;
-  const isSentenceBuilder = question.sentenceBuilder != null;
-  const [slottedWords, setSlottedWords] = useState<string[]>([]);
-  const [dragFromIndex, setDragFromIndex] = useState<number | null>(null);
-
-  const sentenceBuilder = question.sentenceBuilder;
-  const sentenceTargetWords = sentenceBuilder?.targetWords ?? [];
-  const sentenceBankWords = sentenceBuilder?.bankWords ?? [];
-  const isDenseSentenceLayout =
-    isSentenceBuilder &&
-    (sentenceTargetWords.length >= 5 ||
-      sentenceBankWords.length >= 8 ||
-      (sentenceBuilder?.sourceSentence.length ?? 0) >= 34);
-  const isMultipleChoice = choices.length > 0;
-  const isSpeakerDisabled = isAudioLoading || isAudioPlaying;
-  const QuestionIllustration =
-    question.visualKey.length > 0 ? QUESTION_VISUALS[question.visualKey] : null;
-  const promptText = isMultipleChoice ? "What do you hear?" : question.prompt;
-  const hasInput = isSentenceBuilder
-    ? slottedWords.every((word) => word.trim().length > 0)
-    : userAnswer.trim().length > 0;
-
-  const sentenceBankWordCounts = useMemo(
-    () => countWords(sentenceBankWords),
-    [sentenceBankWords]
-  );
-  const slottedWordCounts = useMemo(() => countWords(slottedWords), [slottedWords]);
-
-  const placeWord = useCallback(
-    (word: string) => {
-      setSlottedWords((current) => {
-        const next = [...current];
-
-        const firstOpenIndex = next.findIndex((slotWord) => slotWord.length === 0);
-        if (firstOpenIndex !== -1) {
-          next[firstOpenIndex] = word;
-          return next;
-        }
-
-        // Smart replacement: when full, replace the first incorrect slot.
-        const mismatchIndex = next.findIndex(
-          (slotWord, index) =>
-            normalizeAnswer(slotWord) !==
-            normalizeAnswer(sentenceTargetWords[index] ?? "")
-        );
-
-        if (mismatchIndex !== -1) {
-          next[mismatchIndex] = word;
-          return next;
-        }
-
-        next[next.length - 1] = word;
-        return next;
-      });
-
-      setDragFromIndex(null);
-    },
-    [sentenceTargetWords]
-  );
-
-  const handleSlotPress = useCallback(
-    (slotIndex: number) => {
-      if (dragFromIndex != null) {
-        if (dragFromIndex === slotIndex) {
-          setDragFromIndex(null);
-          return;
-        }
-
-        setSlottedWords((current) => {
-          const next = [...current];
-          [next[dragFromIndex], next[slotIndex]] = [
-            next[slotIndex],
-            next[dragFromIndex],
-          ];
-          return next;
-        });
-        setDragFromIndex(null);
-        return;
-      }
-
-      if (slottedWords[slotIndex]?.length) {
-        setSlottedWords((current) => {
-          const next = [...current];
-          next[slotIndex] = "";
-          return next;
-        });
-      }
-    },
-    [dragFromIndex, slottedWords]
-  );
-
-  const handleSlotLongPress = useCallback(
-    (slotIndex: number) => {
-      if (!slottedWords[slotIndex]?.length) {
-        return;
-      }
-
-      setDragFromIndex(slotIndex);
-    },
-    [slottedWords]
-  );
-
-  useEffect(() => {
-    if (!isSentenceBuilder) {
-      setSlottedWords([]);
-      setDragFromIndex(null);
-      return;
-    }
-
-    setSlottedWords(Array(sentenceTargetWords.length).fill(""));
-    setDragFromIndex(null);
-    onAnswerChange("");
-  }, [isSentenceBuilder, onAnswerChange, question.answer, sentenceTargetWords.length]);
-
-  useEffect(() => {
-    if (!isSentenceBuilder) {
-      return;
-    }
-
-    onAnswerChange(slottedWords.join(" ").trim());
-  }, [isSentenceBuilder, onAnswerChange, slottedWords]);
-
-  useEffect(() => {
-    if (showSpeaker) {
-      onPlayAudio();
-    }
-  }, [question.answer, showSpeaker, onPlayAudio]);
-
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#111111" />
-
-      <View style={styles.quizFlowContent}>
-        <View style={styles.quizTopRow}>
-        <Pressable
-          onPress={onBack}
-          style={styles.quizBackIconButton}
-          hitSlop={12}
-          accessibilityRole="button"
-          accessibilityLabel="Back to lessons"
-        >
-          <BackIcon width={22} height={22} />
-        </Pressable>
-
-        <View style={styles.quizHeaderProgressTrack}>
-          <View
-            style={[styles.quizHeaderProgressFill, { width: `${progress * 100}%` }]}
-          />
-        </View>
-        </View>
-
-        {showSpeaker && (
-          <View
-            style={[
-              styles.speakerControlsRow,
-              isDenseSentenceLayout && styles.speakerControlsRowCompact,
-            ]}
-          >
-            <Pressable
-              onPress={onPlayAudio}
-              style={[
-                styles.speakerButton,
-                isSpeakerDisabled && styles.speakerButtonDisabled,
-              ]}
-              disabled={isSpeakerDisabled}
-              hitSlop={14}
-              accessibilityRole="button"
-              accessibilityLabel={
-                isAudioLoading
-                  ? "Audio loading"
-                  : isAudioPlaying
-                    ? "Audio playing"
-                    : "Play audio"
-              }
-            >
-              {isAudioLoading ? (
-                <View style={styles.speakerSkeletonGlyph} />
-              ) : (
-                <SpeakerIcon width={34} height={34} />
-              )}
-            </Pressable>
-
-            <Pressable
-              onPress={onToggleAudioPlaybackRate}
-              style={[
-                styles.speedToggleButton,
-                isSpeakerDisabled && styles.speedToggleButtonDisabled,
-              ]}
-              disabled={isSpeakerDisabled}
-              hitSlop={12}
-              accessibilityRole="button"
-              accessibilityLabel="Toggle playback speed"
-            >
-              <Text style={styles.speedToggleText}>
-                {audioPlaybackRate === 1 ? "1x" : "0.5x"}
-              </Text>
-            </Pressable>
-          </View>
-        )}
-
-        <View
-          style={[
-            styles.quizPromptRow,
-            isDenseSentenceLayout && styles.quizPromptRowCompact,
-          ]}
-        >
-          <Text
-            style={[
-              styles.quizPromptWord,
-              isDenseSentenceLayout && styles.quizPromptWordCompact,
-            ]}
-          >
-            {promptText}
-          </Text>
-          <Pressable
-            onPress={onOpenHint}
-            style={styles.hintIconButton}
-            hitSlop={14}
-            accessibilityRole="button"
-            accessibilityLabel="Open hint"
-          >
-            <HintIcon width={18} height={18} />
-          </Pressable>
-        </View>
-
-        {QuestionIllustration ? (
-          <View style={styles.quizIllustrationSlot}>
-            <QuestionIllustration width={120} height={120} />
-          </View>
-        ) : null}
-
-        {isSentenceBuilder && sentenceBuilder ? (
-          <View
-            style={[
-              styles.sentenceBuilderWrap,
-              isDenseSentenceLayout && styles.sentenceBuilderWrapCompact,
-            ]}
-          >
-            <View
-              style={[
-                styles.sentenceSourceCard,
-                isDenseSentenceLayout && styles.sentenceSourceCardCompact,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.sentenceSourceText,
-                  getDynamicSentencePromptStyle(
-                    sentenceBuilder.sourceSentence,
-                    isDenseSentenceLayout
-                  ),
-                ]}
-                numberOfLines={2}
-                adjustsFontSizeToFit
-                minimumFontScale={0.72}
-              >
-                {sentenceBuilder.sourceSentence}
-              </Text>
-            </View>
-
-            <View
-              style={[styles.slotGrid, isDenseSentenceLayout && styles.slotGridCompact]}
-            >
-              {sentenceTargetWords.map((_, slotIndex) => {
-                const slotWord = slottedWords[slotIndex] ?? "";
-                const isActive = dragFromIndex === slotIndex;
-
-                return (
-                  <Pressable
-                    key={`slot-${slotIndex}`}
-                    onPress={() => handleSlotPress(slotIndex)}
-                    onLongPress={() => handleSlotLongPress(slotIndex)}
-                    delayLongPress={170}
-                    hitSlop={14}
-                    style={[
-                      styles.slotChip,
-                      isDenseSentenceLayout && styles.slotChipCompact,
-                      slotWord.length > 0 && styles.slotChipFilled,
-                      isActive && styles.slotChipActive,
-                    ]}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Sentence slot ${slotIndex + 1}`}
-                  >
-                    <Text
-                      style={[
-                        styles.slotChipText,
-                        isDenseSentenceLayout && styles.slotChipTextCompact,
-                        slotWord.length > 0 && styles.slotChipTextFilled,
-                        getDynamicOptionTextStyle(
-                          slotWord.length > 0
-                            ? slotWord
-                            : sentenceTargetWords[slotIndex] ?? "",
-                          isDenseSentenceLayout
-                        ),
-                      ]}
-                    >
-                      {slotWord.length > 0 ? slotWord : "_"}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-            <View
-              style={[
-                styles.wordBankWrap,
-                isDenseSentenceLayout && styles.wordBankWrapCompact,
-              ]}
-            >
-              {sentenceBankWords.map((word, index) => {
-                const maxWordCount = sentenceBankWordCounts[word] ?? 0;
-                const usedWordCount = slottedWordCounts[word] ?? 0;
-                const isDisabled = usedWordCount >= maxWordCount;
-
-                return (
-                  <Pressable
-                    key={`bank-${word}-${index}`}
-                    onPress={() => placeWord(word)}
-                    disabled={isDisabled}
-                    hitSlop={14}
-                    style={[
-                      styles.wordBankChip,
-                      isDenseSentenceLayout && styles.wordBankChipCompact,
-                      isDisabled && styles.wordBankChipDisabled,
-                    ]}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Use word ${word}`}
-                  >
-                    <Text
-                      style={[
-                        styles.wordBankChipText,
-                        isDenseSentenceLayout && styles.wordBankChipTextCompact,
-                        isDisabled && styles.wordBankChipTextDisabled,
-                        getDynamicOptionTextStyle(word, isDenseSentenceLayout),
-                      ]}
-                    >
-                      {word}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </View>
-        ) : isMultipleChoice ? (
-          <View style={styles.multipleChoiceList}>
-            {choices.map((choice) => {
-              const isSelected = userAnswer === choice.label;
-
-              return (
-                <Pressable
-                  key={`${choice.label}-${choice.translation}`}
-                  onPress={() => onAnswerChange(choice.label)}
-                  style={[
-                    styles.choiceCard,
-                    isSelected && styles.choiceCardSelected,
-                  ]}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Choose ${choice.label}`}
-                >
-                  <Text
-                    style={[
-                      styles.choiceLabel,
-                      isSelected && styles.choiceLabelSelected,
-                    ]}
-                  >
-                    {choice.label}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.choiceTranslation,
-                      isSelected && styles.choiceTranslationSelected,
-                    ]}
-                  >
-                    {choice.translation}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ) : null}
-
-        {hasInput && feedback == null && <View style={styles.quizBottomSpacer} />}
-
-        {hasInput && feedback == null && (
-          <View style={styles.checkButtonFixedWrap}>
-            <Pressable
-              style={[
-                styles.checkButton,
-                isDenseSentenceLayout && styles.checkButtonCompact,
-              ]}
-              hitSlop={12}
-              accessibilityRole="button"
-              onPress={onCheckAnswer}
-            >
-              <Text
-                style={[
-                  styles.checkButtonText,
-                  isDenseSentenceLayout && styles.checkButtonTextCompact,
-                ]}
-              >
-                Check
-              </Text>
-            </Pressable>
-          </View>
-        )}
-      </View>
-
-      {feedback != null && (
-        <View
-          style={[
-            styles.feedbackSheet,
-            feedback === "correct"
-              ? styles.feedbackSheetCorrect
-              : styles.feedbackSheetWrong,
-          ]}
-        >
-          <View style={styles.feedbackHeader}>
-            <View
-              style={[
-                styles.feedbackIconCircle,
-                feedback === "correct"
-                  ? styles.feedbackIconCircleCorrect
-                  : styles.feedbackIconCircleWrong,
-              ]}
-            >
-              <Text style={styles.feedbackIconText}>
-                {feedback === "correct" ? "✓" : "✕"}
-              </Text>
-            </View>
-            <Text
-              style={[
-                styles.feedbackTitle,
-                feedback === "correct"
-                  ? styles.feedbackTitleCorrect
-                  : styles.feedbackTitleWrong,
-              ]}
-            >
-              {feedback === "correct" ? "Correct" : "Incorrect"}
-            </Text>
-          </View>
-
-          {feedback === "wrong" && (
-            <Text style={styles.feedbackAnswerText}>
-              The correct answer is "{question.answer}".
-            </Text>
-          )}
-
-          <Pressable
-            style={[
-              styles.feedbackAction,
-              feedback === "correct"
-                ? styles.feedbackActionCorrect
-                : styles.feedbackActionWrong,
-            ]}
-            onPress={onContinue}
-            accessibilityRole="button"
-          >
-            <Text style={styles.feedbackActionText}>
-              {feedback === "correct" ? "Continue" : "Got it"}
-            </Text>
-          </Pressable>
-        </View>
-      )}
-
-      <Modal
-        visible={isHintModalOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={onCloseHint}
-      >
-        <View style={styles.hintModalBackdrop}>
-          <View style={styles.hintModalCard}>
-            <Text style={styles.hintModalTitle}>Hint</Text>
-
-            <ScrollView
-              style={styles.hintModalList}
-              showsVerticalScrollIndicator={false}
-            >
-              {hintEntries.map((entry) => (
-                <View key={entry.word} style={styles.hintModalRow}>
-                  <Text style={styles.hintWord}>{entry.word}</Text>
-                  <Text style={styles.hintMeaning}>{entry.meaning}</Text>
-                </View>
-              ))}
-            </ScrollView>
-
-            <Pressable onPress={onCloseHint} style={styles.hintModalCloseButton}>
-              <Text style={styles.hintModalCloseText}>Close</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
-    </SafeAreaView>
-  );
-}
-
-function CompletedLessonScreen({
-  lessonTitle,
-  onRestart,
-  onContinue,
-}: {
-  lessonTitle: string;
-  onRestart: () => void;
-  onContinue: () => void;
-}) {
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#111111" />
-      <View style={styles.completedContent}>
-                <Text style={styles.completedSubtitle}>Lesson: {lessonTitle}</Text>
-        <Text style={styles.completedTitle}>You completed this lesson</Text>
-
-        <View style={styles.completedIllustrationWrap}>
-          <CompletionIllustration width="100%" height="100%" />
-        </View>
-
-        <Pressable style={styles.restartButton} onPress={onRestart}>
-          <Text style={styles.restartButtonText}>Restart</Text>
-        </Pressable>
-
-        <Pressable style={styles.continueButton} onPress={onContinue}>
-          <Text style={styles.continueButtonText}>Continue</Text>
-        </Pressable>
-      </View>
-    </SafeAreaView>
-  );
-}
-
-function LessonCard({
-  lesson,
-  lessonNumber,
-  isLocked,
-  onStart,
-}: {
-  lesson: Lesson;
-  lessonNumber: number;
-  isLocked: boolean;
-  onStart: () => void;
-}) {
-  const progress =
-    lesson.totalQuestions === 0
-      ? 0
-      : lesson.answeredQuestions / lesson.totalQuestions;
-
-  return (
-    <Pressable
-      style={[styles.lessonCard, isLocked && styles.lessonCardLocked]}
-      onPress={onStart}
-      disabled={isLocked}
-      accessibilityRole="button"
-      accessibilityLabel={
-        isLocked
-          ? `Lesson ${lessonNumber}: ${lesson.title} is locked until audio is available`
-          : `Start lesson ${lessonNumber}: ${lesson.title}`
-      }
-    >
-      <Text style={styles.lessonCardTitle}>{lessonNumber}. {lesson.title}</Text>
-      {isLocked && <Text style={styles.lessonCardMeta}>Audio coming soon</Text>}
-      <View style={styles.lessonCardProgressTrack}>
-        {progress > 0 && (
-          <View
-            style={[styles.lessonCardProgressFill, { width: `${progress * 100}%` }]}
-          />
-        )}
-      </View>
-    </Pressable>
   );
 }
 
@@ -2115,724 +1659,3 @@ function getTodayKey(): string {
   const day = `${now.getDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#0D0F14",
-  },
-  scrollView: {
-    flex: 1,
-    backgroundColor: "#0D0F14",
-  },
-  homeContent: {
-    flexGrow: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    paddingHorizontal: 28,
-    paddingTop: 56,
-    paddingBottom: 0,
-  },
-  homeTopContent: {
-    width: "100%",
-    alignItems: "center",
-    marginTop: 44,
-    marginBottom: 36,
-    gap: 72,
-  },
-  homeHeadline: {
-    color: "#F7F7F7",
-    textAlign: "center",
-    fontFamily: "DMSans_400Regular",
-    fontSize: 36,
-    lineHeight: 40,
-  },
-  homeHeroWrap: {
-    width: "105%",
-    aspectRatio: 0.72,
-    maxWidth: 820,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: -20,
-    marginBottom: -20,
-  },
-  button: {
-    width: "100%",
-    maxWidth: 620,
-    minHeight: 100,
-    borderRadius: 28,
-    backgroundColor: "#55BFF2",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000000",
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 8,
-  },
-  buttonText: {
-    color: "#111111",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 28,
-    lineHeight: 36,
-  },
-  lessonsContent: {
-    flexGrow: 1,
-    paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 28,
-  },
-  lessonsHeaderRow: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "nowrap",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    backgroundColor: "#0D0F14",
-    paddingTop: 8,
-    paddingBottom: 10,
-    paddingHorizontal: 4,
-    zIndex: 2,
-    marginBottom: 18,
-  },
-  metricWrap: {
-    flex: 1,
-    minWidth: 0,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-  },
-  metricText: {
-    color: "#FFFFFF",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 22,
-    lineHeight: 24,
-  },
-  lessonsHeaderCenter: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  lessonsHeaderLogo: {
-    width: 92,
-    height: 54,
-  },
-  lessonList: {
-    gap: 22,
-    paddingTop: 6,
-  },
-  lessonCard: {
-    minHeight: 106,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#2A2F3A",
-    backgroundColor: "#1A1C21",
-    paddingHorizontal: 32,
-    paddingTop: 30,
-    paddingBottom: 22,
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  lessonCardLocked: {
-    opacity: 0.72,
-  },
-  lessonCardTitle: {
-    color: "#F4F4F4",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 21,
-    lineHeight: 24,
-  },
-  lessonCardMeta: {
-    marginTop: 6,
-    color: "#99A6B4",
-    fontFamily: "DMSans_400Regular",
-    fontSize: 14,
-    lineHeight: 18,
-  },
-  lessonCardProgressTrack: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 6,
-    backgroundColor: "transparent",
-    overflow: "hidden",
-  },
-  lessonCardProgressFill: {
-    height: "100%",
-    backgroundColor: "#4FC3FF",
-  },
-  quizFlowContent: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 112,
-  },
-  quizTopRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  quizBackIconButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "#3A3B3F",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  quizHeaderProgressTrack: {
-    flex: 1,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#45484D",
-    overflow: "hidden",
-  },
-  quizHeaderProgressFill: {
-    height: "100%",
-    borderRadius: 4,
-    backgroundColor: "#9CD754",
-  },
-  speakerButton: {
-    marginTop: 0,
-    width: 66,
-    height: 66,
-    borderRadius: 33,
-    alignSelf: "center",
-    backgroundColor: "#3A3B3F",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  speakerButtonDisabled: {
-    opacity: 0.7,
-  },
-  speakerSkeletonGlyph: {
-    width: 34,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#66717E",
-  },
-  speakerControlsRow: {
-    marginTop: 22,
-    flexDirection: "row",
-    alignSelf: "center",
-    alignItems: "center",
-    gap: 10,
-  },
-  speakerControlsRowCompact: {
-    marginTop: 10,
-  },
-  speedToggleButton: {
-    minHeight: 36,
-    minWidth: 66,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#2B313D",
-    backgroundColor: "#181C23",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 10,
-  },
-  speedToggleButtonDisabled: {
-    opacity: 0.6,
-  },
-  speedToggleText: {
-    color: "#DDE7F1",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 12,
-    lineHeight: 14,
-  },
-  quizPromptRow: {
-    marginTop: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  quizPromptRowCompact: {
-    marginTop: 8,
-  },
-  quizPromptWord: {
-    color: "#FFFFFF",
-    fontFamily: "DMSans_400Regular",
-    fontSize: 18,
-    lineHeight: 22,
-  },
-  quizPromptWordCompact: {
-    fontSize: 17,
-    lineHeight: 21,
-  },
-  hintIconButton: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#3A3B3F",
-  },
-  quizIllustrationSlot: {
-    marginTop: 10,
-    height: 120,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  quizVisualWrap: {
-    marginTop: 24,
-    height: 190,
-    width: "100%",
-  },
-  quizVisualFallback: {
-    color: "#8AA0B8",
-    textAlign: "center",
-    fontSize: 22,
-    lineHeight: 28,
-    marginTop: 100,
-  },
-  sentenceBuilderWrap: {
-    marginTop: 14,
-    gap: 10,
-    paddingHorizontal: 4,
-  },
-  sentenceBuilderWrapCompact: {
-    marginTop: 8,
-    gap: 6,
-    paddingHorizontal: 2,
-  },
-  sentenceSourceCard: {
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "#2B313D",
-    backgroundColor: "#181C23",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  sentenceSourceCardCompact: {
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
-  sentenceSourceText: {
-    color: "#F4F7FA",
-    textAlign: "center",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 20,
-    lineHeight: 24,
-  },
-  slotGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    justifyContent: "center",
-  },
-  slotGridCompact: {
-    gap: 7,
-  },
-  slotChip: {
-    minWidth: 108,
-    minHeight: 58,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#2A2F3A",
-    borderStyle: "dashed",
-    backgroundColor: "#10141B",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-  },
-  slotChipCompact: {
-    minWidth: 94,
-    minHeight: 50,
-    borderRadius: 13,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-  },
-  slotChipFilled: {
-    borderStyle: "solid",
-    borderColor: "#4EC5FF",
-    backgroundColor: "#172634",
-  },
-  slotChipActive: {
-    borderColor: "#F7C654",
-    backgroundColor: "#2E2412",
-  },
-  slotChipText: {
-    color: "#5E6F83",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 20,
-    lineHeight: 24,
-  },
-  slotChipTextCompact: {
-    fontSize: 16,
-    lineHeight: 20,
-  },
-  slotChipTextFilled: {
-    color: "#F2FAFF",
-  },
-  sentenceBuilderHelperText: {
-    color: "#7E91A6",
-    textAlign: "center",
-    fontFamily: "DMSans_400Regular",
-    fontSize: 12,
-    lineHeight: 16,
-    marginTop: -2,
-  },
-  sentenceHelperText: {
-    color: "#97A9BC",
-    textAlign: "center",
-    fontFamily: "DMSans_400Regular",
-    fontSize: 14,
-    lineHeight: 18,
-  },
-  wordBankWrap: {
-    marginTop: 10,
-    marginHorizontal: 6,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: 30,
-  },
-  wordBankWrapCompact: {
-    marginTop: 8,
-    marginHorizontal: 4,
-    gap: 21,
-  },
-  wordBankChip: {
-    minHeight: 56,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#2B313D",
-    backgroundColor: "#181C23",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 18,
-  },
-  wordBankChipCompact: {
-    minHeight: 48,
-    borderRadius: 21,
-    paddingHorizontal: 14,
-    paddingVertical: 4,
-  },
-  wordBankChipDisabled: {
-    opacity: 0.35,
-  },
-  wordBankChipText: {
-    color: "#F3F7FB",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 16,
-    lineHeight: 20,
-  },
-  wordBankChipTextCompact: {
-    fontSize: 13,
-    lineHeight: 17,
-  },
-  wordBankChipTextDisabled: {
-    color: "#8A97A6",
-  },
-  answerInputWrap: {
-    marginTop: 24,
-    gap: 18,
-  },
-  multipleChoiceList: {
-    marginTop: 20,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    gap: 10,
-  },
-  choiceCard: {
-    width: "48%",
-    minHeight: 112,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#2B313D",
-    backgroundColor: "#181C23",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    justifyContent: "center",
-  },
-  choiceCardSelected: {
-    borderColor: "#4EC5FF",
-    backgroundColor: "#1C2E3B",
-  },
-  choiceLabel: {
-    color: "#F3F7FB",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 22,
-    lineHeight: 26,
-    textAlign: "center",
-  },
-  choiceLabelSelected: {
-    color: "#DDF5FF",
-  },
-  choiceTranslation: {
-    marginTop: 2,
-    color: "#97A7B8",
-    fontFamily: "DMSans_400Regular",
-    fontSize: 13,
-    lineHeight: 17,
-    textAlign: "center",
-  },
-  choiceTranslationSelected: {
-    color: "#AEDDFF",
-  },
-  answerInput: {
-    color: "#E7F7FF",
-    fontSize: 28,
-    lineHeight: 34,
-    fontWeight: "500",
-    paddingVertical: 0,
-  },
-  answerLine: {
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "#4EC5FF",
-  },
-  hintText: {
-    marginTop: 26,
-    color: "#8BD0FF",
-    fontSize: 22,
-    lineHeight: 30,
-    fontWeight: "600",
-  },
-  quizBottomSpacer: {
-    minHeight: 4,
-  },
-  checkButtonFixedWrap: {
-    position: "absolute",
-    left: 24,
-    right: 24,
-    bottom: 16,
-  },
-  checkButton: {
-    marginTop: 0,
-    marginBottom: 4,
-    minHeight: 68,
-    borderRadius: 20,
-    backgroundColor: "#3CC1FF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkButtonCompact: {
-    minHeight: 56,
-    borderRadius: 16,
-  },
-  checkButtonText: {
-    color: "#0C1721",
-    fontSize: 31,
-    lineHeight: 35,
-    fontWeight: "800",
-  },
-  checkButtonTextCompact: {
-    fontSize: 24,
-    lineHeight: 28,
-  },
-  feedbackSheet: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderTopLeftRadius: 26,
-    borderTopRightRadius: 26,
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 40,
-  },
-  feedbackSheetCorrect: {
-    backgroundColor: "#BEE3A6",
-  },
-  feedbackSheetWrong: {
-    backgroundColor: "#E0C8CA",
-  },
-  feedbackHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
-    marginBottom: 14,
-  },
-  feedbackIconCircle: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  feedbackIconCircleCorrect: {
-    backgroundColor: "#39A600",
-  },
-  feedbackIconCircleWrong: {
-    backgroundColor: "#EF2C33",
-  },
-  feedbackIconText: {
-    color: "#FFFFFF",
-    fontSize: 26,
-    lineHeight: 30,
-    fontWeight: "700",
-  },
-  feedbackTitle: {
-    fontSize: 34,
-    lineHeight: 38,
-    fontWeight: "700",
-  },
-  feedbackTitleCorrect: {
-    color: "#33980C",
-  },
-  feedbackTitleWrong: {
-    color: "#EA2E35",
-  },
-  feedbackAnswerText: {
-    textAlign: "center",
-    color: "#7A2124",
-    fontFamily: "DMSans_400Regular",
-    fontSize: 15,
-    lineHeight: 20,
-    marginBottom: 12,
-  },
-  feedbackAction: {
-    minHeight: 72,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  feedbackActionCorrect: {
-    backgroundColor: "#56CD00",
-  },
-  feedbackActionWrong: {
-    backgroundColor: "#FF4B54",
-  },
-  feedbackActionText: {
-    color: "#FFFFFF",
-    fontSize: 38,
-    lineHeight: 42,
-    fontWeight: "700",
-  },
-  hintModalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
-    paddingHorizontal: 22,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  hintModalCard: {
-    width: "100%",
-    maxHeight: "80%",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#2A2F3A",
-    backgroundColor: "#15181E",
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-  },
-  hintModalTitle: {
-    color: "#F5F7FA",
-    textAlign: "center",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 24,
-    lineHeight: 28,
-    marginBottom: 14,
-  },
-  hintModalList: {
-    maxHeight: 420,
-  },
-  hintModalRow: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#252A33",
-    gap: 4,
-  },
-  hintWord: {
-    color: "#FFFFFF",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 16,
-    lineHeight: 20,
-  },
-  hintMeaning: {
-    color: "#99A6B4",
-    fontFamily: "DMSans_400Regular",
-    fontSize: 14,
-    lineHeight: 18,
-  },
-  hintModalCloseButton: {
-    marginTop: 18,
-    minHeight: 52,
-    borderRadius: 16,
-    backgroundColor: "#4FC3FF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  hintModalCloseText: {
-    color: "#07141E",
-    fontFamily: "DMSans_700Bold",
-    fontSize: 20,
-    lineHeight: 24,
-  },
-  completedContent: {
-    flexGrow: 1,
-    alignItems: "center",
-    paddingHorizontal: 24,
-    justifyContent: "center",
-    paddingTop: 16,
-    paddingBottom: 20,
-  },
-  completedTitle: {
-    color: "#F7F7F7",
-    textAlign: "center",
-    fontSize: 42,
-    lineHeight: 46,
-    fontWeight: "800",
-    letterSpacing: -0.6,
-    maxWidth: 420,
-  },
-  completedSubtitle: {
-    marginTop: 8,
-    color: "#7BCDF8",
-    textAlign: "center",
-    fontSize: 20,
-    lineHeight: 24,
-    fontWeight: "600",
-  },
-  completedIllustrationWrap: {
-    width: "100%",
-    maxWidth: 330,
-    height: 180,
-    marginTop: 12,
-    marginBottom: 18,
-  },
-  restartButton: {
-    width: "100%",
-    maxWidth: 320,
-    minHeight: 56,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#3A97C5",
-    backgroundColor: "rgba(72, 192, 247, 0.08)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 48,
-    marginBottom: 48,
-  },
-  restartButtonText: {
-    color: "#7BBEDC",
-    fontSize: 22,
-    lineHeight: 26,
-    fontWeight: "600",
-  },
-  continueButton: {
-    width: "100%",
-    maxWidth: 320,
-    minHeight: 62,
-    borderRadius: 18,
-    backgroundColor: "#48B8EE",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  continueButtonText: {
-    color: "#0F1A22",
-    fontSize: 24,
-    lineHeight: 28,
-    fontWeight: "700",
-  },
-});
