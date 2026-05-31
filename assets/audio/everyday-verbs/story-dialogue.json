@@ -8,7 +8,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-gini-ka-i-mere-unyaahu",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks what she will do tomorrow."
   },
   {
     "speaker": "daughter",
@@ -19,7 +20,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-asara-m-uwe",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says she cleaned the windows."
   },
   {
     "speaker": "dad",
@@ -30,7 +32,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-nke-ahu-di-mma",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says that is bad."
   },
   {
     "speaker": "daughter",
@@ -41,7 +44,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-esiri-m-nri",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says she washed the car."
   },
   {
     "speaker": "dad",
@@ -52,7 +56,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-eziokwu",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad is calm and says okay."
   },
   {
     "speaker": "daughter",
@@ -63,7 +68,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-aguru-m-akwukwo",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says she wrote a letter."
   },
   {
     "speaker": "dad",
@@ -74,7 +80,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-gini-ozo",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks if she is hungry."
   },
   {
     "speaker": "daughter",
@@ -85,7 +92,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-asara-m-efere",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says she dried the dishes."
   },
   {
     "speaker": "dad",
@@ -96,7 +104,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-o-di-ihe-ozo",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says there is nothing else."
   },
   {
     "speaker": "daughter",
@@ -107,7 +116,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-ejeere-m-ahia",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says she went to the park."
   },
   {
     "speaker": "dad",
@@ -118,7 +128,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-ihe-ndi-ahu-niile",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks if she forgot something."
   },
   {
     "speaker": "daughter",
@@ -129,7 +140,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-ee-ejegharikwara-m-ileta-enyi-m",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says she also called her friend."
   },
   {
     "speaker": "dad",
@@ -140,7 +152,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-notu-ubochi",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks if all of it happened last week."
   },
   {
     "speaker": "daughter",
@@ -151,7 +164,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-ee-papa",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter denies and says no, Dad."
   },
   {
     "speaker": "dad",
@@ -162,7 +176,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-ugbua-ama-m-ihe-m-ga-eme-izu-a",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says he forgot what he'll do this week."
   },
   {
     "speaker": "daughter",
@@ -173,7 +188,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-gini-mere",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says because."
   },
   {
     "speaker": "dad",
@@ -184,6 +200,7 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-oburu-na-i-nwere-ike-ime-ihe-ndi-ahu-niile",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says he can do all his tasks this week too!"
   }
 ]

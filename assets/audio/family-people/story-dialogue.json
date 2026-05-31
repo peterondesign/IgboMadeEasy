@@ -8,7 +8,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-enwe-m-nnukwu-akuko",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says he has little news."
   },
   {
     "speaker": "daughter",
@@ -19,7 +20,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-gini-ka-o-bu-papa",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter asks when it is."
   },
   {
     "speaker": "dad",
@@ -30,7 +32,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-enyi-m-ga-alu-nwunye-nizu-a",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says his friend is getting married next week."
   },
   {
     "speaker": "daughter",
@@ -41,7 +44,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-nwanne-m-nwoke-nwere-ike-iweta-enyi-ya",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter asks if her sister can bring her friend."
   },
   {
     "speaker": "dad",
@@ -52,7 +56,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-ee-o-nwere-ike",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says no, he can't."
   },
   {
     "speaker": "daughter",
@@ -63,7 +68,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-nwanne-m-nwanyi-nwere-ike-iweta-enyi-ya-kwa",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter asks if her brother can bring his friend too."
   },
   {
     "speaker": "dad",
@@ -74,7 +80,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-ee-o-nwere-ike-kwa",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says no, she can't."
   },
   {
     "speaker": "daughter",
@@ -85,7 +92,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-mama-nwere-ike-iweta-enyi-ya",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter asks if Dad can bring his friend."
   },
   {
     "speaker": "dad",
@@ -96,7 +104,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-ee",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says no."
   },
   {
     "speaker": "daughter",
@@ -107,7 +116,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-papa-i-nwere-ike-iweta-enyi-gi-kwa",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter asks if Mum can bring her friend too."
   },
   {
     "speaker": "dad",
@@ -118,7 +128,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-ee-ozo",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says no."
   },
   {
     "speaker": "daughter",
@@ -129,7 +140,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-onye-ka-a-kporo",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter asks who was invited last week."
   },
   {
     "speaker": "dad",
@@ -140,6 +152,7 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-a-kporo-obodo-niile",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says the whole town has been invited."
   }
 ]

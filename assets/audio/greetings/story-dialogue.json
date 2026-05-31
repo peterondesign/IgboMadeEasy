@@ -8,7 +8,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-ututu-oma-nwa-m-nwanyi",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says good morning to his daughter."
   },
   {
     "speaker": "daughter",
@@ -19,7 +20,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-ututu-oma-papa",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says goodbye to her dad."
   },
   {
     "speaker": "dad",
@@ -30,7 +32,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-kedu-ka-i-mere",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad is telling her to be quiet."
   },
   {
     "speaker": "daughter",
@@ -41,7 +44,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-adi-m-mma",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says she is happy."
   },
   {
     "speaker": "dad",
@@ -52,7 +56,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-nnoo-nwa-m-nwanyi",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says goodbye to his daughter."
   },
   {
     "speaker": "daughter",
@@ -63,7 +68,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-papa-gini-mere-i-ji-ekele-m-otu-a",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter tells Dad to stop greeting her like that."
   },
   {
     "speaker": "dad",
@@ -74,7 +80,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-nihi-na-enwe-m-nnukwu-nsogbu",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says he has a small problem."
   },
   {
     "speaker": "daughter",
@@ -85,7 +92,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-nsogbu-gini",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter ignores the problem."
   },
   {
     "speaker": "dad",
@@ -96,7 +104,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-aguu-na-agu-m-nke-ukwuu",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says he is very thirsty."
   },
   {
     "speaker": "daughter",
@@ -107,7 +116,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-na-achi-ochi-o-bu-naani-nke-ahu",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter laughs and joins him."
   },
   {
     "speaker": "dad",
@@ -118,7 +128,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-ee-anyi-nwere-ike-iri-nri",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks if they should wait to eat."
   },
   {
     "speaker": "daughter",
@@ -129,6 +140,7 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-ee-ka-anyi-rie",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says they should wait to eat."
   }
 ]

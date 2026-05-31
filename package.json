@@ -10,6 +10,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "tts:replicate": "node scripts/generate-replicate-tts.mjs",
+    "story:false": "node scripts/generate-story-false-statements.mjs",
     "generate:greetings-translations": "node scripts/generate-greetings-translations.mjs"
   },
   "dependencies": {

@@ -8,7 +8,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-i-di-njikere-taa",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks if she is ready tomorrow."
   },
   {
     "speaker": "daughter",
@@ -19,7 +20,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-ee-papa-adi-m-njikere",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says she is not ready."
   },
   {
     "speaker": "dad",
@@ -30,7 +32,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-ebee-ka-i-na-aga",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks why she is going."
   },
   {
     "speaker": "daughter",
@@ -41,7 +44,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-ana-m-aga-ulo-akwukwo",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says she is going to the park."
   },
   {
     "speaker": "dad",
@@ -52,7 +56,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-gini-ka-i-choro-ka-m-zuta",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks what she wants him to sell."
   },
   {
     "speaker": "daughter",
@@ -63,7 +68,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-zutara-m-mkpisi-ide-ohuru",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter asks for a new notebook."
   },
   {
     "speaker": "dad",
@@ -74,7 +80,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-ego-ole-ka-nke-ahu-bu",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks how heavy it is."
   },
   {
     "speaker": "daughter",
@@ -85,7 +92,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-o-di-onu-ala-papa",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says it is expensive."
   },
   {
     "speaker": "dad",
@@ -96,7 +104,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-onye-ga-aga-ahia",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks who will stay home."
   },
   {
     "speaker": "daughter",
@@ -107,7 +116,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-anyi-abuo-ga-aga",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says only she will go."
   },
   {
     "speaker": "dad",
@@ -118,7 +128,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-mgbe-ole-ka-anyi-ga-alo",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks where they will return."
   },
   {
     "speaker": "daughter",
@@ -129,6 +140,7 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-asking-questions-anyi-ga-alo-tupu-anyasi",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says they will return after evening."
   }
 ]

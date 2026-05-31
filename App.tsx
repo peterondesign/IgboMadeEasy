@@ -119,6 +119,7 @@ type StoryModeQuestion = {
 type StoryDialogueEntry = StoryModeQuestion & {
   audioKey: string;
   voice: "male" | "female";
+  falseStatement?: string;
 };
 
 type Question = {
@@ -1467,11 +1468,16 @@ function buildBalancedStoryQuestionSet(entries: StoryDialogueEntry[]): Question[
 
   return entries.map((entry, index) => {
     const shouldBeTrue = truthAssignments[index];
-    const speakerLabel = entry.speaker === "dad" ? "Dad" : "Daughter";
 
     const statement = shouldBeTrue
       ? entry.statement
-      : buildMismatchedStoryStatement(entries, index, speakerLabel);
+      :
+          entry.falseStatement?.trim() ||
+          buildMismatchedStoryStatement(
+            entries,
+            index,
+            entry.speaker === "dad" ? "Dad" : "Daughter"
+          );
 
     return {
       prompt: "Story mode",

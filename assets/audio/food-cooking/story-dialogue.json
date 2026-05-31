@@ -8,7 +8,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-aguu-na-agu-m",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says she is hungry."
   },
   {
     "speaker": "daughter",
@@ -19,7 +20,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-gini-ka-i-choro-iri-papa",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter asks what she wants to eat."
   },
   {
     "speaker": "dad",
@@ -30,7 +32,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-m-ga-esi-ofe-egusi",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says he will make jollof rice."
   },
   {
     "speaker": "daughter",
@@ -41,7 +44,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-anyi-nwere-mmiri",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter asks if they have juice."
   },
   {
     "speaker": "dad",
@@ -52,7 +56,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-mmiri-di-na-kichin",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says there is water in the living room."
   },
   {
     "speaker": "daughter",
@@ -63,7 +68,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-anyi-nwekwara-ose-na-ji-akwo",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says they also have salt and pounded yam."
   },
   {
     "speaker": "dad",
@@ -74,7 +80,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-anyi-ga-esi-osikapa-kwa",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks if they should cook beans too."
   },
   {
     "speaker": "daughter",
@@ -85,7 +92,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-elegi-anya",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says no."
   },
   {
     "speaker": "dad",
@@ -96,7 +104,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-ka-anyi-gaa-kichin-malite-isi-nri",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad says they should go to the garden and start cooking."
   },
   {
     "speaker": "daughter",
@@ -107,7 +116,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-papa-lee-tebul",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter tells Mum to look at the table."
   },
   {
     "speaker": "dad",
@@ -118,7 +128,8 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-gini-ka-m-ga-ahu",
-    "voice": "male"
+    "voice": "male",
+    "falseStatement": "Dad asks what she will see."
   },
   {
     "speaker": "daughter",
@@ -129,6 +140,7 @@
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-mama-esiela-ofe-egusi-osikapa-na-ji-akwo",
-    "voice": "female"
+    "voice": "female",
+    "falseStatement": "The daughter says Mum has already cooked only egusi soup and rice."
   }
 ]
