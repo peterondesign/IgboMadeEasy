@@ -91,6 +91,7 @@ import {
   CompletedLessonScreen,
   LessonsScreen,
   QuizScreen,
+  StreakScreen,
 } from "./src/app/screens";
 import { styles } from "./src/app/styles";
 import {
@@ -100,7 +101,7 @@ import {
   restorePremiumStatus,
 } from "./src/services/premiumPurchase";
 
-type ScreenName = "home" | "lessons" | "quiz" | "completed";
+type ScreenName = "home" | "lessons" | "quiz" | "completed" | "streak";
 type AppGroup = "home" | "lesson" | "game";
 type FeedbackState = "correct" | "wrong" | null;
 
@@ -1318,27 +1319,36 @@ export default function App() {
         screen={screen}
         activeLessonTitle={activeLesson?.title ?? null}
         renderLessons={() => (
-          <LessonsScreen
-            lessons={lessons}
-            overallProgress={overallProgress}
-            streakCount={streakCount}
-            isLoggedIn={isLoggedIn}
-            hasPremiumAccess={hasPremiumAccess}
-            isAuthBusy={isAuthBusy}
-            onLoginPress={handleLoginPress}
-            isUpgradeModalOpen={isUpgradeModalOpen}
-            signupEmail={signupEmail}
-            onSignupEmailChange={setSignupEmail}
-            onCloseUpgradeModal={() => {
-              if (!isAuthBusy) {
-                setIsUpgradeModalOpen(false);
-              }
-            }}
-            onUpgradeSubmit={handleUpgradeSubmit}
-            onLogoutPress={handleLogout}
-            onRestorePurchasesPress={handleRestorePurchases}
-            onStartLesson={startLesson}
-          />
+          screen === "streak" ? (
+            <StreakScreen
+              lessons={lessons}
+              streakCount={streakCount}
+              onBack={() => setScreen("lessons")}
+            />
+          ) : (
+            <LessonsScreen
+              lessons={lessons}
+              overallProgress={overallProgress}
+              streakCount={streakCount}
+              isLoggedIn={isLoggedIn}
+              hasPremiumAccess={hasPremiumAccess}
+              isAuthBusy={isAuthBusy}
+              onLoginPress={handleLoginPress}
+              isUpgradeModalOpen={isUpgradeModalOpen}
+              signupEmail={signupEmail}
+              onSignupEmailChange={setSignupEmail}
+              onCloseUpgradeModal={() => {
+                if (!isAuthBusy) {
+                  setIsUpgradeModalOpen(false);
+                }
+              }}
+              onUpgradeSubmit={handleUpgradeSubmit}
+              onLogoutPress={handleLogout}
+              onRestorePurchasesPress={handleRestorePurchases}
+              onOpenStreakScreen={() => setScreen("streak")}
+              onStartLesson={startLesson}
+            />
+          )
         )}
         renderCompleted={(lessonTitle) => (
           <CompletedLessonScreen
@@ -1403,6 +1413,7 @@ export default function App() {
       onUpgradeSubmit={handleUpgradeSubmit}
       onLogoutPress={handleLogout}
       onRestorePurchasesPress={handleRestorePurchases}
+      onOpenStreakScreen={() => setScreen("streak")}
       onStartLesson={startLesson}
     />
   );

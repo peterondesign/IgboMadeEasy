@@ -149,6 +149,28 @@ function toPercent(value: number): number {
   return Math.round(value * 100);
 }
 
+function toDateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function startOfWeek(date: Date): Date {
+  const start = new Date(date);
+  const day = start.getDay();
+  const delta = (day + 6) % 7;
+  start.setDate(start.getDate() - delta);
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
+
+function addDays(date: Date, days: number): Date {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
 export function LessonsScreen({
   lessons,
   overallProgress,
@@ -163,6 +185,7 @@ export function LessonsScreen({
   onUpgradeSubmit,
   onLogoutPress,
   onRestorePurchasesPress,
+  onOpenStreakScreen,
   onStartLesson,
 }: {
   lessons: Lesson[];
@@ -179,6 +202,7 @@ export function LessonsScreen({
   onUpgradeSubmit: () => void;
   onLogoutPress: () => void;
   onRestorePurchasesPress: () => void;
+  onOpenStreakScreen: () => void;
   onStartLesson: (lessonId: string) => void;
 }) {
   const canAccessPremiumLessons = hasPremiumAccess;
@@ -204,10 +228,15 @@ export function LessonsScreen({
           </View>
 
           <View style={styles.metricsRow}>
-            <View style={styles.metricWrap}>
+            <Pressable
+              style={styles.metricWrap}
+              onPress={onOpenStreakScreen}
+              accessibilityRole="button"
+              accessibilityLabel="Open streak screen"
+            >
               <FireIllustration width={20} height={20} />
               <Text style={styles.metricText}>{streakCount}</Text>
-            </View>
+            </Pressable>
 
             <View style={styles.metricWrap}>
               <PlantIllustration width={20} height={20} />
@@ -348,6 +377,134 @@ export function LessonsScreen({
           </View>
         </View>
       ) : null}
+    </SafeAreaView>
+  );
+}
+
+export function StreakScreen({
+  lessons,
+  streakCount,
+  onBack,
+}: {
+  lessons: Lesson[];
+  streakCount: number;
+  onBack: () => void;
+}) {
+  const [weekOffset, setWeekOffset] = useState(0);
+  const today = useMemo(() => new Date(), []);
+  const todayKey = useMemo(() => toDateKey(today), [today]);
+  const completedDayKeys = useMemo(
+    () =>
+      new Set(
+        lessons
+          .map((lesson) => lesson.completedOn)
+          .filter((value): value is string => Boolean(value))
+      ),
+    [lessons]
+  );
+  const activeWeekStart = useMemo(
+    () => addDays(startOfWeek(today), weekOffset * 7),
+    [today, weekOffset]
+  );
+  const weekDays = useMemo(
+    () => Array.from({ length: 7 }, (_, index) => addDays(activeWeekStart, index)),
+    [activeWeekStart]
+  );
+  const weekLabel = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+    return `${formatter.format(weekDays[0])} - ${formatter.format(weekDays[6])}`;
+  }, [weekDays]);
+  const canGoPreviousWeek = weekOffset > -1;
+  const canGoNextWeek = weekOffset < 0;
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#111111" />
+      <View style={styles.streakScreenContainer}>
+        <View style={styles.streakScreenTopRow}>
+          <Pressable
+            style={styles.quizBackIconButton}
+            onPress={onBack}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <BackIcon width={18} height={18} />
+          </Pressable>
+
+          <Text style={styles.streakScreenTitle}>Streak</Text>
+
+          <View style={styles.streakScreenCounter}>
+            <FireIllustration width={18} height={18} />
+            <Text style={styles.streakScreenCounterText}>{streakCount}</Text>
+          </View>
+        </View>
+
+        <View style={styles.streakScreenCard}>
+          <View style={styles.streakScreenHeaderRow}>
+            <Text style={styles.streakScreenCardTitle}>Streak Calendar</Text>
+            <Text style={styles.streakScreenWeekTag}>
+              {weekOffset === 0 ? "Current week" : "Last week"}
+            </Text>
+          </View>
+
+          <View style={styles.streakWeekNavRow}>
+            <Pressable
+              style={[
+                styles.streakWeekNavButton,
+                !canGoPreviousWeek ? styles.streakWeekNavButtonDisabled : null,
+              ]}
+              onPress={() =>
+                setWeekOffset((value) => (value > -1 ? value - 1 : value))
+              }
+              disabled={!canGoPreviousWeek}
+            >
+              <Text style={styles.streakWeekNavText}>- 1 week</Text>
+            </Pressable>
+
+            <Text style={styles.streakWeekLabel}>{weekLabel}</Text>
+
+            <Pressable
+              style={[
+                styles.streakWeekNavButton,
+                !canGoNextWeek ? styles.streakWeekNavButtonDisabled : null,
+              ]}
+              onPress={() =>
+                setWeekOffset((value) => (value < 0 ? value + 1 : value))
+              }
+              disabled={!canGoNextWeek}
+            >
+              <Text style={styles.streakWeekNavText}>+ 1 week</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.streakDaysRow}>
+            {weekDays.map((day) => {
+              const dayKey = toDateKey(day);
+              const isToday = dayKey === todayKey;
+              const isCompleted = completedDayKeys.has(dayKey);
+
+              return (
+                <View key={dayKey} style={styles.streakDayItem}>
+                  <Text style={styles.streakDayLabel}>
+                    {day.toLocaleDateString("en-US", { weekday: "short" })}
+                  </Text>
+                  <View
+                    style={[
+                      styles.streakDayCircle,
+                      isCompleted ? styles.streakDayCircleCompleted : null,
+                      isToday ? styles.streakDayCircleToday : null,
+                    ]}
+                  />
+                  <Text style={styles.streakDateLabel}>{day.getDate()}</Text>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
