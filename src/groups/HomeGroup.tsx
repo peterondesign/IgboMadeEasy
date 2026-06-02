@@ -1,12 +1,25 @@
 import HeroIllustration from "../../assets/hero.svg";
-import { Pressable, SafeAreaView, ScrollView, StatusBar, Text, View } from "react-native";
+import {
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  Text,
+  View,
+} from "react-native";
 
 type HomeGroupProps = {
   onGetStarted: () => void;
+  onDemoReminderTest: () => void;
   styles: Record<string, any>;
 };
 
-export default function HomeGroup({ onGetStarted, styles }: HomeGroupProps) {
+export default function HomeGroup({
+  onGetStarted,
+  onDemoReminderTest,
+  styles,
+}: HomeGroupProps) {
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#111111" />
@@ -28,6 +41,32 @@ export default function HomeGroup({ onGetStarted, styles }: HomeGroupProps) {
           >
             <Text style={styles.buttonText}>Get started</Text>
           </Pressable>
+
+          {__DEV__ ? (
+            <Pressable
+              style={{
+                marginTop: 12,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: "#34465D",
+                backgroundColor: "#1B2533",
+                paddingHorizontal: 14,
+                paddingVertical: 10,
+              }}
+              accessibilityRole="button"
+              onPress={onDemoReminderTest}
+            >
+              <Text
+                style={{
+                  color: "#CFE8FF",
+                  fontSize: 14,
+                  fontWeight: "600",
+                }}
+              >
+                Dev: Demo Reminder Push
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
 
         <View style={styles.homeHeroWrap}>

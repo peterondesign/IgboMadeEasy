@@ -55,35 +55,26 @@ export function getLastPremiumAccessReason(): string {
   return lastPremiumAccessReason;
 }
 
-function configureForUser(userId?: string) {
+function configureRevenueCat() {
   ensureRevenueCatKey();
 
-  if (configuredUserId === userId) {
+  if (configuredUserId != null) {
     return;
   }
 
-  if (configuredUserId == null) {
-    Purchases.configure({
-      apiKey: REVENUECAT_IOS_API_KEY,
-      appUserID: userId,
-    });
-    configuredUserId = userId ?? "__anonymous__";
-  }
+  Purchases.configure({
+    apiKey: REVENUECAT_IOS_API_KEY,
+  });
+  configuredUserId = "__configured__";
 }
 
 export const PREMIUM_ANNUAL_PRODUCT_ID = "premium_annual_igbo_easy";
 export const PREMIUM_MONTHLY_PRODUCT_ID = "premium_monthly_igbo_easy";
 
 export async function purchasePremiumAccess(
-  userEmail?: string,
   productId?: string
 ): Promise<boolean> {
-  configureForUser(userEmail);
-
-  if (userEmail && configuredUserId !== userEmail) {
-    await Purchases.logIn(userEmail);
-    configuredUserId = userEmail;
-  }
+  configureRevenueCat();
 
   const offerings = await Purchases.getOfferings();
   const packages = offerings.current?.availablePackages ?? [];
@@ -102,34 +93,20 @@ export async function purchasePremiumAccess(
   return hasPremiumAccess(purchaseResult.customerInfo);
 }
 
-export async function restorePremiumStatus(userEmail?: string): Promise<boolean> {
-  configureForUser(userEmail);
-
-  if (userEmail && configuredUserId !== userEmail) {
-    await Purchases.logIn(userEmail);
-    configuredUserId = userEmail;
-  }
+export async function restorePremiumStatus(): Promise<boolean> {
+  configureRevenueCat();
 
   const customerInfo = await Purchases.getCustomerInfo();
   return hasPremiumAccess(customerInfo);
 }
 
-export async function restorePremiumPurchases(userEmail?: string): Promise<boolean> {
-  configureForUser(userEmail);
-
-  if (userEmail && configuredUserId !== userEmail) {
-    await Purchases.logIn(userEmail);
-    configuredUserId = userEmail;
-  }
+export async function restorePremiumPurchases(): Promise<boolean> {
+  configureRevenueCat();
 
   const customerInfo = await Purchases.restorePurchases();
   return hasPremiumAccess(customerInfo);
 }
 
 export async function logoutPremiumAccess(): Promise<void> {
-  try {
-    await Purchases.logOut();
-  } finally {
-    configuredUserId = null;
-  }
+  configuredUserId = null;
 }

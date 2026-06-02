@@ -121,6 +121,10 @@ import {
   restorePremiumPurchases,
   restorePremiumStatus,
 } from "./src/services/premiumPurchase";
+import {
+  scheduleDemoLessonReminderNotifications,
+  syncDailyLessonReminderNotifications,
+} from "./src/services/lessonReminders";
 
 type ScreenName =
   | "home"
@@ -193,7 +197,6 @@ type RemovableSubscription = {
 
 const STORAGE_KEY = "igbo-made-easy.lesson-progress.v1";
 const PREMIUM_UNLOCK_STORAGE_KEY = "igbo-made-easy.premium-unlock.v1";
-const PREMIUM_EMAIL_STORAGE_KEY = "igbo-made-easy.premium-email.v1";
 const GREETINGS_STORY_DIALOGUE = require("./assets/audio/greetings/story-dialogue.json") as StoryDialogueEntry[];
 const EVERYDAY_VERBS_STORY_DIALOGUE = require("./assets/audio/everyday-verbs/story-dialogue.json") as StoryDialogueEntry[];
 const ASKING_QUESTIONS_STORY_DIALOGUE = require("./assets/audio/asking-questions/story-dialogue.json") as StoryDialogueEntry[];
@@ -844,7 +847,6 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
   const [isAuthBusy, setIsAuthBusy] = useState(false);
-  const [signupEmail, setSignupEmail] = useState("");
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const isAudioLoadingRef = useRef(false);
@@ -860,28 +862,21 @@ export default function App() {
   useEffect(() => {
     const restorePremiumState = async () => {
       try {
-        const [savedPremium, savedEmail] = await Promise.all([
-          AsyncStorage.getItem(PREMIUM_UNLOCK_STORAGE_KEY),
-          AsyncStorage.getItem(PREMIUM_EMAIL_STORAGE_KEY),
-        ]);
+        const savedPremium = await AsyncStorage.getItem(PREMIUM_UNLOCK_STORAGE_KEY);
 
         const unlocked = savedPremium === "true";
         setHasPremiumAccess(unlocked);
 
-        if (savedEmail) {
-          setSignupEmail(savedEmail);
+        try {
+          const hasActiveSubscription = await restorePremiumStatus();
+          setHasPremiumAccess(hasActiveSubscription);
 
-          try {
-            const hasActiveSubscription = await restorePremiumStatus(savedEmail);
-            setHasPremiumAccess(hasActiveSubscription);
-
-            await AsyncStorage.setItem(
-              PREMIUM_UNLOCK_STORAGE_KEY,
-              hasActiveSubscription ? "true" : "false"
-            );
-          } catch {
-            // Keep locally cached premium state if remote status cannot load.
-          }
+          await AsyncStorage.setItem(
+            PREMIUM_UNLOCK_STORAGE_KEY,
+            hasActiveSubscription ? "true" : "false"
+          );
+        } catch {
+          // Keep locally cached premium state if remote status cannot load.
         }
       } catch {
         setHasPremiumAccess(false);
@@ -962,6 +957,9 @@ export default function App() {
   const streakCount = lessons.some((lesson) => lesson.completedOn === todayKey)
     ? 1
     : 0;
+  const hasCompletedLessonToday = lessons.some(
+    (lesson) => lesson.completedOn === todayKey
+  );
 
   const activeLesson =
     activeLessonId == null
@@ -1165,12 +1163,8 @@ export default function App() {
     setIsAuthBusy(true);
 
     try {
-      await AsyncStorage.multiRemove([
-        PREMIUM_UNLOCK_STORAGE_KEY,
-        PREMIUM_EMAIL_STORAGE_KEY,
-      ]);
+      await AsyncStorage.removeItem(PREMIUM_UNLOCK_STORAGE_KEY);
       await logoutPremiumAccess();
-      setSignupEmail("");
       setIsLoggedIn(false);
       setHasPremiumAccess(false);
       setScreen("home");
@@ -1183,12 +1177,11 @@ export default function App() {
     setIsAuthBusy(true);
 
     try {
-      const trimmedEmail = signupEmail.trim().toLowerCase();
       const productId =
         plan === "annual"
           ? PREMIUM_ANNUAL_PRODUCT_ID
           : PREMIUM_MONTHLY_PRODUCT_ID;
-      const hasPremium = await purchasePremiumAccess(trimmedEmail || undefined, productId);
+      const hasPremium = await purchasePremiumAccess(productId);
 
       if (!hasPremium) {
         throw new Error(
@@ -1203,10 +1196,6 @@ export default function App() {
         );
       }
 
-      if (trimmedEmail) {
-        await AsyncStorage.setItem(PREMIUM_EMAIL_STORAGE_KEY, trimmedEmail);
-        setSignupEmail(trimmedEmail);
-      }
       setHasPremiumAccess(true);
       setIsLoggedIn(true);
       await AsyncStorage.setItem(PREMIUM_UNLOCK_STORAGE_KEY, "true");
@@ -1225,7 +1214,7 @@ export default function App() {
     } finally {
       setIsAuthBusy(false);
     }
-  }, [signupEmail]);
+  }, []);
 
   const handleRestorePurchases = useCallback(async () => {
     if (isAuthBusy) {
@@ -1235,8 +1224,7 @@ export default function App() {
     setIsAuthBusy(true);
 
     try {
-      const trimmedEmail = signupEmail.trim().toLowerCase();
-      const restored = await restorePremiumPurchases(trimmedEmail || undefined);
+      const restored = await restorePremiumPurchases();
 
       if (!restored) {
         Alert.alert(
@@ -1267,7 +1255,7 @@ export default function App() {
     } finally {
       setIsAuthBusy(false);
     }
-  }, [isAuthBusy, signupEmail]);
+  }, [isAuthBusy]);
 
   const playActiveAudio = useCallback(async () => {
     if (
@@ -1328,6 +1316,33 @@ export default function App() {
       // Ignore audio playback errors.
     }
   }, [activeQuestion, audioPlaybackRate]);
+
+  useEffect(() => {
+    void syncDailyLessonReminderNotifications({
+      hasCompletedLessonToday,
+    });
+  }, [hasCompletedLessonToday]);
+
+  const handleDemoReminderTest = useCallback(async () => {
+    try {
+      const result = await scheduleDemoLessonReminderNotifications();
+
+      if (!result.hasPermission) {
+        Alert.alert(
+          "Notifications blocked",
+          "Enable notifications to test reminder push alerts."
+        );
+        return;
+      }
+
+      Alert.alert(
+        "Demo reminders scheduled",
+        "Morning and night reminder pushes will appear in a few seconds."
+      );
+    } catch {
+      Alert.alert("Demo failed", "Could not schedule reminder notifications.");
+    }
+  }, []);
 
   useEffect(() => {
     setIsAudioLoading(false);
@@ -1413,7 +1428,13 @@ export default function App() {
     screen === "home" ? "home" : screen === "quiz" ? "game" : "lesson";
 
   if (currentGroup === "home") {
-    return <HomeGroup onGetStarted={handleGetStarted} styles={styles} />;
+    return (
+      <HomeGroup
+        onGetStarted={handleGetStarted}
+        onDemoReminderTest={handleDemoReminderTest}
+        styles={styles}
+      />
+    );
   }
 
   if (currentGroup === "lesson") {
@@ -1446,6 +1467,7 @@ export default function App() {
               onLoginPress={handleLoginPress}
               onLogoutPress={handleLogout}
               onOpenStreakScreen={() => setScreen("streak")}
+              onOpenHome={() => setScreen("home")}
               onStartLesson={startLesson}
             />
           )
@@ -1506,6 +1528,7 @@ export default function App() {
       onLoginPress={handleLoginPress}
       onLogoutPress={handleLogout}
       onOpenStreakScreen={() => setScreen("streak")}
+      onOpenHome={() => setScreen("home")}
       onStartLesson={startLesson}
     />
   );

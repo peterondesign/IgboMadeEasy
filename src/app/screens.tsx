@@ -181,6 +181,7 @@ export function LessonsScreen({
   onLoginPress,
   onLogoutPress,
   onOpenStreakScreen,
+  onOpenHome,
   onStartLesson,
 }: {
   lessons: Lesson[];
@@ -192,6 +193,7 @@ export function LessonsScreen({
   onLoginPress: () => void;
   onLogoutPress: () => void;
   onOpenStreakScreen: () => void;
+  onOpenHome: () => void;
   onStartLesson: (lessonId: string) => void;
 }) {
   const canAccessPremiumLessons = hasPremiumAccess;
@@ -218,13 +220,18 @@ export function LessonsScreen({
             </Pressable>
           ) : null}
 
-          <View style={styles.lessonsHeaderCenter}>
+          <Pressable
+            style={styles.lessonsHeaderCenter}
+            onPress={onOpenHome}
+            accessibilityRole="button"
+            accessibilityLabel="Go to home"
+          >
             <Image
               source={require("../../assets/illustrations/logo-with-text.png")}
               style={styles.lessonsHeaderLogo}
               resizeMode="contain"
             />
-          </View>
+          </Pressable>
 
           <View style={styles.metricsRow}>
             <Pressable
@@ -354,7 +361,6 @@ export function PremiumScreen({
             <Text style={styles.premiumPlanPrice}>$79.99/year</Text>
           </View>
           <Text style={styles.premiumPlanMeta}>Best value for full access</Text>
-          <Text style={styles.premiumPlanMeta}>Includes Family Sharing</Text>
         </Pressable>
 
         <Pressable
