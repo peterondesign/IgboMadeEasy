@@ -3,13 +3,13 @@
     "speaker": "dad",
     "igboText": "Ụtụtụ ọma, nwa m nwanyị!",
     "englishText": "Good morning, my daughter!",
-    "statement": "Dad says good night to his daughter.",
+    "statement": "Dad says good morning to his daughter.",
     "correctAnswer": false,
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-ututu-oma-nwa-m-nwanyi",
     "voice": "male",
-    "falseStatement": "Dad says good morning to his daughter."
+    "falseStatement": "Dad says good night to his daughter."
   },
   {
     "speaker": "daughter",
@@ -33,7 +33,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-kedu-ka-i-mere",
     "voice": "male",
-    "falseStatement": "Dad is telling her to be quiet."
+    "falseStatement": "Dad is telling asking how her mom is."
   },
   {
     "speaker": "daughter",
@@ -45,7 +45,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-adi-m-mma",
     "voice": "female",
-    "falseStatement": "The daughter says she is happy."
+    "falseStatement": "The daughter says she is sick."
   },
   {
     "speaker": "dad",
@@ -69,7 +69,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-papa-gini-mere-i-ji-ekele-m-otu-a",
     "voice": "female",
-    "falseStatement": "The daughter tells Dad to stop greeting her like that."
+    "falseStatement": "The daughter is not curious why her Dad is greeting her."
   },
   {
     "speaker": "dad",
@@ -111,13 +111,13 @@
     "speaker": "daughter",
     "igboText": "(Na-achị ọchị) Ọ bụ naanị nke ahụ?",
     "englishText": "(laughs) Is that all?",
-    "statement": "The daughter is upset and walks away.",
+    "statement": "The daughter asks if that is all",
     "correctAnswer": false,
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-na-achi-ochi-o-bu-naani-nke-ahu",
     "voice": "female",
-    "falseStatement": "The daughter laughs and joins him."
+    "falseStatement": "The daughter says she has to leave."
   },
   {
     "speaker": "dad",
