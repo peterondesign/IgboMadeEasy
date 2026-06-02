@@ -1,0 +1,18 @@
+export const MOSQUITO_AND_EAR_STORY_AUDIO: Record<string, number> = {
+  "story-mosquito-and-ear-01": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-01.wav"),
+  "story-mosquito-and-ear-02": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-02.wav"),
+  "story-mosquito-and-ear-03": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-03.wav"),
+  "story-mosquito-and-ear-04": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-04.wav"),
+  "story-mosquito-and-ear-05": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-05.wav"),
+  "story-mosquito-and-ear-06": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-06.wav"),
+  "story-mosquito-and-ear-07": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-07.wav"),
+  "story-mosquito-and-ear-08": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-08.wav"),
+  "story-mosquito-and-ear-09": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-09.wav"),
+  "story-mosquito-and-ear-10": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-10.wav"),
+  "story-mosquito-and-ear-11": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-11.wav"),
+  "story-mosquito-and-ear-12": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-12.wav"),
+  "story-mosquito-and-ear-13": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-13.wav"),
+  "story-mosquito-and-ear-14": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-14.wav"),
+  "story-mosquito-and-ear-15": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-15.wav"),
+  "story-mosquito-and-ear-16": require("../../assets/audio/mosquito-and-ear/story/story-mosquito-and-ear-16.wav"),
+};

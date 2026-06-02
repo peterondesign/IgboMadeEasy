@@ -18,6 +18,7 @@ import SpeakerIcon from "../../assets/icons/speaker-icon.svg";
 import CompletionIllustration from "../../assets/illustrations/lesson-complete.svg";
 import FireIllustration from "../../assets/illustrations/fire.svg";
 import PlantIllustration from "../../assets/illustrations/plant.svg";
+import { PREMIUM_PRICING } from "../services/premiumPurchase";
 import { QUESTION_VISUALS } from "./questionVisuals";
 import StoryMode, { type StoryModeQuestion } from "./storyMode";
 import { styles } from "./styles";
@@ -358,7 +359,7 @@ export function PremiumScreen({
         >
           <View style={styles.premiumPlanRow}>
             <Text style={styles.premiumPlanName}>Yearly</Text>
-            <Text style={styles.premiumPlanPrice}>$79.99/year</Text>
+            <Text style={styles.premiumPlanPrice}>{PREMIUM_PRICING.yearlyLabel}</Text>
           </View>
           <Text style={styles.premiumPlanMeta}>Best value for full access</Text>
         </Pressable>
@@ -374,7 +375,7 @@ export function PremiumScreen({
         >
           <View style={styles.premiumPlanRow}>
             <Text style={styles.premiumPlanName}>Monthly</Text>
-            <Text style={styles.premiumPlanPrice}>$7.99/month</Text>
+            <Text style={styles.premiumPlanPrice}>{PREMIUM_PRICING.monthlyLabel}</Text>
           </View>
           <Text style={styles.premiumPlanMeta}>Flexible monthly billing</Text>
         </Pressable>
@@ -398,8 +399,8 @@ export function PremiumScreen({
             {isAuthBusy
               ? "Working..."
               : selectedPlan === "annual"
-                ? "Continue - $79.99/year"
-                : "Continue - $7.99/month"}
+                ? `Continue - ${PREMIUM_PRICING.yearlyLabel}`
+                : `Continue - ${PREMIUM_PRICING.monthlyLabel}`}
           </Text>
         </Pressable>
       </View>

@@ -1,0 +1,18 @@
+export const POINTING_THINGS_OUT_STORY_AUDIO: Record<string, number> = {
+  "story-pointing-things-out-01": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-01.wav"),
+  "story-pointing-things-out-02": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-02.wav"),
+  "story-pointing-things-out-03": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-03.wav"),
+  "story-pointing-things-out-04": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-04.wav"),
+  "story-pointing-things-out-05": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-05.wav"),
+  "story-pointing-things-out-06": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-06.wav"),
+  "story-pointing-things-out-07": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-07.wav"),
+  "story-pointing-things-out-08": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-08.wav"),
+  "story-pointing-things-out-09": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-09.wav"),
+  "story-pointing-things-out-10": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-10.wav"),
+  "story-pointing-things-out-11": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-11.wav"),
+  "story-pointing-things-out-12": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-12.wav"),
+  "story-pointing-things-out-13": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-13.wav"),
+  "story-pointing-things-out-14": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-14.wav"),
+  "story-pointing-things-out-15": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-15.wav"),
+  "story-pointing-things-out-16": require("../../assets/audio/pointing-things-out/story/story-pointing-things-out-16.wav"),
+};

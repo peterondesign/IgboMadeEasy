@@ -42,6 +42,7 @@ import {
   CELEBRATIONS_ENTRIES,
 } from "./src/data/celebrationsAudio";
 import { CELEBRATIONS_STORY_AUDIO } from "./src/data/celebrationsStoryAudio";
+import { COLORS_AUDIO, COLORS_ENTRIES } from "./src/data/colorsAudio";
 import { ELDERS_AUDIO, ELDERS_ENTRIES } from "./src/data/eldersAudio";
 import { ELDERS_STORY_AUDIO } from "./src/data/eldersStoryAudio";
 import { EMOTIONS_AUDIO, EMOTIONS_ENTRIES } from "./src/data/emotionsAudio";
@@ -61,6 +62,11 @@ import {
   FOOD_COOKING_ENTRIES,
 } from "./src/data/foodCookingAudio";
 import { FOOD_COOKING_STORY_AUDIO } from "./src/data/foodCookingStoryAudio";
+import {
+  GIRL_AND_SKULL_AUDIO,
+  GIRL_AND_SKULL_ENTRIES,
+} from "./src/data/girlAndSkullAudio";
+import { GIRL_AND_SKULL_STORY_AUDIO } from "./src/data/girlAndSkullStoryAudio";
 import { GREETINGS_AUDIO, GREETINGS_PHRASES } from "./src/data/greetingsAudio";
 import { HEALTH_AUDIO, HEALTH_ENTRIES } from "./src/data/healthAudio";
 import { HEALTH_STORY_AUDIO } from "./src/data/healthStoryAudio";
@@ -69,6 +75,16 @@ import {
   HOUSEHOLD_OBJECTS_ENTRIES,
 } from "./src/data/householdObjectsAudio";
 import { HOUSEHOLD_OBJECTS_STORY_AUDIO } from "./src/data/householdObjectsStoryAudio";
+import {
+  MOSQUITO_AND_EAR_AUDIO,
+  MOSQUITO_AND_EAR_ENTRIES,
+} from "./src/data/mosquitoAndEarAudio";
+import { MOSQUITO_AND_EAR_STORY_AUDIO } from "./src/data/mosquitoAndEarStoryAudio";
+import {
+  POINTING_THINGS_OUT_AUDIO,
+  POINTING_THINGS_OUT_ENTRIES,
+} from "./src/data/pointingThingsOutAudio";
+import { POINTING_THINGS_OUT_STORY_AUDIO } from "./src/data/pointingThingsOutStoryAudio";
 import {
   NUMBERS_MONEY_AUDIO,
   NUMBERS_MONEY_ENTRIES,
@@ -205,8 +221,11 @@ const ELDERS_STORY_DIALOGUE = require("./assets/audio/elders/story-dialogue.json
 const EMOTIONS_STORY_DIALOGUE = require("./assets/audio/emotions/story-dialogue.json") as StoryDialogueEntry[];
 const FOOD_COOKING_STORY_DIALOGUE = require("./assets/audio/food-cooking/story-dialogue.json") as StoryDialogueEntry[];
 const FAMILY_PEOPLE_STORY_DIALOGUE = require("./assets/audio/family-people/story-dialogue.json") as StoryDialogueEntry[];
+const GIRL_AND_SKULL_STORY_DIALOGUE = require("./assets/audio/girl-and-skull/story-dialogue.json") as StoryDialogueEntry[];
 const HEALTH_STORY_DIALOGUE = require("./assets/audio/health/story-dialogue.json") as StoryDialogueEntry[];
 const HOUSEHOLD_OBJECTS_STORY_DIALOGUE = require("./assets/audio/household-objects/story-dialogue.json") as StoryDialogueEntry[];
+const MOSQUITO_AND_EAR_STORY_DIALOGUE = require("./assets/audio/mosquito-and-ear/story-dialogue.json") as StoryDialogueEntry[];
+const POINTING_THINGS_OUT_STORY_DIALOGUE = require("./assets/audio/pointing-things-out/story-dialogue.json") as StoryDialogueEntry[];
 const NUMBERS_MONEY_STORY_DIALOGUE = require("./assets/audio/numbers-money/story-dialogue.json") as StoryDialogueEntry[];
 const SCHOOL_WORK_STORY_DIALOGUE = require("./assets/audio/school-work/story-dialogue.json") as StoryDialogueEntry[];
 const TORTOISE_AND_ITS_SHELL_STORY_DIALOGUE = require("./assets/audio/tortoise-and-its-shell/story-dialogue.json") as StoryDialogueEntry[];
@@ -231,6 +250,10 @@ const FAMILY_PEOPLE_TRANSLATIONS = require("./assets/audio/family-people/transla
   string
 >;
 const FOOD_COOKING_TRANSLATIONS = require("./assets/audio/food-cooking/translations.json") as Record<
+  string,
+  string
+>;
+const GIRL_AND_SKULL_TRANSLATIONS = require("./assets/audio/girl-and-skull/translations.json") as Record<
   string,
   string
 >;
@@ -266,6 +289,14 @@ const HOUSEHOLD_OBJECTS_TRANSLATIONS = require("./assets/audio/household-objects
   string,
   string
 >;
+const MOSQUITO_AND_EAR_TRANSLATIONS = require("./assets/audio/mosquito-and-ear/translations.json") as Record<
+  string,
+  string
+>;
+const POINTING_THINGS_OUT_TRANSLATIONS = require("./assets/audio/pointing-things-out/translations.json") as Record<
+  string,
+  string
+>;
 const WEATHER_NATURE_TRANSLATIONS = require("./assets/audio/weather-nature/translations.json") as Record<
   string,
   string
@@ -282,6 +313,10 @@ const CELEBRATIONS_TRANSLATIONS = require("./assets/audio/celebrations/translati
   string,
   string
 >;
+const COLORS_TRANSLATIONS = require("./assets/audio/colors/translations.json") as Record<
+  string,
+  string
+>;
 
 const LESSON_TRANSLATIONS: Record<string, Record<string, string>> = {
   greetings: GREETINGS_TRANSLATIONS,
@@ -289,6 +324,7 @@ const LESSON_TRANSLATIONS: Record<string, Record<string, string>> = {
   "asking-questions": ASKING_QUESTIONS_TRANSLATIONS,
   "family-people": FAMILY_PEOPLE_TRANSLATIONS,
   "food-cooking": FOOD_COOKING_TRANSLATIONS,
+  "girl-and-skull": GIRL_AND_SKULL_TRANSLATIONS,
   "numbers-money": NUMBERS_MONEY_TRANSLATIONS,
   "school-work": SCHOOL_WORK_TRANSLATIONS,
   "tortoise-and-its-shell": TORTOISE_AND_ITS_SHELL_TRANSLATIONS,
@@ -297,10 +333,13 @@ const LESSON_TRANSLATIONS: Record<string, Record<string, string>> = {
   emotions: EMOTIONS_TRANSLATIONS,
   health: HEALTH_TRANSLATIONS,
   "household-objects": HOUSEHOLD_OBJECTS_TRANSLATIONS,
+  "mosquito-and-ear": MOSQUITO_AND_EAR_TRANSLATIONS,
+  "pointing-things-out": POINTING_THINGS_OUT_TRANSLATIONS,
   "weather-nature": WEATHER_NATURE_TRANSLATIONS,
   animals: ANIMALS_TRANSLATIONS,
   elders: ELDERS_TRANSLATIONS,
   celebrations: CELEBRATIONS_TRANSLATIONS,
+  colors: COLORS_TRANSLATIONS,
 };
 
 const DEFAULT_VISUAL_KEY_BY_ENGLISH_PROMPT: Record<string, string> = {
@@ -343,15 +382,22 @@ const QUESTION_AUDIO: Record<string, number> = {
   ...ANIMALS_AUDIO,
   ...CELEBRATIONS_AUDIO,
   ...CELEBRATIONS_STORY_AUDIO,
+  ...COLORS_AUDIO,
   ...ELDERS_AUDIO,
   ...ELDERS_STORY_AUDIO,
   ...EMOTIONS_AUDIO,
   ...EMOTIONS_STORY_AUDIO,
+  ...GIRL_AND_SKULL_AUDIO,
+  ...GIRL_AND_SKULL_STORY_AUDIO,
   ...GREETINGS_AUDIO,
   ...HEALTH_AUDIO,
   ...HEALTH_STORY_AUDIO,
   ...HOUSEHOLD_OBJECTS_AUDIO,
   ...HOUSEHOLD_OBJECTS_STORY_AUDIO,
+  ...MOSQUITO_AND_EAR_AUDIO,
+  ...MOSQUITO_AND_EAR_STORY_AUDIO,
+  ...POINTING_THINGS_OUT_AUDIO,
+  ...POINTING_THINGS_OUT_STORY_AUDIO,
   ...NUMBERS_MONEY_AUDIO,
   ...NUMBERS_MONEY_STORY_AUDIO,
   ...SCHOOL_WORK_AUDIO,
@@ -422,6 +468,16 @@ const WORD_QUESTION_BANK: Record<string, Question[]> = {
       answer,
       visualKey: resolveVisualKey(entry.english, answer),
       audioKey: resolveAudioKey(FOOD_COOKING_AUDIO, answer),
+    };
+  }),
+  "girl-and-skull": GIRL_AND_SKULL_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("girl-and-skull", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(GIRL_AND_SKULL_AUDIO, answer),
     };
   }),
   "numbers-money": NUMBERS_MONEY_ENTRIES.map((entry) => {
@@ -504,6 +560,26 @@ const WORD_QUESTION_BANK: Record<string, Question[]> = {
       audioKey: resolveAudioKey(HOUSEHOLD_OBJECTS_AUDIO, answer),
     };
   }),
+  "mosquito-and-ear": MOSQUITO_AND_EAR_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("mosquito-and-ear", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(MOSQUITO_AND_EAR_AUDIO, answer),
+    };
+  }),
+  "pointing-things-out": POINTING_THINGS_OUT_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("pointing-things-out", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(POINTING_THINGS_OUT_AUDIO, answer),
+    };
+  }),
   "weather-nature": WEATHER_NATURE_ENTRIES.map((entry) => {
     const answer = toToneMarkedText("weather-nature", entry.igbo);
 
@@ -544,6 +620,16 @@ const WORD_QUESTION_BANK: Record<string, Question[]> = {
       audioKey: resolveAudioKey(CELEBRATIONS_AUDIO, answer),
     };
   }),
+  colors: COLORS_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("colors", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(COLORS_AUDIO, answer),
+    };
+  }),
 };
 
 const SENTENCE_BUILDER_BANK: Record<string, SentenceBuilderSeed[]> = {
@@ -552,6 +638,7 @@ const SENTENCE_BUILDER_BANK: Record<string, SentenceBuilderSeed[]> = {
   "asking-questions": buildSentenceSeedsFromEntries(ASKING_QUESTIONS_ENTRIES),
   "family-people": buildSentenceSeedsFromEntries(FAMILY_PEOPLE_ENTRIES),
   "food-cooking": buildSentenceSeedsFromEntries(FOOD_COOKING_ENTRIES),
+  "girl-and-skull": buildSentenceSeedsFromEntries(GIRL_AND_SKULL_ENTRIES),
   "numbers-money": buildSentenceSeedsFromEntries(NUMBERS_MONEY_ENTRIES),
   "school-work": buildSentenceSeedsFromEntries(SCHOOL_WORK_ENTRIES),
   "tortoise-and-its-shell": buildSentenceSeedsFromEntries(
@@ -562,10 +649,13 @@ const SENTENCE_BUILDER_BANK: Record<string, SentenceBuilderSeed[]> = {
   emotions: buildSentenceSeedsFromEntries(EMOTIONS_ENTRIES),
   health: buildSentenceSeedsFromEntries(HEALTH_ENTRIES),
   "household-objects": buildSentenceSeedsFromEntries(HOUSEHOLD_OBJECTS_ENTRIES),
+  "mosquito-and-ear": buildSentenceSeedsFromEntries(MOSQUITO_AND_EAR_ENTRIES),
+  "pointing-things-out": buildSentenceSeedsFromEntries(POINTING_THINGS_OUT_ENTRIES),
   "weather-nature": buildSentenceSeedsFromEntries(WEATHER_NATURE_ENTRIES),
   animals: buildSentenceSeedsFromEntries(ANIMALS_ENTRIES),
   elders: buildSentenceSeedsFromEntries(ELDERS_ENTRIES),
   celebrations: buildSentenceSeedsFromEntries(CELEBRATIONS_ENTRIES),
+  colors: buildSentenceSeedsFromEntries(COLORS_ENTRIES),
 };
 
 const QUESTION_BANK: Record<string, Question[]> = {
@@ -598,6 +688,12 @@ const QUESTION_BANK: Record<string, Question[]> = {
     "Food and Cooking",
     WORD_QUESTION_BANK["food-cooking"],
     SENTENCE_BUILDER_BANK["food-cooking"]
+  ),
+  "girl-and-skull": buildLessonQuestionSet(
+    "girl-and-skull",
+    "Girl and Skull",
+    WORD_QUESTION_BANK["girl-and-skull"],
+    SENTENCE_BUILDER_BANK["girl-and-skull"]
   ),
   "numbers-money": buildLessonQuestionSet(
     "numbers-money",
@@ -647,6 +743,18 @@ const QUESTION_BANK: Record<string, Question[]> = {
     WORD_QUESTION_BANK["household-objects"],
     SENTENCE_BUILDER_BANK["household-objects"]
   ),
+  "mosquito-and-ear": buildLessonQuestionSet(
+    "mosquito-and-ear",
+    "Mosquito and Ear",
+    WORD_QUESTION_BANK["mosquito-and-ear"],
+    SENTENCE_BUILDER_BANK["mosquito-and-ear"]
+  ),
+  "pointing-things-out": buildLessonQuestionSet(
+    "pointing-things-out",
+    "Pointing Things Out",
+    WORD_QUESTION_BANK["pointing-things-out"],
+    SENTENCE_BUILDER_BANK["pointing-things-out"]
+  ),
   "weather-nature": buildLessonQuestionSet(
     "weather-nature",
     "Weather and Nature",
@@ -670,6 +778,12 @@ const QUESTION_BANK: Record<string, Question[]> = {
     "Celebrations",
     WORD_QUESTION_BANK.celebrations,
     SENTENCE_BUILDER_BANK.celebrations
+  ),
+  colors: buildLessonQuestionSet(
+    "colors",
+    "Colors",
+    WORD_QUESTION_BANK.colors,
+    SENTENCE_BUILDER_BANK.colors
   ),
 };
 
@@ -812,6 +926,7 @@ const LESSON_DEFS = [
   { id: "asking-questions", title: "Asking Questions" },
   { id: "family-people", title: "Family and People" },
   { id: "food-cooking", title: "Food and Cooking" },
+  { id: "girl-and-skull", title: "Girl and Skull" },
   { id: "numbers-money", title: "Numbers and Money" },
   { id: "school-work", title: "School and Work" },
   { id: "tortoise-and-its-shell", title: "Tortoise and its Shell" },
@@ -820,10 +935,13 @@ const LESSON_DEFS = [
   { id: "emotions", title: "Emotions" },
   { id: "health", title: "Health" },
   { id: "household-objects", title: "Household Objects" },
+  { id: "mosquito-and-ear", title: "Mosquito and Ear" },
+  { id: "pointing-things-out", title: "Pointing Things Out" },
   { id: "weather-nature", title: "Weather and Nature" },
   { id: "animals", title: "Animals" },
   { id: "elders", title: "Elders" },
   { id: "celebrations", title: "Celebrations" },
+  { id: "colors", title: "Colors" },
 ];
 
 const ACTIVE_QUESTION_BANK: Record<string, Question[]> = QUESTION_BANK;
@@ -1582,6 +1700,10 @@ function buildStoryQuestions(lessonId: string): Question[] {
     return buildBalancedStoryQuestionSet(FOOD_COOKING_STORY_DIALOGUE);
   }
 
+  if (lessonId === "girl-and-skull") {
+    return buildBalancedStoryQuestionSet(GIRL_AND_SKULL_STORY_DIALOGUE);
+  }
+
   if (lessonId === "family-people") {
     return buildBalancedStoryQuestionSet(FAMILY_PEOPLE_STORY_DIALOGUE);
   }
@@ -1592,6 +1714,14 @@ function buildStoryQuestions(lessonId: string): Question[] {
 
   if (lessonId === "household-objects") {
     return buildBalancedStoryQuestionSet(HOUSEHOLD_OBJECTS_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "mosquito-and-ear") {
+    return buildBalancedStoryQuestionSet(MOSQUITO_AND_EAR_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "pointing-things-out") {
+    return buildBalancedStoryQuestionSet(POINTING_THINGS_OUT_STORY_DIALOGUE);
   }
 
   if (lessonId === "numbers-money") {

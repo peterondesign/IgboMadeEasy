@@ -71,6 +71,13 @@ function configureRevenueCat() {
 export const PREMIUM_ANNUAL_PRODUCT_ID = "premium_annual_igbo_easy";
 export const PREMIUM_MONTHLY_PRODUCT_ID = "premium_monthly_igbo_easy";
 
+export const PREMIUM_PRICING = {
+  monthlyUsd: 7.99,
+  yearlyUsd: 79.99,
+  monthlyLabel: "$7.99/month",
+  yearlyLabel: "$79.99/year",
+} as const;
+
 export async function purchasePremiumAccess(
   productId?: string
 ): Promise<boolean> {
