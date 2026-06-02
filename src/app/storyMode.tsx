@@ -1,9 +1,11 @@
 import { Pressable, Text, View } from "react-native";
 import StoryDadIllustration from "../../assets/illustrations/story-dad.svg";
 import StoryDaughterIllustration from "../../assets/illustrations/story-daughter.svg";
+import StoryGranddaughterIllustration from "../../assets/illustrations/story-granddaughter.svg";
+import StoryDoveIllustration from "../../assets/illustrations/story-dove.svg";
 import { styles } from "./styles";
 
-export type StorySpeaker = "dad" | "daughter";
+export type StorySpeaker = "dad" | "daughter" | "granddaughter" | "dove";
 
 export type StoryModeQuestion = {
   speaker: StorySpeaker;
@@ -18,7 +20,23 @@ export type StoryModeQuestion = {
 const STORY_CHARACTER_LABELS: Record<StorySpeaker, string> = {
   dad: "Dad",
   daughter: "Daughter",
+  granddaughter: "Granddaughter",
+  dove: "Dove",
 };
+
+function resolveCompanionSpeaker(story: StoryModeQuestion): StorySpeaker {
+  const normalizedPath = story.daughterSvgPath.toLowerCase();
+
+  if (normalizedPath.includes("story-granddaughter")) {
+    return "granddaughter";
+  }
+
+  if (normalizedPath.includes("story-dove")) {
+    return "dove";
+  }
+
+  return "daughter";
+}
 
 function CharacterCard({
   label,
@@ -27,10 +45,16 @@ function CharacterCard({
 }: {
   label: string;
   isActive: boolean;
-  illustration: "dad" | "daughter";
+  illustration: StorySpeaker;
 }) {
   const Illustration =
-    illustration === "dad" ? StoryDadIllustration : StoryDaughterIllustration;
+    illustration === "dad"
+      ? StoryDadIllustration
+      : illustration === "granddaughter"
+        ? StoryGranddaughterIllustration
+        : illustration === "dove"
+          ? StoryDoveIllustration
+        : StoryDaughterIllustration;
 
   return (
     <View style={[styles.storyCharacterWrap, isActive && styles.storyCharacterWrapActive]}>
@@ -52,6 +76,7 @@ export default function StoryMode({
   onSelectAnswer: (value: string) => void;
 }) {
   const isDadSpeaking = story.speaker === "dad";
+  const companionSpeaker = resolveCompanionSpeaker(story);
 
   return (
     <View style={styles.storyModeWrap}>
@@ -80,9 +105,9 @@ export default function StoryMode({
           illustration="dad"
         />
         <CharacterCard
-          label={STORY_CHARACTER_LABELS.daughter}
-          isActive={story.speaker === "daughter"}
-          illustration="daughter"
+          label={STORY_CHARACTER_LABELS[companionSpeaker]}
+          isActive={story.speaker !== "dad"}
+          illustration={companionSpeaker}
         />
       </View>
 

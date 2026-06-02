@@ -1,0 +1,15 @@
+export const CELEBRATIONS_STORY_AUDIO: Record<string, number> = {
+	"story-celebrations-emume-a-buru-ibu-nke-ukwuu": require("../../assets/audio/celebrations/story/story-celebrations-emume-a-buru-ibu-nke-ukwuu.wav"),
+	"story-celebrations-ndi-obia-no-ebe-niile": require("../../assets/audio/celebrations/story/story-celebrations-ndi-obia-no-ebe-niile.wav"),
+	"story-celebrations-e-nwere-nri-mmanya-nkwu-abu-na-igba": require("../../assets/audio/celebrations/story/story-celebrations-e-nwere-nri-mmanya-nkwu-abu-na-igba.wav"),
+	"story-celebrations-lee-mmanwu-ahu": require("../../assets/audio/celebrations/story/story-celebrations-lee-mmanwu-ahu.wav"),
+	"story-celebrations-ahuru-m-ya": require("../../assets/audio/celebrations/story/story-celebrations-ahuru-m-ya.wav"),
+	"story-celebrations-papa-i-ga-eso-mmanwu-gbaa-egwu": require("../../assets/audio/celebrations/story/story-celebrations-papa-i-ga-eso-mmanwu-gbaa-egwu.wav"),
+	"story-celebrations-o-nwere-ike-bu": require("../../assets/audio/celebrations/story/story-celebrations-o-nwere-ike-bu.wav"),
+	"story-celebrations-eziokwu": require("../../assets/audio/celebrations/story/story-celebrations-eziokwu.wav"),
+	"story-celebrations-anyi-no-noriri-di-ka-agbamakwukwo-ma-o-bu-ubochi-omumu": require("../../assets/audio/celebrations/story/story-celebrations-anyi-no-noriri-di-ka-agbamakwukwo-ma-o-bu-ubochi-omumu.wav"),
+	"story-celebrations-ya-bu-i-ga-agba-egwu": require("../../assets/audio/celebrations/story/story-celebrations-ya-bu-i-ga-agba-egwu.wav"),
+	"story-celebrations-mba": require("../../assets/audio/celebrations/story/story-celebrations-mba.wav"),
+	"story-celebrations-gini-ka-i-ga-eme": require("../../assets/audio/celebrations/story/story-celebrations-gini-ka-i-ga-eme.wav"),
+	"story-celebrations-aga-m-eri-nri-nuo-obere-mmanya-nkwu-chota-oche-ma-hie-obere-ura": require("../../assets/audio/celebrations/story/story-celebrations-aga-m-eri-nri-nuo-obere-mmanya-nkwu-chota-oche-ma-hie-obere-ura.wav"),
+};

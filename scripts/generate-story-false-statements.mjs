@@ -4,7 +4,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const CHATGPT_MODEL = process.env.CHATGPT_MODEL || "gpt-4.1-mini";
 const OPENAI_API_KEY =
-  process.env.OPENAI_API_KEY || process.env.CHATGPT_API_KEY || "";
+  process.env.OPENAI_API_KEY || process.env.CHATGPT_API_KEY;
 
 const DEFAULT_FIVE_LESSONS = [
   "greetings",

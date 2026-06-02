@@ -1,0 +1,15 @@
+export const WEATHER_NATURE_STORY_AUDIO: Record<string, number> = {
+	"story-weather-nature-nwa-nwa-m-choro-iga-lelee-odidi-ke-uwa-taa": require("../../assets/audio/weather-nature/story/story-weather-nature-nwa-nwa-m-choro-iga-lelee-odidi-ke-uwa-taa.wav"),
+	"story-weather-nature-eziokwu-o-ga-enwe-onu-na-ya": require("../../assets/audio/weather-nature/story/story-weather-nature-eziokwu-o-ga-enwe-onu-na-ya.wav"),
+	"story-weather-nature-ee-o-huru-ya-nanya": require("../../assets/audio/weather-nature/story/story-weather-nature-ee-o-huru-ya-nanya.wav"),
+	"story-weather-nature-o-ga-ahu-osisi-na-akwukwo-osisi": require("../../assets/audio/weather-nature/story/story-weather-nature-o-ga-ahu-osisi-na-akwukwo-osisi.wav"),
+	"story-weather-nature-nke-ahu-di-mma": require("../../assets/audio/weather-nature/story/story-weather-nature-nke-ahu-di-mma.wav"),
+	"story-weather-nature-o-ga-ahu-osimiri-na-ugwu": require("../../assets/audio/weather-nature/story/story-weather-nature-o-ga-ahu-osimiri-na-ugwu.wav"),
+	"story-weather-nature-ee": require("../../assets/audio/weather-nature/story/story-weather-nature-ee.wav"),
+	"story-weather-nature-o-nwekwara-ike-ihu-anyu-igwe-ojii-na-ifufe": require("../../assets/audio/weather-nature/story/story-weather-nature-o-nwekwara-ike-ihu-anyu-igwe-ojii-na-ifufe.wav"),
+	"story-weather-nature-hmm": require("../../assets/audio/weather-nature/story/story-weather-nature-hmm.wav"),
+	"story-weather-nature-ma-o-buru-na-mmiri-ozuzo-adaa-ma-o-bu-oke-ifufe-bia-o-ga-enwe-akuko": require("../../assets/audio/weather-nature/story/story-weather-nature-ma-o-buru-na-mmiri-ozuzo-adaa-ma-o-bu-oke-ifufe-bia-o-ga-enwe-akuko.wav"),
+	"story-weather-nature-nke-ahu-bu-eziokwu": require("../../assets/audio/weather-nature/story/story-weather-nature-nke-ahu-bu-eziokwu.wav"),
+	"story-weather-nature-papa-gini-ka-i-choro-ihu": require("../../assets/audio/weather-nature/story/story-weather-nature-papa-gini-ka-i-choro-ihu.wav"),
+	"story-weather-nature-mu-achoro-m-ino-nulo-ka-nwa-nwa-m-gaa-hu-ihe-ndi-ahu-niile": require("../../assets/audio/weather-nature/story/story-weather-nature-mu-achoro-m-ino-nulo-ka-nwa-nwa-m-gaa-hu-ihe-ndi-ahu-niile.wav"),
+};

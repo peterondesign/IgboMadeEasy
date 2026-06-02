@@ -1,0 +1,15 @@
+export const TORTOISE_AND_ITS_SHELL_STORY_AUDIO: Record<string, number> = {
+	"story-tortoise-and-its-shell-i-ma-etu-mbe-si-nweta-akpukpo-ya-gbawara-agbawa": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-i-ma-etu-mbe-si-nweta-akpukpo-ya-gbawara-agbawa.wav"),
+	"story-tortoise-and-its-shell-mba-nnaochie-gwa-m": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-mba-nnaochie-gwa-m.wav"),
+	"story-tortoise-and-its-shell-otu-ubochi-e-nwere-ukwu-oriri-neluigwe": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-otu-ubochi-e-nwere-ukwu-oriri-neluigwe.wav"),
+	"story-tortoise-and-its-shell-mbe-o-gara": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-mbe-o-gara.wav"),
+	"story-tortoise-and-its-shell-o-riri-nri-karie-mmadu-niile": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-o-riri-nri-karie-mmadu-niile.wav"),
+	"story-tortoise-and-its-shell-gini-mere-mgbe-ahu": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-gini-mere-mgbe-ahu.wav"),
+	"story-tortoise-and-its-shell-nnunu-ndi-ahu-were-iwe": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-nnunu-ndi-ahu-were-iwe.wav"),
+	"story-tortoise-and-its-shell-gini-ka-ha-mere": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-gini-ka-ha-mere.wav"),
+	"story-tortoise-and-its-shell-ha-weghachiri-abuba-ha-ha-gbazinyere-ya": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-ha-weghachiri-abuba-ha-ha-gbazinyere-ya.wav"),
+	"story-tortoise-and-its-shell-kedu-ka-o-si-lota-nulo": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-kedu-ka-o-si-lota-nulo.wav"),
+	"story-tortoise-and-its-shell-o-si-neluigwe-daa": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-o-si-neluigwe-daa.wav"),
+	"story-tortoise-and-its-shell-chineke": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-chineke.wav"),
+	"story-tortoise-and-its-shell-mgbe-o-dara-akpukpo-ya-gbawara-agbawa": require("../../assets/audio/tortoise-and-its-shell/story/story-tortoise-and-its-shell-mgbe-o-dara-akpukpo-ya-gbawara-agbawa.wav"),
+};

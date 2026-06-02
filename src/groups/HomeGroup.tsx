@@ -17,7 +17,8 @@ export default function HomeGroup({ onGetStarted, styles }: HomeGroupProps) {
       >
         <View style={styles.homeTopContent}>
           <Text style={styles.homeHeadline}>
-            Speak Igbo{"\n"}confidently{"\n"}from day one
+            Speak Igbo{"\n"}confidently{"\n"}from{" "}
+            <Text style={{ fontWeight: "700" }}>day one</Text>
           </Text>
 
           <Pressable
@@ -25,7 +26,7 @@ export default function HomeGroup({ onGetStarted, styles }: HomeGroupProps) {
             accessibilityRole="button"
             onPress={onGetStarted}
           >
-            <Text style={styles.buttonText}>Log in</Text>
+            <Text style={styles.buttonText}>Get started</Text>
           </Pressable>
         </View>
 

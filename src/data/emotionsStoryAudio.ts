@@ -1,0 +1,15 @@
+export const EMOTIONS_STORY_AUDIO: Record<string, number> = {
+	"story-emotions-nwa-m-umu-umu-m-ga-abia-taa": require("../../assets/audio/emotions/story/story-emotions-nwa-m-umu-umu-m-ga-abia-taa.wav"),
+	"story-emotions-olee-otu-obi-di-gi-papa": require("../../assets/audio/emotions/story/story-emotions-olee-otu-obi-di-gi-papa.wav"),
+	"story-emotions-enwe-m-anuri": require("../../assets/audio/emotions/story/story-emotions-enwe-m-anuri.wav"),
+	"story-emotions-nke-ahu-di-mma": require("../../assets/audio/emotions/story/story-emotions-nke-ahu-di-mma.wav"),
+	"story-emotions-enwekwara-m-obi-uto": require("../../assets/audio/emotions/story/story-emotions-enwekwara-m-obi-uto.wav"),
+	"story-emotions-ginikwa-ozo": require("../../assets/audio/emotions/story/story-emotions-ginikwa-ozo.wav"),
+	"story-emotions-enwe-m-nchegbu-ha-na-eme-mkpotu": require("../../assets/audio/emotions/story/story-emotions-enwe-m-nchegbu-ha-na-eme-mkpotu.wav"),
+	"story-emotions-na-achi-ochi": require("../../assets/audio/emotions/story/story-emotions-na-achi-ochi.wav"),
+	"story-emotions-enwe-m-egwu-ha-nwere-ike-iri-nri-m-niile": require("../../assets/audio/emotions/story/story-emotions-enwe-m-egwu-ha-nwere-ike-iri-nri-m-niile.wav"),
+	"story-emotions-papa": require("../../assets/audio/emotions/story/story-emotions-papa.wav"),
+	"story-emotions-enwe-m-udo-mwute-iwe-na-ike-agwula": require("../../assets/audio/emotions/story/story-emotions-enwe-m-udo-mwute-iwe-na-ike-agwula.wav"),
+	"story-emotions-kedu-maka-iju-anya": require("../../assets/audio/emotions/story/story-emotions-kedu-maka-iju-anya.wav"),
+	"story-emotions-o-digwa-m-iju-anya-na-mmadu-nwere-ike-inwe-mmetuta-ndi-a-niile-notu-oge": require("../../assets/audio/emotions/story/story-emotions-o-digwa-m-iju-anya-na-mmadu-nwere-ike-inwe-mmetuta-ndi-a-niile-notu-oge.wav"),
+};

@@ -41,8 +41,11 @@ import {
   CELEBRATIONS_AUDIO,
   CELEBRATIONS_ENTRIES,
 } from "./src/data/celebrationsAudio";
+import { CELEBRATIONS_STORY_AUDIO } from "./src/data/celebrationsStoryAudio";
 import { ELDERS_AUDIO, ELDERS_ENTRIES } from "./src/data/eldersAudio";
+import { ELDERS_STORY_AUDIO } from "./src/data/eldersStoryAudio";
 import { EMOTIONS_AUDIO, EMOTIONS_ENTRIES } from "./src/data/emotionsAudio";
+import { EMOTIONS_STORY_AUDIO } from "./src/data/emotionsStoryAudio";
 import {
   EVERYDAY_VERBS_AUDIO,
   EVERYDAY_VERBS_ENTRIES,
@@ -60,14 +63,17 @@ import {
 import { FOOD_COOKING_STORY_AUDIO } from "./src/data/foodCookingStoryAudio";
 import { GREETINGS_AUDIO, GREETINGS_PHRASES } from "./src/data/greetingsAudio";
 import { HEALTH_AUDIO, HEALTH_ENTRIES } from "./src/data/healthAudio";
+import { HEALTH_STORY_AUDIO } from "./src/data/healthStoryAudio";
 import {
   HOUSEHOLD_OBJECTS_AUDIO,
   HOUSEHOLD_OBJECTS_ENTRIES,
 } from "./src/data/householdObjectsAudio";
+import { HOUSEHOLD_OBJECTS_STORY_AUDIO } from "./src/data/householdObjectsStoryAudio";
 import {
   NUMBERS_MONEY_AUDIO,
   NUMBERS_MONEY_ENTRIES,
 } from "./src/data/numbersMoneyAudio";
+import { NUMBERS_MONEY_STORY_AUDIO } from "./src/data/numbersMoneyStoryAudio";
 import {
   SCHOOL_WORK_AUDIO,
   SCHOOL_WORK_ENTRIES,
@@ -79,9 +85,20 @@ import {
 } from "./src/data/transportationAudio";
 import { TRANSPORTATION_STORY_AUDIO } from "./src/data/transportationStoryAudio";
 import {
+  TORTOISE_AND_ITS_SHELL_AUDIO,
+  TORTOISE_AND_ITS_SHELL_ENTRIES,
+} from "./src/data/tortoiseAndItsShellAudio";
+import { TORTOISE_AND_ITS_SHELL_STORY_AUDIO } from "./src/data/tortoiseAndItsShellStoryAudio";
+import {
+  TORTOISE_AND_DOVE_AUDIO,
+  TORTOISE_AND_DOVE_ENTRIES,
+} from "./src/data/tortoiseAndDoveAudio";
+import { TORTOISE_AND_DOVE_STORY_AUDIO } from "./src/data/tortoiseAndDoveStoryAudio";
+import {
   WEATHER_NATURE_AUDIO,
   WEATHER_NATURE_ENTRIES,
 } from "./src/data/weatherNatureAudio";
+import { WEATHER_NATURE_STORY_AUDIO } from "./src/data/weatherNatureStoryAudio";
 import { GREETINGS_STORY_AUDIO } from "./src/data/greetingsStoryAudio";
 import { VISUAL_KEY_OVERRIDES_BY_IGBO } from "./src/data/illustrationOverrides";
 import GameGroup from "./src/groups/GameGroup";
@@ -90,7 +107,6 @@ import LessonGroup from "./src/groups/LessonGroup";
 import {
   CompletedLessonScreen,
   LessonsScreen,
-  ProfileScreen,
   PremiumScreen,
   QuizScreen,
   StreakScreen,
@@ -105,11 +121,6 @@ import {
   restorePremiumPurchases,
   restorePremiumStatus,
 } from "./src/services/premiumPurchase";
-import {
-  clearStoredAuthSession,
-  getStoredAuthSession,
-  loginWithAuth0,
-} from "./src/services/auth";
 
 type ScreenName =
   | "home"
@@ -117,12 +128,11 @@ type ScreenName =
   | "quiz"
   | "completed"
   | "streak"
-  | "premium"
-  | "profile";
+  | "premium";
 type AppGroup = "home" | "lesson" | "game";
 type FeedbackState = "correct" | "wrong" | null;
 
-type StorySpeaker = "dad" | "daughter";
+type StorySpeaker = "dad" | "daughter" | "granddaughter" | "dove";
 
 type StoryModeQuestion = {
   speaker: StorySpeaker;
@@ -135,8 +145,8 @@ type StoryModeQuestion = {
 };
 
 type StoryDialogueEntry = StoryModeQuestion & {
-  audioKey: string;
-  voice: "male" | "female";
+  audioKey?: string;
+  voice: "male" | "female" | "very-young-girl";
   falseStatement?: string;
 };
 
@@ -187,10 +197,19 @@ const PREMIUM_EMAIL_STORAGE_KEY = "igbo-made-easy.premium-email.v1";
 const GREETINGS_STORY_DIALOGUE = require("./assets/audio/greetings/story-dialogue.json") as StoryDialogueEntry[];
 const EVERYDAY_VERBS_STORY_DIALOGUE = require("./assets/audio/everyday-verbs/story-dialogue.json") as StoryDialogueEntry[];
 const ASKING_QUESTIONS_STORY_DIALOGUE = require("./assets/audio/asking-questions/story-dialogue.json") as StoryDialogueEntry[];
+const CELEBRATIONS_STORY_DIALOGUE = require("./assets/audio/celebrations/story-dialogue.json") as StoryDialogueEntry[];
+const ELDERS_STORY_DIALOGUE = require("./assets/audio/elders/story-dialogue.json") as StoryDialogueEntry[];
+const EMOTIONS_STORY_DIALOGUE = require("./assets/audio/emotions/story-dialogue.json") as StoryDialogueEntry[];
 const FOOD_COOKING_STORY_DIALOGUE = require("./assets/audio/food-cooking/story-dialogue.json") as StoryDialogueEntry[];
 const FAMILY_PEOPLE_STORY_DIALOGUE = require("./assets/audio/family-people/story-dialogue.json") as StoryDialogueEntry[];
+const HEALTH_STORY_DIALOGUE = require("./assets/audio/health/story-dialogue.json") as StoryDialogueEntry[];
+const HOUSEHOLD_OBJECTS_STORY_DIALOGUE = require("./assets/audio/household-objects/story-dialogue.json") as StoryDialogueEntry[];
+const NUMBERS_MONEY_STORY_DIALOGUE = require("./assets/audio/numbers-money/story-dialogue.json") as StoryDialogueEntry[];
 const SCHOOL_WORK_STORY_DIALOGUE = require("./assets/audio/school-work/story-dialogue.json") as StoryDialogueEntry[];
+const TORTOISE_AND_ITS_SHELL_STORY_DIALOGUE = require("./assets/audio/tortoise-and-its-shell/story-dialogue.json") as StoryDialogueEntry[];
+const TORTOISE_AND_DOVE_STORY_DIALOGUE = require("./assets/audio/tortoise-and-dove/story-dialogue.json") as StoryDialogueEntry[];
 const TRANSPORTATION_STORY_DIALOGUE = require("./assets/audio/transportation/story-dialogue.json") as StoryDialogueEntry[];
+const WEATHER_NATURE_STORY_DIALOGUE = require("./assets/audio/weather-nature/story-dialogue.json") as StoryDialogueEntry[];
 
 const GREETINGS_TRANSLATIONS = require("./assets/audio/greetings/translations.json") as Record<
   string,
@@ -217,6 +236,14 @@ const NUMBERS_MONEY_TRANSLATIONS = require("./assets/audio/numbers-money/transla
   string
 >;
 const SCHOOL_WORK_TRANSLATIONS = require("./assets/audio/school-work/translations.json") as Record<
+  string,
+  string
+>;
+const TORTOISE_AND_ITS_SHELL_TRANSLATIONS = require("./assets/audio/tortoise-and-its-shell/translations.json") as Record<
+  string,
+  string
+>;
+const TORTOISE_AND_DOVE_TRANSLATIONS = require("./assets/audio/tortoise-and-dove/translations.json") as Record<
   string,
   string
 >;
@@ -261,6 +288,8 @@ const LESSON_TRANSLATIONS: Record<string, Record<string, string>> = {
   "food-cooking": FOOD_COOKING_TRANSLATIONS,
   "numbers-money": NUMBERS_MONEY_TRANSLATIONS,
   "school-work": SCHOOL_WORK_TRANSLATIONS,
+  "tortoise-and-its-shell": TORTOISE_AND_ITS_SHELL_TRANSLATIONS,
+  "tortoise-and-dove": TORTOISE_AND_DOVE_TRANSLATIONS,
   transportation: TRANSPORTATION_TRANSLATIONS,
   emotions: EMOTIONS_TRANSLATIONS,
   health: HEALTH_TRANSLATIONS,
@@ -310,17 +339,28 @@ const QUESTION_AUDIO: Record<string, number> = {
   ...ASKING_QUESTIONS_STORY_AUDIO,
   ...ANIMALS_AUDIO,
   ...CELEBRATIONS_AUDIO,
+  ...CELEBRATIONS_STORY_AUDIO,
   ...ELDERS_AUDIO,
+  ...ELDERS_STORY_AUDIO,
   ...EMOTIONS_AUDIO,
+  ...EMOTIONS_STORY_AUDIO,
   ...GREETINGS_AUDIO,
   ...HEALTH_AUDIO,
+  ...HEALTH_STORY_AUDIO,
   ...HOUSEHOLD_OBJECTS_AUDIO,
+  ...HOUSEHOLD_OBJECTS_STORY_AUDIO,
   ...NUMBERS_MONEY_AUDIO,
+  ...NUMBERS_MONEY_STORY_AUDIO,
   ...SCHOOL_WORK_AUDIO,
   ...SCHOOL_WORK_STORY_AUDIO,
+  ...TORTOISE_AND_ITS_SHELL_AUDIO,
+  ...TORTOISE_AND_ITS_SHELL_STORY_AUDIO,
+  ...TORTOISE_AND_DOVE_AUDIO,
+  ...TORTOISE_AND_DOVE_STORY_AUDIO,
   ...TRANSPORTATION_AUDIO,
   ...TRANSPORTATION_STORY_AUDIO,
   ...WEATHER_NATURE_AUDIO,
+  ...WEATHER_NATURE_STORY_AUDIO,
   ...EVERYDAY_VERBS_AUDIO,
   ...EVERYDAY_VERBS_STORY_AUDIO,
   ...FAMILY_PEOPLE_AUDIO,
@@ -399,6 +439,26 @@ const WORD_QUESTION_BANK: Record<string, Question[]> = {
       answer,
       visualKey: resolveVisualKey(entry.english, answer),
       audioKey: resolveAudioKey(SCHOOL_WORK_AUDIO, answer),
+    };
+  }),
+  "tortoise-and-its-shell": TORTOISE_AND_ITS_SHELL_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("tortoise-and-its-shell", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(TORTOISE_AND_ITS_SHELL_AUDIO, answer),
+    };
+  }),
+  "tortoise-and-dove": TORTOISE_AND_DOVE_ENTRIES.map((entry) => {
+    const answer = toToneMarkedText("tortoise-and-dove", entry.igbo);
+
+    return {
+      prompt: entry.english,
+      answer,
+      visualKey: resolveVisualKey(entry.english, answer),
+      audioKey: resolveAudioKey(TORTOISE_AND_DOVE_AUDIO, answer),
     };
   }),
   transportation: TRANSPORTATION_ENTRIES.map((entry) => {
@@ -491,6 +551,10 @@ const SENTENCE_BUILDER_BANK: Record<string, SentenceBuilderSeed[]> = {
   "food-cooking": buildSentenceSeedsFromEntries(FOOD_COOKING_ENTRIES),
   "numbers-money": buildSentenceSeedsFromEntries(NUMBERS_MONEY_ENTRIES),
   "school-work": buildSentenceSeedsFromEntries(SCHOOL_WORK_ENTRIES),
+  "tortoise-and-its-shell": buildSentenceSeedsFromEntries(
+    TORTOISE_AND_ITS_SHELL_ENTRIES
+  ),
+  "tortoise-and-dove": buildSentenceSeedsFromEntries(TORTOISE_AND_DOVE_ENTRIES),
   transportation: buildSentenceSeedsFromEntries(TRANSPORTATION_ENTRIES),
   emotions: buildSentenceSeedsFromEntries(EMOTIONS_ENTRIES),
   health: buildSentenceSeedsFromEntries(HEALTH_ENTRIES),
@@ -543,6 +607,18 @@ const QUESTION_BANK: Record<string, Question[]> = {
     "School and Work",
     WORD_QUESTION_BANK["school-work"],
     SENTENCE_BUILDER_BANK["school-work"]
+  ),
+  "tortoise-and-its-shell": buildLessonQuestionSet(
+    "tortoise-and-its-shell",
+    "Tortoise and its Shell",
+    WORD_QUESTION_BANK["tortoise-and-its-shell"],
+    SENTENCE_BUILDER_BANK["tortoise-and-its-shell"]
+  ),
+  "tortoise-and-dove": buildLessonQuestionSet(
+    "tortoise-and-dove",
+    "Tortoise and Dove",
+    WORD_QUESTION_BANK["tortoise-and-dove"],
+    SENTENCE_BUILDER_BANK["tortoise-and-dove"]
   ),
   transportation: buildLessonQuestionSet(
     "transportation",
@@ -735,6 +811,8 @@ const LESSON_DEFS = [
   { id: "food-cooking", title: "Food and Cooking" },
   { id: "numbers-money", title: "Numbers and Money" },
   { id: "school-work", title: "School and Work" },
+  { id: "tortoise-and-its-shell", title: "Tortoise and its Shell" },
+  { id: "tortoise-and-dove", title: "Tortoise and Dove" },
   { id: "transportation", title: "Transportation" },
   { id: "emotions", title: "Emotions" },
   { id: "health", title: "Health" },
@@ -767,12 +845,6 @@ export default function App() {
   const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
   const [isAuthBusy, setIsAuthBusy] = useState(false);
   const [signupEmail, setSignupEmail] = useState("");
-  const [authUserName, setAuthUserName] = useState<string | undefined>(
-    undefined
-  );
-  const [authUserEmail, setAuthUserEmail] = useState<string | undefined>(
-    undefined
-  );
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const isAudioLoadingRef = useRef(false);
@@ -817,23 +889,6 @@ export default function App() {
     };
 
     void restorePremiumState();
-  }, []);
-
-  useEffect(() => {
-    const restoreAuthState = async () => {
-      try {
-        const session = await getStoredAuthSession();
-        setIsLoggedIn(Boolean(session?.accessToken));
-        setAuthUserName(session?.userName);
-        setAuthUserEmail(session?.userEmail);
-      } catch {
-        setIsLoggedIn(false);
-        setAuthUserName(undefined);
-        setAuthUserEmail(undefined);
-      }
-    };
-
-    void restoreAuthState();
   }, []);
 
   useEffect(() => {
@@ -1093,29 +1148,13 @@ export default function App() {
     setScreen("premium");
   }, [hasPremiumAccess, isAuthBusy]);
 
-  const handleAuthLogin = useCallback(async () => {
+  const handleGetStarted = useCallback(() => {
     if (isAuthBusy) {
       return;
     }
 
-    try {
-      const session = await loginWithAuth0();
-      if (!session) {
-        return;
-      }
-
-      setIsLoggedIn(true);
-      setAuthUserName(session.userName);
-      setAuthUserEmail(session.userEmail);
-      setScreen("lessons");
-    } catch (error) {
-      const message =
-        error instanceof Error && error.message
-          ? error.message
-          : "Login failed. Try again.";
-
-      Alert.alert("Login unavailable", message);
-    }
+    setIsLoggedIn(true);
+    setScreen("lessons");
   }, [isAuthBusy]);
 
   const handleLogout = useCallback(async () => {
@@ -1130,13 +1169,10 @@ export default function App() {
         PREMIUM_UNLOCK_STORAGE_KEY,
         PREMIUM_EMAIL_STORAGE_KEY,
       ]);
-      await clearStoredAuthSession();
       await logoutPremiumAccess();
       setSignupEmail("");
       setIsLoggedIn(false);
       setHasPremiumAccess(false);
-      setAuthUserName(undefined);
-      setAuthUserEmail(undefined);
       setScreen("home");
     } finally {
       setIsAuthBusy(false);
@@ -1373,13 +1409,11 @@ export default function App() {
     return null;
   }
 
-  const profileEmailForUi = authUserEmail ?? signupEmail;
-
   const currentGroup: AppGroup =
     screen === "home" ? "home" : screen === "quiz" ? "game" : "lesson";
 
   if (currentGroup === "home") {
-    return <HomeGroup onGetStarted={handleAuthLogin} styles={styles} />;
+    return <HomeGroup onGetStarted={handleGetStarted} styles={styles} />;
   }
 
   if (currentGroup === "lesson") {
@@ -1401,15 +1435,6 @@ export default function App() {
               onRestorePurchases={handleRestorePurchases}
               isAuthBusy={isAuthBusy}
             />
-          ) : screen === "profile" ? (
-            <ProfileScreen
-              userDisplayName={authUserName}
-              userEmail={profileEmailForUi || undefined}
-              onBack={() => setScreen("lessons")}
-              onLogout={handleLogout}
-              onRestorePurchases={handleRestorePurchases}
-              isAuthBusy={isAuthBusy}
-            />
           ) : (
             <LessonsScreen
               lessons={lessons}
@@ -1419,11 +1444,8 @@ export default function App() {
               hasPremiumAccess={hasPremiumAccess}
               isAuthBusy={isAuthBusy}
               onLoginPress={handleLoginPress}
-              signupEmail={profileEmailForUi}
               onLogoutPress={handleLogout}
-              onRestorePurchasesPress={handleRestorePurchases}
               onOpenStreakScreen={() => setScreen("streak")}
-              onOpenProfileScreen={() => setScreen("profile")}
               onStartLesson={startLesson}
             />
           )
@@ -1454,7 +1476,9 @@ export default function App() {
             onCheckAnswer={checkCurrentAnswer}
             feedback={feedback}
             onContinue={continueFromFeedback}
-            showSpeaker={Boolean(question.audioKey || question.storyMode)}
+            showSpeaker={Boolean(
+              question.audioKey && QUESTION_AUDIO[question.audioKey]
+            )}
             onPlayAudio={playActiveAudio}
             audioPlaybackRate={audioPlaybackRate}
             onToggleAudioPlaybackRate={toggleAudioPlaybackRate}
@@ -1480,11 +1504,8 @@ export default function App() {
       hasPremiumAccess={hasPremiumAccess}
       isAuthBusy={isAuthBusy}
       onLoginPress={handleLoginPress}
-      signupEmail={profileEmailForUi}
       onLogoutPress={handleLogout}
-      onRestorePurchasesPress={handleRestorePurchases}
       onOpenStreakScreen={() => setScreen("streak")}
-      onOpenProfileScreen={() => setScreen("profile")}
       onStartLesson={startLesson}
     />
   );
@@ -1522,6 +1543,18 @@ function buildStoryQuestions(lessonId: string): Question[] {
     return buildBalancedStoryQuestionSet(ASKING_QUESTIONS_STORY_DIALOGUE);
   }
 
+  if (lessonId === "celebrations") {
+    return buildBalancedStoryQuestionSet(CELEBRATIONS_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "elders") {
+    return buildBalancedStoryQuestionSet(ELDERS_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "emotions") {
+    return buildBalancedStoryQuestionSet(EMOTIONS_STORY_DIALOGUE);
+  }
+
   if (lessonId === "food-cooking") {
     return buildBalancedStoryQuestionSet(FOOD_COOKING_STORY_DIALOGUE);
   }
@@ -1530,12 +1563,36 @@ function buildStoryQuestions(lessonId: string): Question[] {
     return buildBalancedStoryQuestionSet(FAMILY_PEOPLE_STORY_DIALOGUE);
   }
 
+  if (lessonId === "health") {
+    return buildBalancedStoryQuestionSet(HEALTH_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "household-objects") {
+    return buildBalancedStoryQuestionSet(HOUSEHOLD_OBJECTS_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "numbers-money") {
+    return buildBalancedStoryQuestionSet(NUMBERS_MONEY_STORY_DIALOGUE);
+  }
+
   if (lessonId === "school-work") {
     return buildBalancedStoryQuestionSet(SCHOOL_WORK_STORY_DIALOGUE);
   }
 
+  if (lessonId === "tortoise-and-its-shell") {
+    return buildBalancedStoryQuestionSet(TORTOISE_AND_ITS_SHELL_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "tortoise-and-dove") {
+    return buildBalancedStoryQuestionSet(TORTOISE_AND_DOVE_STORY_DIALOGUE);
+  }
+
   if (lessonId === "transportation") {
     return buildBalancedStoryQuestionSet(TRANSPORTATION_STORY_DIALOGUE);
+  }
+
+  if (lessonId === "weather-nature") {
+    return buildBalancedStoryQuestionSet(WEATHER_NATURE_STORY_DIALOGUE);
   }
 
   return [];
@@ -1558,7 +1615,7 @@ function buildBalancedStoryQuestionSet(entries: StoryDialogueEntry[]): Question[
           buildMismatchedStoryStatement(
             entries,
             index,
-            entry.speaker === "dad" ? "Dad" : "Daughter"
+            formatStorySpeakerLabel(entry.speaker)
           );
 
     return {
@@ -1577,6 +1634,22 @@ function buildBalancedStoryQuestionSet(entries: StoryDialogueEntry[]): Question[
       },
     };
   });
+}
+
+function formatStorySpeakerLabel(speaker: StorySpeaker): string {
+  if (speaker === "dad") {
+    return "Dad";
+  }
+
+  if (speaker === "granddaughter") {
+    return "Granddaughter";
+  }
+
+  if (speaker === "dove") {
+    return "Dove";
+  }
+
+  return "Daughter";
 }
 
 function buildBalancedTruthAssignments(count: number): boolean[] {

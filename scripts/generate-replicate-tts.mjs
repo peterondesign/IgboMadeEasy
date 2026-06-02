@@ -4,10 +4,14 @@ import path from "node:path";
 const MODEL = "google/gemini-3.1-flash-tts";
 const MALE_VOICE = process.env.REPLICATE_TTS_MALE_VOICE || "Algenib";
 const FEMALE_VOICE = process.env.REPLICATE_TTS_FEMALE_VOICE || "Despina";
+const VERY_YOUNG_GIRL_VOICE =
+  process.env.REPLICATE_TTS_VERY_YOUNG_GIRL_VOICE || FEMALE_VOICE;
 const MALE_STYLE_PROMPT =
   "Say the following in a Nigerian Igbo accent with a warm fatherly tone.";
 const FEMALE_STYLE_PROMPT =
   "Say the following in a Nigerian Igbo accent with a warm young female tone.";
+const VERY_YOUNG_GIRL_STYLE_PROMPT =
+  "Say the following in a Nigerian Igbo accent with a playful, very young girl tone.";
 const LANGUAGE_CODE = "en-US";
 
 const ROOT = process.cwd();
@@ -138,7 +142,12 @@ async function loadStoryAudioTargets() {
         lesson: `${lesson}-story`,
         text: entry.igboText,
         outputPath: path.join(ROOT, `assets/audio/${lesson}/story/${entry.audioKey}.wav`),
-        voiceProfile: entry.voice === "female" ? "female" : "male",
+        voiceProfile:
+          entry.voice === "very-young-girl"
+            ? "very-young-girl"
+            : entry.voice === "female"
+              ? "female"
+              : "male",
       });
     }
   }
@@ -182,15 +191,24 @@ async function loadGeneratedLessonTargets() {
 }
 
 async function runPrediction(apiKey, target) {
-  const voice = target.voiceProfile === "female" ? FEMALE_VOICE : MALE_VOICE;
+  const voice =
+    target.voiceProfile === "very-young-girl"
+      ? VERY_YOUNG_GIRL_VOICE
+      : target.voiceProfile === "female"
+        ? FEMALE_VOICE
+        : MALE_VOICE;
   const prompt =
-    target.voiceProfile === "female"
-      ? FEMALE_STYLE_PROMPT
-      : MALE_STYLE_PROMPT;
+    target.voiceProfile === "very-young-girl"
+      ? VERY_YOUNG_GIRL_STYLE_PROMPT
+      : target.voiceProfile === "female"
+        ? FEMALE_STYLE_PROMPT
+        : MALE_STYLE_PROMPT;
   const prefix =
-    target.voiceProfile === "female"
-      ? "[like an Igbo woman]"
-      : "[like an Igbo man]";
+    target.voiceProfile === "very-young-girl"
+      ? "[like a very young Igbo girl]"
+      : target.voiceProfile === "female"
+        ? "[like an Igbo woman]"
+        : "[like an Igbo man]";
 
   const response = await fetch(
     `https://api.replicate.com/v1/models/${MODEL}/predictions`,

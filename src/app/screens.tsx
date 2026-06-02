@@ -179,11 +179,8 @@ export function LessonsScreen({
   hasPremiumAccess,
   isAuthBusy,
   onLoginPress,
-  signupEmail,
   onLogoutPress,
-  onRestorePurchasesPress,
   onOpenStreakScreen,
-  onOpenProfileScreen,
   onStartLesson,
 }: {
   lessons: Lesson[];
@@ -193,15 +190,11 @@ export function LessonsScreen({
   hasPremiumAccess: boolean;
   isAuthBusy: boolean;
   onLoginPress: () => void;
-  signupEmail: string;
   onLogoutPress: () => void;
-  onRestorePurchasesPress: () => void;
   onOpenStreakScreen: () => void;
-  onOpenProfileScreen: () => void;
   onStartLesson: (lessonId: string) => void;
 }) {
   const canAccessPremiumLessons = hasPremiumAccess;
-  const avatarInitial = signupEmail.trim().charAt(0).toUpperCase() || "P";
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -285,30 +278,12 @@ export function LessonsScreen({
                 {isAuthBusy ? "Working..." : "Upgrade to Premium"}
               </Text>
             </Pressable>
-
-            <Pressable
-              style={styles.footerProfileButton}
-              onPress={onOpenProfileScreen}
-              accessibilityRole="button"
-              accessibilityLabel="Open profile"
-            >
-              <Text style={styles.footerProfileText}>{avatarInitial}</Text>
-            </Pressable>
           </View>
         ) : (
           <View style={styles.premiumFooterRow}>
             <View style={styles.premiumBadgeChip}>
               <Text style={styles.premiumBadgeText}>Premium</Text>
             </View>
-
-            <Pressable
-              style={styles.avatarButton}
-              onPress={onOpenProfileScreen}
-              accessibilityRole="button"
-              accessibilityLabel="Open profile"
-            >
-              <Text style={styles.avatarText}>{avatarInitial}</Text>
-            </Pressable>
           </View>
         )}
       </View>
@@ -321,72 +296,6 @@ export function LessonsScreen({
           </View>
         </View>
       ) : null}
-    </SafeAreaView>
-  );
-}
-
-export function ProfileScreen({
-  userDisplayName,
-  userEmail,
-  onBack,
-  onLogout,
-  onRestorePurchases,
-  isAuthBusy,
-}: {
-  userDisplayName?: string;
-  userEmail?: string;
-  onBack: () => void;
-  onLogout: () => void;
-  onRestorePurchases: () => void;
-  isAuthBusy: boolean;
-}) {
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#111111" />
-      <View style={styles.profileScreenContainer}>
-        <View style={styles.profileScreenTopRow}>
-          <Pressable
-            style={styles.quizBackIconButton}
-            onPress={onBack}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-          >
-            <BackIcon width={18} height={18} />
-          </Pressable>
-
-          <Text style={styles.profileScreenTitle}>Profile</Text>
-
-          <View style={styles.premiumScreenTopSpacer} />
-        </View>
-
-        <View style={styles.profileCard}>
-          <Text style={styles.profileEmailLabel}>Signed in as</Text>
-          <Text style={styles.profileEmailValue}>
-            {userDisplayName || userEmail || "Anonymous user"}
-          </Text>
-          {userDisplayName && userEmail ? (
-            <Text style={styles.profileEmailLabel}>{userEmail}</Text>
-          ) : null}
-
-          <Pressable
-            style={styles.profileSecondaryButton}
-            onPress={onRestorePurchases}
-            disabled={isAuthBusy}
-          >
-            <Text style={styles.profileSecondaryButtonText}>Restore Purchases</Text>
-          </Pressable>
-
-          <Pressable
-            style={styles.profileLogoutButton}
-            onPress={onLogout}
-            disabled={isAuthBusy}
-          >
-            <Text style={styles.profileLogoutButtonText}>
-              {isAuthBusy ? "Working..." : "Log out"}
-            </Text>
-          </Pressable>
-        </View>
-      </View>
     </SafeAreaView>
   );
 }
