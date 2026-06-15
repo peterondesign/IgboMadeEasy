@@ -1,72 +1,14 @@
-import Purchases, { type CustomerInfo } from "react-native-purchases";
-
-const REVENUECAT_IOS_API_KEY =
-  process.env.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY ?? "";
-const PREMIUM_ENTITLEMENT_ID =
-  process.env.EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID ?? "premium";
-
-const KNOWN_PREMIUM_PRODUCT_IDS = new Set<string>([
-  "premium_annual_igbo_easy",
-  "premium_monthly_igbo_easy",
-  // RevenueCat test products often use simple IDs.
-  "annual",
-  "monthly",
-]);
-
-let configuredUserId: string | null = null;
-let lastPremiumAccessReason = "none";
-
-function ensureRevenueCatKey() {
-  if (!REVENUECAT_IOS_API_KEY) {
-    throw new Error(
-      "Missing RevenueCat key. Set EXPO_PUBLIC_REVENUECAT_IOS_API_KEY."
-    );
-  }
-}
-
-function hasPremiumAccess(customerInfo: CustomerInfo): boolean {
-  if (Boolean(customerInfo.entitlements.active[PREMIUM_ENTITLEMENT_ID])) {
-    lastPremiumAccessReason = `entitlement:${PREMIUM_ENTITLEMENT_ID}`;
-    return true;
-  }
-
-  const dynamicInfo = customerInfo as CustomerInfo & {
-    activeSubscriptions?: string[];
-    allPurchasedProductIdentifiers?: string[];
-  };
-
-  const purchasedIds = new Set<string>([
-    ...(dynamicInfo.activeSubscriptions ?? []),
-    ...(dynamicInfo.allPurchasedProductIdentifiers ?? []),
-  ]);
-
-  for (const id of KNOWN_PREMIUM_PRODUCT_IDS) {
-    if (purchasedIds.has(id)) {
-      lastPremiumAccessReason = `product:${id}`;
-      return true;
-    }
-  }
-
-  lastPremiumAccessReason = "none";
-  return false;
-}
-
-export function getLastPremiumAccessReason(): string {
-  return lastPremiumAccessReason;
-}
-
-function configureRevenueCat() {
-  ensureRevenueCatKey();
-
-  if (configuredUserId != null) {
-    return;
-  }
-
-  Purchases.configure({
-    apiKey: REVENUECAT_IOS_API_KEY,
-  });
-  configuredUserId = "__configured__";
-}
+import {
+  initConnection,
+  endConnection,
+  fetchProducts,
+  requestPurchase,
+  getAvailablePurchases,
+  finishTransaction,
+  purchaseUpdatedListener,
+  purchaseErrorListener,
+  type Purchase,
+} from "react-native-iap";
 
 export const PREMIUM_ANNUAL_PRODUCT_ID = "premium_annual_igbo_easy";
 export const PREMIUM_MONTHLY_PRODUCT_ID = "premium_monthly_igbo_easy";
@@ -78,42 +20,215 @@ export const PREMIUM_PRICING = {
   yearlyLabel: "$79.99/year",
 } as const;
 
-export async function purchasePremiumAccess(
-  productId?: string
-): Promise<boolean> {
-  configureRevenueCat();
+export const SUBSCRIPTION_METADATA = {
+  annual: {
+    productId: PREMIUM_ANNUAL_PRODUCT_ID,
+    name: "Premium Annual Igbo Easy",
+    description: "Unlock full access to all Igbo Made Easy lessons for one year. Perfect for learners committed to mastering Igbo.",
+    localizations: {
+      en: "Unlock full access to all Igbo Made Easy lessons for one year.",
+    },
+  },
+  monthly: {
+    productId: PREMIUM_MONTHLY_PRODUCT_ID,
+    name: "Premium Monthly Igbo Easy",
+    description: "Unlock full access to all Igbo Made Easy lessons for one month. Flexible premium access billed monthly.",
+    localizations: {
+      en: "Unlock full access to all Igbo Made Easy lessons for one month.",
+    },
+  },
+} as const;
 
-  const offerings = await Purchases.getOfferings();
-  const packages = offerings.current?.availablePackages ?? [];
-  const selectedPackage =
-    packages.find((item) => item.product.identifier === productId) ??
-    packages.find((item) => item.identifier === productId) ??
-    packages[0];
+let isConnected = false;
+let lastPremiumAccessReason = "none";
+let purchaseListener: ReturnType<typeof purchaseUpdatedListener> | null = null;
+let errorListener: ReturnType<typeof purchaseErrorListener> | null = null;
 
-  if (!selectedPackage) {
+const PREMIUM_PRODUCT_IDS = new Set<string>([
+  PREMIUM_ANNUAL_PRODUCT_ID,
+  PREMIUM_MONTHLY_PRODUCT_ID,
+]);
+
+async function assertSkuIsAvailable(targetProductId: string): Promise<void> {
+  const products = await fetchProducts({
+    type: "subs",
+    skus: Array.from(PREMIUM_PRODUCT_IDS),
+  });
+
+  const availableSkuSet = new Set((products ?? []).map((product) => product.id));
+
+  if (!availableSkuSet.has(targetProductId)) {
     throw new Error(
-      "No subscription products are currently available. Configure offerings and App Store products in RevenueCat."
+      `SKU not found: ${targetProductId}. In App Store Connect, confirm the Product ID matches exactly, metadata is complete, and the subscription is attached to this app version under In-App Purchases and Subscriptions. For first-time subscriptions, upload a new binary and submit that version with at least one subscription selected for App Review.`
     );
   }
+}
 
-  const purchaseResult = await Purchases.purchasePackage(selectedPackage);
-  return hasPremiumAccess(purchaseResult.customerInfo);
+export function getLastPremiumAccessReason(): string {
+  return lastPremiumAccessReason;
+}
+
+function hasPremiumAccess(purchases: Purchase[]): boolean {
+  for (const purchase of purchases) {
+    if (PREMIUM_PRODUCT_IDS.has(purchase.productId)) {
+      if (purchase.purchaseState === "purchased") {
+        lastPremiumAccessReason = `product:${purchase.productId}`;
+        return true;
+      }
+    }
+  }
+
+  lastPremiumAccessReason = "none";
+  return false;
+}
+
+async function ensureConnection(): Promise<void> {
+  if (isConnected) {
+    return;
+  }
+
+  try {
+    await initConnection();
+    isConnected = true;
+
+    if (!purchaseListener) {
+      purchaseListener = purchaseUpdatedListener(async (purchase: Purchase) => {
+        try {
+          if (purchase.purchaseState === "purchased") {
+            await finishTransaction({
+              purchase,
+              isConsumable: false,
+            });
+          }
+        } catch (error) {
+          console.warn("Error finishing transaction:", error);
+        }
+      });
+    }
+
+    if (!errorListener) {
+      errorListener = purchaseErrorListener((error) => {
+        console.warn("IAP Error:", error);
+      });
+    }
+  } catch (error) {
+    console.warn("Failed to initialize IAP connection:", error);
+    throw new Error("Could not connect to App Store. Please check your internet connection.");
+  }
+}
+
+export async function purchasePremiumAccess(productId?: string): Promise<boolean> {
+  await ensureConnection();
+
+  const targetProductId = productId || PREMIUM_ANNUAL_PRODUCT_ID;
+
+  if (!PREMIUM_PRODUCT_IDS.has(targetProductId)) {
+    throw new Error(`Invalid premium product ID: ${targetProductId}`);
+  }
+
+  await assertSkuIsAvailable(targetProductId);
+
+  return new Promise<boolean>((resolve, reject) => {
+    const unsubscribePurchase = purchaseUpdatedListener(async (purchase: Purchase) => {
+      if (purchase.productId === targetProductId && purchase.purchaseState === "purchased") {
+        unsubscribePurchase.remove();
+        unsubscribeError.remove();
+        try {
+          await finishTransaction({
+            purchase,
+            isConsumable: false,
+          });
+          lastPremiumAccessReason = `product:${purchase.productId}`;
+          resolve(true);
+        } catch (error) {
+          console.warn("Error finishing transaction after purchase:", error);
+          resolve(true);
+        }
+      }
+    });
+
+    const unsubscribeError = purchaseErrorListener((error) => {
+      unsubscribePurchase.remove();
+      unsubscribeError.remove();
+      console.warn("Purchase error:", error);
+      reject(new Error(error.message || "Purchase failed"));
+    });
+
+    requestPurchase({
+      type: "subs",
+      request: {
+        apple: {
+          sku: targetProductId,
+        },
+        google: {
+          skus: [targetProductId],
+        },
+      },
+    }).catch((error) => {
+      unsubscribePurchase.remove();
+      unsubscribeError.remove();
+      reject(error);
+    });
+  });
 }
 
 export async function restorePremiumStatus(): Promise<boolean> {
-  configureRevenueCat();
+  await ensureConnection();
 
-  const customerInfo = await Purchases.getCustomerInfo();
-  return hasPremiumAccess(customerInfo);
+  try {
+    const purchases = await getAvailablePurchases();
+    return hasPremiumAccess(purchases);
+  } catch (error) {
+    console.warn("Error checking premium status:", error);
+    return false;
+  }
 }
 
 export async function restorePremiumPurchases(): Promise<boolean> {
-  configureRevenueCat();
+  await ensureConnection();
 
-  const customerInfo = await Purchases.restorePurchases();
-  return hasPremiumAccess(customerInfo);
+  try {
+    const purchases = await getAvailablePurchases();
+
+    for (const purchase of purchases) {
+      if (
+        PREMIUM_PRODUCT_IDS.has(purchase.productId) &&
+        purchase.purchaseState === "purchased"
+      ) {
+        try {
+          await finishTransaction({
+            purchase,
+            isConsumable: false,
+          });
+        } catch (error) {
+          console.warn(`Error finishing transaction for ${purchase.productId}:`, error);
+        }
+      }
+    }
+
+    return hasPremiumAccess(purchases);
+  } catch (error) {
+    console.warn("Error restoring purchases:", error);
+    throw new Error("Could not restore purchases. Please try again.");
+  }
 }
 
 export async function logoutPremiumAccess(): Promise<void> {
-  configuredUserId = null;
+  if (purchaseListener) {
+    purchaseListener.remove();
+    purchaseListener = null;
+  }
+  if (errorListener) {
+    errorListener.remove();
+    errorListener = null;
+  }
+
+  try {
+    await endConnection();
+    isConnected = false;
+  } catch (error) {
+    console.warn("Error ending IAP connection:", error);
+  }
+
+  lastPremiumAccessReason = "none";
 }

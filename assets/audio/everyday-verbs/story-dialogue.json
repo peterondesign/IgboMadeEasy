@@ -105,7 +105,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-o-di-ihe-ozo",
     "voice": "male",
-    "falseStatement": "Dad says there is nothing else."
+    "falseStatement": "Dad doesn't ask if there is anything else."
   },
   {
     "speaker": "daughter",
@@ -153,7 +153,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-notu-ubochi",
     "voice": "male",
-    "falseStatement": "Dad asks if all of it happened last week."
+    "falseStatement": "Dad asks if all of it happened in two days."
   },
   {
     "speaker": "daughter",
@@ -189,18 +189,18 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-gini-mere",
     "voice": "female",
-    "falseStatement": "The daughter says because."
+    "falseStatement": "The daughter doesn't ask why."
   },
   {
     "speaker": "dad",
     "igboText": "Ọ bụrụ na ị nwere ike ime ihe ndị ahụ niile n'otu ụbọchị, m nwekwara ike ime ọrụ m n'izu a!",
     "englishText": "If you can do all that in one day, I can do my tasks this week too!",
-    "statement": "Dad says he cannot do his tasks this week.",
+    "statement": "Dad says he can do all his tasks this week too!",
     "correctAnswer": false,
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-everyday-verbs-oburu-na-i-nwere-ike-ime-ihe-ndi-ahu-niile",
     "voice": "male",
-    "falseStatement": "Dad says he can do all his tasks this week too!"
+    "falseStatement": "Dad says he cannot do his tasks this week."
   }
 ]

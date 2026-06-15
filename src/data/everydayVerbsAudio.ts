@@ -61,4 +61,5 @@ export const EVERYDAY_VERBS_AUDIO: Record<string, number> = {
   "ibia": require("../../assets/audio/everyday-verbs/ịbịa.wav"),
   "igba oso": require("../../assets/audio/everyday-verbs/ịgba ọsọ.wav"),
   "icho": require("../../assets/audio/everyday-verbs/ịchọ.wav"),
+  "ikwu odu": require("../../assets/audio/everyday-verbs/ịkwụ ọdụ.wav")
 };

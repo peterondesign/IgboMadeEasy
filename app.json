@@ -4,20 +4,21 @@
     "slug": "igbo-made-easy",
     "owner": "petedgt",
     "scheme": "igbomadeeasy",
-    "version": "1.0.0",
+    "version": "1.2.0",
+    "runtimeVersion": "1.2.0",
+    "updates": {
+      "url": "https://u.expo.dev/a3f01ad1-dd08-400b-a04b-f07b9e3343b6",
+      "fallbackToCacheTimeout": 0
+    },
     "icon": "./assets/IgboMadeEasy_Logo.png",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/IgboMadeEasy_Logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0D0F14"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "bundleIdentifier": "com.igbomadeeasy.app",
+      "buildNumber": "2",
       "icon": "./assets/IgboMadeEasy_Logo.png",
       "supportsTablet": true,
       "infoPlist": {
@@ -25,6 +26,8 @@
       }
     },
     "android": {
+      "package": "com.igbomadeeasy.app",
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/IgboMadeEasy_Logo.png",
         "backgroundColor": "#0D0F14"
@@ -44,7 +47,8 @@
       "expo-audio",
       "expo-notifications",
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-asset"
     ]
   }
 }

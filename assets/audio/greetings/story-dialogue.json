@@ -21,7 +21,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-ututu-oma-papa",
     "voice": "female",
-    "falseStatement": "The daughter says goodbye to her dad."
+    "falseStatement": "The daughter doesn't say anything to her dad."
   },
   {
     "speaker": "dad",
@@ -33,19 +33,19 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-kedu-ka-i-mere",
     "voice": "male",
-    "falseStatement": "Dad is telling asking how her mom is."
+    "falseStatement": "Dad is asking how her mom is."
   },
   {
     "speaker": "daughter",
     "igboText": "Adị m mma.",
     "englishText": "I'm fine.",
-    "statement": "The daughter says she is angry.",
+    "statement": "The daughter says she is fine.",
     "correctAnswer": false,
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-adi-m-mma",
     "voice": "female",
-    "falseStatement": "The daughter says she is sick."
+    "falseStatement": "The daughter says she is unhappy."
   },
   {
     "speaker": "dad",
@@ -57,7 +57,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-greetings-nnoo-nwa-m-nwanyi",
     "voice": "male",
-    "falseStatement": "Dad says goodbye to his daughter."
+    "falseStatement": "Dad doesn't welcome his daughter."
   },
   {
     "speaker": "daughter",
@@ -75,7 +75,7 @@
     "speaker": "dad",
     "igboText": "N'ihi na enwere m nnukwu nsogbu.",
     "englishText": "Because I have a big problem.",
-    "statement": "Dad says he has no problem.",
+    "statement": "Dad says he has a big problem.",
     "correctAnswer": false,
     "dadSvgPath": "assets/illustrations/story-dad.svg",
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StatusBar } from "react-native";
 import {
   ActivityIndicator,
@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import BackIcon from "../../assets/icons/back-icon.svg";
+import HelpIcon from "../../assets/icons/HelpIcon.svg";
 import HintIcon from "../../assets/icons/hint-icon.svg";
 import LoginIcon from "../../assets/icons/login-icon.svg";
 import LockIcon from "../../assets/icons/lock-icon.svg";
@@ -34,7 +35,22 @@ type Question = {
     targetWords: string[];
     bankWords: string[];
   };
+  sentenceBreakdown?: {
+    sourceSentence: string;
+    targetWords: string[];
+    bankWords: string[];
+    wordGlosses?: string[];
+    igboRule: string;
+    anotherExample: {
+      igbo: string;
+      english: string;
+    };
+    anotherExampleAudioKey?: string;
+    illustrationKey: string;
+  };
 };
+
+type SentenceBreakdownQuestion = Question;
 
 type Lesson = {
   id: string;
@@ -409,25 +425,20 @@ export function PremiumScreen({
 }
 
 export function StreakScreen({
-  lessons,
+  completedDayKeys,
   streakCount,
   onBack,
 }: {
-  lessons: Lesson[];
+  completedDayKeys: string[];
   streakCount: number;
   onBack: () => void;
 }) {
   const [weekOffset, setWeekOffset] = useState(0);
   const today = useMemo(() => new Date(), []);
   const todayKey = useMemo(() => toDateKey(today), [today]);
-  const completedDayKeys = useMemo(
-    () =>
-      new Set(
-        lessons
-          .map((lesson) => lesson.completedOn)
-          .filter((value): value is string => Boolean(value))
-      ),
-    [lessons]
+  const completedDayKeySet = useMemo(
+    () => new Set(completedDayKeys),
+    [completedDayKeys]
   );
   const activeWeekStart = useMemo(
     () => addDays(startOfWeek(today), weekOffset * 7),
@@ -488,7 +499,7 @@ export function StreakScreen({
               }
               disabled={!canGoPreviousWeek}
             >
-              <Text style={styles.streakWeekNavText}>- 1 week</Text>
+              <BackIcon width={14} height={14} />
             </Pressable>
 
             <Text style={styles.streakWeekLabel}>{weekLabel}</Text>
@@ -503,7 +514,9 @@ export function StreakScreen({
               }
               disabled={!canGoNextWeek}
             >
-              <Text style={styles.streakWeekNavText}>+ 1 week</Text>
+              <View style={styles.streakWeekNavIconRight}>
+                <BackIcon width={14} height={14} />
+              </View>
             </Pressable>
           </View>
 
@@ -511,7 +524,7 @@ export function StreakScreen({
             {weekDays.map((day) => {
               const dayKey = toDateKey(day);
               const isToday = dayKey === todayKey;
-              const isCompleted = completedDayKeys.has(dayKey);
+              const isCompleted = completedDayKeySet.has(dayKey);
 
               return (
                 <View key={dayKey} style={styles.streakDayItem}>
@@ -583,13 +596,15 @@ export function QuizScreen({
       : lesson.answeredQuestions / lesson.totalQuestions;
   const storyMode = question.storyMode;
   const isStoryMode = storyMode != null;
-  const isSentenceBuilder = question.sentenceBuilder != null;
+  const sentenceAssembly = question.sentenceBreakdown ?? question.sentenceBuilder;
+  const isSentenceBuilder = sentenceAssembly != null;
   const [slottedWords, setSlottedWords] = useState<string[]>([]);
   const [dragFromIndex, setDragFromIndex] = useState<number | null>(null);
+  const [breakdownPhase, setBreakdownPhase] = useState<"teaching" | "practicing">("teaching");
 
-  const sentenceBuilder = question.sentenceBuilder;
-  const sentenceTargetWords = sentenceBuilder?.targetWords ?? [];
-  const sentenceBankWords = sentenceBuilder?.bankWords ?? [];
+  const sentenceBuilder = sentenceAssembly;
+  const sentenceTargetWords = sentenceAssembly?.targetWords ?? [];
+  const sentenceBankWords = sentenceAssembly?.bankWords ?? [];
   const isDenseSentenceLayout =
     isSentenceBuilder &&
     (sentenceTargetWords.length >= 5 ||
@@ -703,12 +718,15 @@ export function QuizScreen({
 
     onAnswerChange(slottedWords.join(" ").trim());
   }, [isSentenceBuilder, onAnswerChange, slottedWords]);
-
   useEffect(() => {
     if (showSpeaker) {
       onPlayAudio();
     }
   }, [question.audioKey, question.answer, question.storyMode?.igboText, showSpeaker, onPlayAudio]);
+  useEffect(() => {
+    // Reset breakdown phase to teaching when question changes
+    setBreakdownPhase("teaching");
+  }, [question.answer]);
 
   useEffect(() => {
     if (!isAutoContinuingStory) {
@@ -833,7 +851,7 @@ export function QuizScreen({
               </View>
             ) : null}
 
-            {isSentenceBuilder && sentenceBuilder ? (
+            {isSentenceBuilder && question.sentenceBuilder ? (
           <View
             style={[
               styles.sentenceBuilderWrap,
@@ -850,7 +868,7 @@ export function QuizScreen({
                 style={[
                   styles.sentenceSourceText,
                   getDynamicSentencePromptStyle(
-                    sentenceBuilder.sourceSentence,
+                    sentenceAssembly.sourceSentence,
                     isDenseSentenceLayout
                   ),
                 ]}
@@ -858,7 +876,7 @@ export function QuizScreen({
                 adjustsFontSizeToFit
                 minimumFontScale={0.72}
               >
-                {sentenceBuilder.sourceSentence}
+                {sentenceAssembly.sourceSentence}
               </Text>
             </View>
 
@@ -1100,6 +1118,570 @@ export function QuizScreen({
           </View>
         </Modal>
       ) : null}
+    </SafeAreaView>
+  );
+}
+
+export function SentenceBreakdownLessonScreen({
+  question,
+  lessonIndex,
+  lessonCount,
+  onExit,
+  onNextQuestion,
+  onPreviousQuestion,
+  onPlayAudio,
+  onPlayFeedbackSound,
+  audioPlaybackRate,
+  onToggleAudioPlaybackRate,
+  isAudioLoading,
+  isAudioPlaying,
+}: {
+  question: SentenceBreakdownQuestion;
+  lessonIndex: number;
+  lessonCount: number;
+  onExit: () => void;
+  onNextQuestion: () => void;
+  onPreviousQuestion: () => void;
+  onPlayAudio: (audioKey?: string) => void;
+  onPlayFeedbackSound: (state: Exclude<FeedbackState, null>) => void;
+  audioPlaybackRate: 0.5 | 1;
+  onToggleAudioPlaybackRate: () => void;
+  isAudioLoading: boolean;
+  isAudioPlaying: boolean;
+}) {
+  const breakdown = question.sentenceBreakdown;
+  const sentenceWords = breakdown?.targetWords ?? [];
+  const sentenceBankWords = breakdown?.bankWords ?? [];
+  const Illustration =
+    question.visualKey.length > 0 ? QUESTION_VISUALS[question.visualKey] : null;
+  const [pageIndex, setPageIndex] = useState<0 | 1 | 2 | 3>(0);
+  const [slottedWords, setSlottedWords] = useState<string[]>([]);
+  const [dragFromIndex, setDragFromIndex] = useState<number | null>(null);
+  const [practiceFeedback, setPracticeFeedback] = useState<FeedbackState>(null);
+  const [isPracticeHintOpen, setIsPracticeHintOpen] = useState(false);
+  const isSpeakerDisabled = isAudioLoading || isAudioPlaying;
+  const lastAutoplayKeyRef = useRef<string | null>(null);
+  const wordColors = [
+    "#F7B733",
+    "#78D70A",
+    "#B37DFF",
+    "#35B6FF",
+    "#FFD447",
+    "#FF8A5B",
+    "#64D6B0",
+  ];
+
+  const englishWordHints = useMemo(() => {
+    if (breakdown?.wordGlosses && breakdown.wordGlosses.length === sentenceWords.length) {
+      return breakdown.wordGlosses;
+    }
+
+    return sentenceWords.map(() => "");
+  }, [breakdown?.wordGlosses, sentenceWords]);
+  const sentenceBankWordCounts = useMemo(
+    () => countWords(sentenceBankWords),
+    [sentenceBankWords]
+  );
+  const slottedWordCounts = useMemo(() => countWords(slottedWords), [slottedWords]);
+  const isPracticeComplete =
+    slottedWords.length === sentenceWords.length &&
+    slottedWords.every((word) => word.trim().length > 0) &&
+    normalizeAnswer(slottedWords.join(" ")) === normalizeAnswer(question.answer);
+  const hasPracticeInput = slottedWords.every((word) => word.trim().length > 0);
+
+  useEffect(() => {
+    setPageIndex(0);
+    setSlottedWords(Array(sentenceWords.length).fill(""));
+    setDragFromIndex(null);
+    setPracticeFeedback(null);
+    setIsPracticeHintOpen(false);
+  }, [question.answer, sentenceWords.length]);
+
+  const placeWord = useCallback(
+    (word: string) => {
+      setSlottedWords((current) => {
+        const next = [...current];
+
+        const firstOpenIndex = next.findIndex((slotWord) => slotWord.length === 0);
+        if (firstOpenIndex !== -1) {
+          next[firstOpenIndex] = word;
+          return next;
+        }
+
+        const mismatchIndex = next.findIndex(
+          (slotWord, index) =>
+            normalizeAnswer(slotWord) !== normalizeAnswer(sentenceWords[index] ?? "")
+        );
+
+        if (mismatchIndex !== -1) {
+          next[mismatchIndex] = word;
+          return next;
+        }
+
+        next[next.length - 1] = word;
+        return next;
+      });
+
+      setDragFromIndex(null);
+    },
+    [sentenceWords]
+  );
+
+  const handleSlotPress = useCallback(
+    (slotIndex: number) => {
+      if (dragFromIndex != null) {
+        if (dragFromIndex === slotIndex) {
+          setDragFromIndex(null);
+          return;
+        }
+
+        setSlottedWords((current) => {
+          const next = [...current];
+          [next[dragFromIndex], next[slotIndex]] = [
+            next[slotIndex],
+            next[dragFromIndex],
+          ];
+          return next;
+        });
+        setDragFromIndex(null);
+        return;
+      }
+
+      if (slottedWords[slotIndex]?.length) {
+        setSlottedWords((current) => {
+          const next = [...current];
+          next[slotIndex] = "";
+          return next;
+        });
+      }
+    },
+    [dragFromIndex, slottedWords]
+  );
+
+  const handleSlotLongPress = useCallback(
+    (slotIndex: number) => {
+      if (!slottedWords[slotIndex]?.length) {
+        return;
+      }
+
+      setDragFromIndex(slotIndex);
+    },
+    [slottedWords]
+  );
+
+  const bubbleIgboText =
+    pageIndex === 2 ? (breakdown?.anotherExample.igbo ?? question.answer) : question.answer;
+  const bubbleEnglishText =
+    pageIndex === 2
+      ? (breakdown?.anotherExample.english ?? breakdown?.sourceSentence ?? question.prompt)
+      : (breakdown?.sourceSentence ?? question.prompt);
+  const activeAudioKey =
+    pageIndex === 2
+      ? (breakdown?.anotherExampleAudioKey ?? question.audioKey)
+      : question.audioKey;
+
+  const handlePracticeCheck = useCallback(() => {
+    const nextFeedback: FeedbackState = isPracticeComplete ? "correct" : "wrong";
+    setPracticeFeedback(nextFeedback);
+
+    if (nextFeedback) {
+      onPlayFeedbackSound(nextFeedback);
+    }
+  }, [isPracticeComplete, onPlayFeedbackSound]);
+
+  const handlePracticeContinue = useCallback(() => {
+    if (practiceFeedback === "correct") {
+      onNextQuestion();
+      return;
+    }
+
+    setPracticeFeedback(null);
+  }, [onNextQuestion, practiceFeedback]);
+
+  useEffect(() => {
+    const autoplayKey = `${question.answer}:${activeAudioKey ?? ""}`;
+
+    if (lastAutoplayKeyRef.current === autoplayKey) {
+      return;
+    }
+
+    lastAutoplayKeyRef.current = autoplayKey;
+    onPlayAudio(activeAudioKey);
+  }, [activeAudioKey, onPlayAudio, question.answer]);
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#111111" />
+      <View style={styles.sentenceLessonScreen}>
+        <View style={styles.sentenceLessonTopRow}>
+          <Pressable
+            onPress={onExit}
+            style={styles.quizBackIconButton}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="Back to lessons"
+          >
+            <BackIcon width={22} height={22} />
+          </Pressable>
+
+          <View style={styles.sentenceLessonProgressTrack}>
+            <View
+              style={[
+                styles.sentenceLessonProgressFill,
+                { width: `${Math.max(0.18, (lessonIndex + 1) / Math.max(lessonCount, 1)) * 100}%` },
+              ]}
+            />
+          </View>
+        </View>
+
+        <ScrollView
+          style={styles.sentenceLessonBodyScroll}
+          contentContainerStyle={styles.sentenceLessonBodyScrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.speakerControlsRow}>
+            <Pressable
+              onPress={() => onPlayAudio(activeAudioKey)}
+              style={[
+                styles.speakerButton,
+                isSpeakerDisabled && styles.speakerButtonDisabled,
+              ]}
+              disabled={isSpeakerDisabled}
+              hitSlop={14}
+              accessibilityRole="button"
+              accessibilityLabel={
+                isAudioLoading
+                  ? "Audio loading"
+                  : isAudioPlaying
+                    ? "Audio playing"
+                    : "Play audio"
+              }
+            >
+              {isAudioLoading ? (
+                <View style={styles.speakerSkeletonGlyph} />
+              ) : (
+                <SpeakerIcon width={34} height={34} />
+              )}
+            </Pressable>
+
+            <Pressable
+              onPress={onToggleAudioPlaybackRate}
+              style={[
+                styles.speedToggleButton,
+                isSpeakerDisabled && styles.speedToggleButtonDisabled,
+              ]}
+              disabled={isSpeakerDisabled}
+              hitSlop={12}
+              accessibilityRole="button"
+              accessibilityLabel="Toggle playback speed"
+            >
+              <Text style={styles.speedToggleText}>
+                {audioPlaybackRate === 1 ? "1x" : "0.5x"}
+              </Text>
+            </Pressable>
+          </View>
+
+          {pageIndex === 2 ? (
+            <View style={styles.sentenceLessonTinyBadge}>
+              <Text style={styles.sentenceLessonTinyBadgeText}>Another example</Text>
+            </View>
+          ) : null}
+
+          {pageIndex !== 3 ? (
+            <View style={styles.sentenceLessonBubble}>
+              <Text style={styles.sentenceLessonBubbleIgbo}>{bubbleIgboText}</Text>
+              <Text style={styles.sentenceLessonBubbleEnglish}>{bubbleEnglishText}</Text>
+            </View>
+          ) : null}
+
+          {pageIndex === 0 ? (
+            <>
+              <View style={styles.sentenceLessonExplanationCard}>
+                <View style={styles.sentenceLessonExplanationHeader}>
+                  <Text style={styles.sentenceLessonExplanationTitle}>
+                    In Igbo, the verb often comes first.
+                  </Text>
+                  <HelpIcon width={16} height={16} />
+                </View>
+                <Text style={styles.sentenceLessonExplanationBody}>
+                  {breakdown?.igboRule ?? ""}
+                </Text>
+              </View>
+            </>
+          ) : pageIndex === 1 ? (
+            <>
+              <View style={styles.sentenceLessonIllustrationWrap}>
+                {Illustration ? <Illustration width={170} height={170} /> : null}
+              </View>
+
+              <View style={styles.sentenceLessonWordRow}>
+                {sentenceWords.map((word, index) => (
+                  <View key={`${word}-${index}`} style={styles.sentenceLessonWordCard}>
+                    <Text
+                      style={[
+                        styles.sentenceLessonWordIgbo,
+                        { color: wordColors[index % wordColors.length] },
+                      ]}
+                    >
+                      {word}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.sentenceLessonWordEnglish,
+                        { color: wordColors[index % wordColors.length] },
+                      ]}
+                    >
+                      {englishWordHints[index]}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </>
+          ) : pageIndex === 2 ? (
+            <>
+              <View style={styles.sentenceLessonIllustrationWrap}>
+                {Illustration ? <Illustration width={170} height={170} /> : null}
+              </View>
+            </>
+          ) : (
+            <>
+              <View style={styles.quizPromptRow}>
+                <Text style={styles.quizPromptWord}>Translate this sentence</Text>
+                <Pressable
+                  onPress={() => setIsPracticeHintOpen(true)}
+                  style={styles.hintIconButton}
+                  hitSlop={14}
+                  accessibilityRole="button"
+                  accessibilityLabel="Open translation hint"
+                >
+                  <Text style={styles.practiceQuestionMark}>?</Text>
+                </Pressable>
+              </View>
+
+              <View style={styles.sentenceBuilderWrap}>
+                <View style={styles.sentenceSourceCard}>
+                  <Text
+                    style={[
+                      styles.sentenceSourceText,
+                      getDynamicSentencePromptStyle(
+                        breakdown?.sourceSentence ?? question.prompt,
+                        false
+                      ),
+                    ]}
+                    numberOfLines={2}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.72}
+                  >
+                    {breakdown?.sourceSentence ?? question.prompt}
+                  </Text>
+                </View>
+
+                <View style={styles.slotGrid}>
+                  {sentenceWords.map((word, slotIndex) => {
+                    const slotWord = slottedWords[slotIndex] ?? "";
+                    const isActive = dragFromIndex === slotIndex;
+
+                    return (
+                      <Pressable
+                        key={`sentence-breakdown-slot-${slotIndex}`}
+                        onPress={() => handleSlotPress(slotIndex)}
+                        onLongPress={() => handleSlotLongPress(slotIndex)}
+                        delayLongPress={170}
+                        hitSlop={14}
+                        style={[
+                          styles.slotChip,
+                          slotWord.length > 0 && styles.slotChipFilled,
+                          isActive && styles.slotChipActive,
+                        ]}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Sentence slot ${slotIndex + 1}`}
+                      >
+                        <Text
+                          style={[
+                            styles.slotChipText,
+                            slotWord.length > 0 && styles.slotChipTextFilled,
+                            getDynamicOptionTextStyle(
+                              slotWord.length > 0 ? slotWord : word,
+                              false
+                            ),
+                          ]}
+                        >
+                          {slotWord.length > 0 ? slotWord : "_"}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+
+                <View style={styles.wordBankWrap}>
+                  {sentenceBankWords.map((word, index) => {
+                    const maxWordCount = sentenceBankWordCounts[word] ?? 0;
+                    const usedWordCount = slottedWordCounts[word] ?? 0;
+                    const isDisabled = usedWordCount >= maxWordCount;
+
+                    return (
+                      <Pressable
+                        key={`sentence-breakdown-bank-${word}-${index}`}
+                        onPress={() => placeWord(word)}
+                        disabled={isDisabled}
+                        hitSlop={14}
+                        style={[
+                          styles.wordBankChip,
+                          isDisabled && styles.wordBankChipDisabled,
+                        ]}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Use word ${word}`}
+                      >
+                        <Text
+                          style={[
+                            styles.wordBankChipText,
+                            isDisabled && styles.wordBankChipTextDisabled,
+                            getDynamicOptionTextStyle(word, false),
+                          ]}
+                        >
+                          {word}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+            </>
+          )}
+
+          <View style={styles.sentenceLessonScrollEndPad} />
+        </ScrollView>
+
+        <View style={styles.sentenceLessonBottomFixed}>
+          <View style={styles.sentenceLessonDots}>
+            <View style={pageIndex === 0 ? styles.sentenceLessonDotActive : styles.sentenceLessonDot} />
+            <View style={pageIndex === 1 ? styles.sentenceLessonDotActive : styles.sentenceLessonDot} />
+            <View style={pageIndex === 2 ? styles.sentenceLessonDotActive : styles.sentenceLessonDot} />
+            <View style={pageIndex === 3 ? styles.sentenceLessonDotActive : styles.sentenceLessonDot} />
+          </View>
+
+          <View style={styles.sentenceLessonNavRow}>
+            <Pressable
+              onPress={
+                pageIndex === 0
+                  ? onPreviousQuestion
+                  : () =>
+                      setPageIndex((current) =>
+                        current === 0 ? 0 : ((current - 1) as 0 | 1 | 2 | 3)
+                      )
+              }
+              style={styles.sentenceLessonNavButtonOutline}
+              accessibilityRole="button"
+            >
+              <Text style={styles.sentenceLessonNavButtonOutlineText}>Prev</Text>
+            </Pressable>
+            <Pressable
+              onPress={
+                pageIndex < 3
+                  ? () =>
+                      setPageIndex((current) =>
+                        current === 3 ? 3 : ((current + 1) as 0 | 1 | 2 | 3)
+                      )
+                  : practiceFeedback == null
+                    ? handlePracticeCheck
+                    : handlePracticeContinue
+              }
+              style={styles.sentenceLessonNavButtonFill}
+              accessibilityRole="button"
+            >
+              <Text style={styles.sentenceLessonNavButtonFillText}>
+                {pageIndex === 3
+                  ? practiceFeedback == null
+                    ? "Check"
+                    : "Continue"
+                  : "Next"}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+
+        {practiceFeedback != null ? (
+          <View
+            style={[
+              styles.feedbackSheet,
+              practiceFeedback === "correct"
+                ? styles.feedbackSheetCorrect
+                : styles.feedbackSheetWrong,
+            ]}
+          >
+            <View style={styles.feedbackHeader}>
+              <View
+                style={[
+                  styles.feedbackIconCircle,
+                  practiceFeedback === "correct"
+                    ? styles.feedbackIconCircleCorrect
+                    : styles.feedbackIconCircleWrong,
+                ]}
+              >
+                <Text style={styles.feedbackIconText}>
+                  {practiceFeedback === "correct" ? "✓" : "✕"}
+                </Text>
+              </View>
+              <Text
+                style={[
+                  styles.feedbackTitle,
+                  practiceFeedback === "correct"
+                    ? styles.feedbackTitleCorrect
+                    : styles.feedbackTitleWrong,
+                ]}
+              >
+                {practiceFeedback === "correct" ? "Correct" : "Incorrect"}
+              </Text>
+            </View>
+
+            {practiceFeedback === "wrong" ? (
+              <Text style={styles.feedbackAnswerText}>
+                The correct answer is "{question.answer}".
+              </Text>
+            ) : null}
+
+            <Pressable
+              style={[
+                styles.feedbackAction,
+                practiceFeedback === "correct"
+                  ? styles.feedbackActionCorrect
+                  : styles.feedbackActionWrong,
+              ]}
+              onPress={handlePracticeContinue}
+              accessibilityRole="button"
+            >
+              <Text style={styles.feedbackActionText}>Continue</Text>
+            </Pressable>
+          </View>
+        ) : null}
+
+        <Modal
+          visible={isPracticeHintOpen}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setIsPracticeHintOpen(false)}
+        >
+          <View style={styles.hintModalBackdrop}>
+            <View style={styles.hintModalCard}>
+              <Text style={styles.hintModalTitle}>Translation</Text>
+
+              <View style={styles.practiceHintBody}>
+                <Text style={styles.practiceHintIgbo}>{question.answer}</Text>
+                <Text style={styles.practiceHintEnglish}>
+                  {breakdown?.sourceSentence ?? question.prompt}
+                </Text>
+              </View>
+
+              <Pressable
+                onPress={() => setIsPracticeHintOpen(false)}
+                style={styles.hintModalCloseButton}
+              >
+                <Text style={styles.hintModalCloseText}>Close</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      </View>
     </SafeAreaView>
   );
 }

@@ -9,7 +9,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-enwe-m-nnukwu-akuko",
     "voice": "male",
-    "falseStatement": "Dad says he has little news."
+    "falseStatement": "Dad says he has no news."
   },
   {
     "speaker": "daughter",
@@ -21,7 +21,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-gini-ka-o-bu-papa",
     "voice": "female",
-    "falseStatement": "The daughter asks when it is."
+    "falseStatement": "The daughter doesn't ask what it is."
   },
   {
     "speaker": "dad",
@@ -141,7 +141,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-onye-ka-a-kporo",
     "voice": "female",
-    "falseStatement": "The daughter asks who was invited last week."
+    "falseStatement": "The daughter asks who wasn't invited."
   },
   {
     "speaker": "dad",
@@ -153,6 +153,6 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-family-people-a-kporo-obodo-niile",
     "voice": "male",
-    "falseStatement": "Dad says the whole town has been invited."
+    "falseStatement": "Dad says nobody in the town has been invited."
   }
 ]

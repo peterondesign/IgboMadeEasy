@@ -1,0 +1,16 @@
+# Keep EAS uploads lean and deterministic.
+node_modules/
+.expo/
+.git/
+
+# Local env and editor state
+.env.local
+.vscode/
+
+# iOS local build artifacts and dependencies that EAS installs itself
+ios/build/
+ios/Pods/
+
+# macOS / Xcode noise
+.DS_Store
+*.log

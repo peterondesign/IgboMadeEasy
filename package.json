@@ -1,6 +1,6 @@
 {
   "name": "igbo-made-easy",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -9,7 +9,17 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "doctor": "npx --yes --package expo-doctor expo-doctor",
+    "preflight": "npm run typecheck && npm run doctor",
+    "build:production:ios": "npx eas build --platform ios --profile production --non-interactive",
+    "build:production:android": "npx eas build --platform android --profile production --non-interactive",
+    "submit:production:ios": "npx eas submit --platform ios --profile production --latest --non-interactive",
+    "submit:production:android": "npx eas submit --platform android --profile production --latest --non-interactive",
     "tts:replicate": "node scripts/generate-replicate-tts.mjs",
+    "tts:sentence-breakdowns": "node scripts/generate-sentence-breakdown-tts.mjs",
+    "tts:sentence-breakdowns-igbo": "node scripts/generate-sentence-breakdown-igbo-tts.mjs",
+    "tts:sentence-breakdowns-examples-igbo": "node scripts/generate-sentence-breakdown-example-igbo-tts.mjs",
     "story:false": "node scripts/generate-story-false-statements.mjs",
     "generate:greetings-translations": "node scripts/generate-greetings-translations.mjs"
   },
@@ -17,20 +27,23 @@
     "@expo-google-fonts/dm-sans": "^0.4.2",
     "@expo/metro-runtime": "~56.0.13",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "expo": "~56.0.6",
+    "expo": "~56.0.8",
+    "expo-asset": "~56.0.15",
     "expo-audio": "~56.0.11",
     "expo-auth-session": "^56.0.13",
     "expo-font": "~56.0.5",
     "expo-notifications": "~56.0.15",
     "expo-secure-store": "^56.0.4",
+    "expo-updates": "~56.0.17",
     "expo-web-browser": "~56.0.5",
     "react": "19.2.3",
     "react-native": "0.85.3",
-    "react-native-purchases": "^10.2.0",
+    "react-native-iap": "^15.3.2",
     "react-native-svg": "15.15.4"
   },
   "devDependencies": {
     "@types/react": "latest",
+    "babel-preset-expo": "~56.0.7",
     "react-native-svg-transformer": "latest",
     "typescript": "latest"
   }

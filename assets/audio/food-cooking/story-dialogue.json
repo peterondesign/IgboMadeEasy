@@ -9,7 +9,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-aguu-na-agu-m",
     "voice": "male",
-    "falseStatement": "Dad says she is hungry."
+    "falseStatement": "Dad says he is not hungry."
   },
   {
     "speaker": "daughter",
@@ -21,7 +21,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-gini-ka-i-choro-iri-papa",
     "voice": "female",
-    "falseStatement": "The daughter asks what she wants to eat."
+    "falseStatement": "The daughter doesn't ask what he wants to eat."
   },
   {
     "speaker": "dad",
@@ -69,7 +69,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-anyi-nwekwara-ose-na-ji-akwo",
     "voice": "female",
-    "falseStatement": "The daughter says they also have salt and pounded yam."
+    "falseStatement": "The daughter says they also have eba."
   },
   {
     "speaker": "dad",
@@ -105,7 +105,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-ka-anyi-gaa-kichin-malite-isi-nri",
     "voice": "male",
-    "falseStatement": "Dad says they should go to the garden and start cooking."
+    "falseStatement": "Dad says they should go to the garden and relax."
   },
   {
     "speaker": "daughter",
@@ -117,7 +117,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-papa-lee-tebul",
     "voice": "female",
-    "falseStatement": "The daughter tells Mum to look at the table."
+    "falseStatement": "The daughter tells Dad not to look at the table."
   },
   {
     "speaker": "dad",
@@ -129,7 +129,7 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-gini-ka-m-ga-ahu",
     "voice": "male",
-    "falseStatement": "Dad asks what she will see."
+    "falseStatement": "Dad doesn't ask what he will see."
   },
   {
     "speaker": "daughter",
@@ -141,6 +141,6 @@
     "daughterSvgPath": "assets/illustrations/story-daughter.svg",
     "audioKey": "story-food-cooking-mama-esiela-ofe-egusi-osikapa-na-ji-akwo",
     "voice": "female",
-    "falseStatement": "The daughter says Mum has already cooked only egusi soup and rice."
+    "falseStatement": "The daughter says Mum has already cooked only rice."
   }
 ]

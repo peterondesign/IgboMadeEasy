@@ -117,6 +117,11 @@ import {
 import { WEATHER_NATURE_STORY_AUDIO } from "./src/data/weatherNatureStoryAudio";
 import { GREETINGS_STORY_AUDIO } from "./src/data/greetingsStoryAudio";
 import { VISUAL_KEY_OVERRIDES_BY_IGBO } from "./src/data/illustrationOverrides";
+import {
+  SENTENCE_BREAKDOWNS_AUDIO,
+  SENTENCE_BREAKDOWNS_EXAMPLE_IGBO_AUDIO,
+  SENTENCE_BREAKDOWNS_IGBO_AUDIO,
+} from "./src/data/sentenceBreakdownsAudio";
 import GameGroup from "./src/groups/GameGroup";
 import HomeGroup from "./src/groups/HomeGroup";
 import LessonGroup from "./src/groups/LessonGroup";
@@ -124,6 +129,7 @@ import {
   CompletedLessonScreen,
   LessonsScreen,
   PremiumScreen,
+  SentenceBreakdownLessonScreen,
   QuizScreen,
   StreakScreen,
 } from "./src/app/screens";
@@ -181,12 +187,38 @@ type Question = {
     targetWords: string[];
     bankWords: string[];
   };
+  sentenceBreakdown?: {
+    sourceSentence: string;
+    targetWords: string[];
+    bankWords: string[];
+    wordGlosses?: string[];
+    igboRule: string;
+    anotherExample: {
+      igbo: string;
+      english: string;
+    };
+    anotherExampleAudioKey?: string;
+    illustrationKey: string;
+  };
 };
 
 type SentenceBuilderSeed = {
   sourceSentence: string;
   targetWords: string[];
   distractors: string[];
+};
+
+type SentenceBreakdownSeed = {
+  sourceSentence: string;
+  targetWords: string[];
+  distractors: string[];
+  igboRule: string;
+  anotherExample: {
+    igbo: string;
+    english: string;
+  };
+  illustrationKey: string;
+  audioKey?: string;
 };
 
 type ChoiceOption = {
@@ -205,6 +237,7 @@ type Lesson = {
 type PersistedProgress = {
   answeredByLesson: Record<string, number>;
   completedOnByLesson: Record<string, string | null>;
+  completedDayKeys?: string[];
 };
 
 type RemovableSubscription = {
@@ -658,7 +691,94 @@ const SENTENCE_BUILDER_BANK: Record<string, SentenceBuilderSeed[]> = {
   colors: buildSentenceSeedsFromEntries(COLORS_ENTRIES),
 };
 
+const SENTENCE_BREAKDOWN_WORD_GLOSSES: Record<string, string[]> = {
+  "what-is-your-name": ["what", "is", "name", "your"],
+  "how-are-you": ["how", "is", "you", "doing"],
+  "i-want-to-go-home": ["want", "I", "to-go", "home"],
+  "i-do-not-understand": ["do-not-know", "I"],
+  "i-am-hungry": ["hunger", "is", "on", "me"],
+  "i-have-two-brothers": ["sibling", "my", "plural", "male", "two"],
+  "i-will-come-tomorrow": ["will", "I", "come", "tomorrow"],
+  "where-is-our-sister": ["where", "is", "sister", "our", "located"],
+  "they-are-tired": ["they", "became", "tired"],
+  "we-are-thirsty": ["we", "are", "thirsting", "water"],
+  "give-him-water": ["give", "him", "water"],
+  "he-is-going-to-the-river-to-fetch-water": [
+    "he",
+    "is",
+    "going",
+    "to",
+    "river",
+    "to",
+    "fetch",
+    "water",
+  ],
+  "i-am-going-to-see-my-father-at-the-farm": [
+    "will",
+    "I",
+    "see",
+    "father",
+    "my",
+    "farm",
+  ],
+  "if-it-rains-we-will-stay-at-home": [
+    "if",
+    "it-happens",
+    "that",
+    "rain",
+    "we",
+    "will",
+    "stay",
+    "home",
+  ],
+  "my-house-is-bigger-than-your-house": [
+    "house",
+    "my",
+    "is",
+    "big",
+    "than",
+    "house",
+    "your",
+  ],
+  "shall-we-go-see-them": ["let", "us", "go", "see", "them"],
+  "the-boy-who-is-playing-football-is-my-friend": [
+    "child",
+    "male",
+    "who-is",
+    "playing",
+    "football",
+    "is",
+    "friend",
+    "my",
+  ],
+  "they-are-playing-football-near-the-school": [
+    "they",
+    "are",
+    "playing",
+    "football",
+    "near",
+    "house",
+    "school",
+  ],
+  "they-walked-a-long-distance-this-morning": [
+    "they",
+    "walked",
+    "distance",
+    "long",
+    "morning",
+    "today",
+  ],
+  "we-can-go-tomorrow": ["we", "have", "power/can", "go", "tomorrow"],
+  "we-cannot-go-home": ["we", "will-not", "go", "home"],
+};
+
 const QUESTION_BANK: Record<string, Question[]> = {
+  "introduction-to-igbo": buildSentenceBreakdownQuestionSet(
+    buildIntroductionToIgboBreakdownSeeds()
+  ),
+  "getting-started": buildSentenceBreakdownQuestionSet(
+    buildGettingStartedBreakdownSeeds()
+  ),
   greetings: buildLessonQuestionSet(
     "greetings",
     "Greetings",
@@ -921,6 +1041,8 @@ const QUESTION_VISUALS: Record<string, ComponentType<any>> = {
 };
 
 const LESSON_DEFS = [
+  { id: "introduction-to-igbo", title: "Introduction to Igbo" },
+  { id: "getting-started", title: "Getting Started" },
   { id: "greetings", title: "Greetings" },
   { id: "everyday-verbs", title: "Everyday Verbs" },
   { id: "asking-questions", title: "Asking Questions" },
@@ -957,6 +1079,7 @@ export default function App() {
   const [fontsLoaded] = useFonts({ DMSans_400Regular, DMSans_700Bold });
   const [screen, setScreen] = useState<ScreenName>("home");
   const [lessons, setLessons] = useState<Lesson[]>(INITIAL_LESSONS);
+  const [completedDayKeys, setCompletedDayKeys] = useState<string[]>([]);
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState<FeedbackState>(null);
@@ -973,9 +1096,17 @@ export default function App() {
     null
   );
   const activePlayerSubscriptionRef = useRef<RemovableSubscription | null>(null);
+  const currentActiveAudioKeyRef = useRef<string | null>(null);
   const feedbackPlayerRef = useRef<ReturnType<typeof createAudioPlayer> | null>(
     null
   );
+  const sentencePlayerRef = useRef<ReturnType<typeof createAudioPlayer> | null>(
+    null
+  );
+  const sentencePlayerSubscriptionRef = useRef<RemovableSubscription | null>(null);
+  const currentSentenceAudioKeyRef = useRef<string | null>(null);
+  const [isSentenceAudioLoading, setIsSentenceAudioLoading] = useState(false);
+  const [isSentenceAudioPlaying, setIsSentenceAudioPlaying] = useState(false);
 
   useEffect(() => {
     const restorePremiumState = async () => {
@@ -1021,6 +1152,14 @@ export default function App() {
           : (parsed as Record<string, number>);
         const completedOnByLesson: Record<string, string | null> =
           isPersistedProgress(parsed) ? parsed.completedOnByLesson : {};
+        const persistedCompletedDayKeys =
+          isPersistedProgress(parsed) && Array.isArray(parsed.completedDayKeys)
+            ? parsed.completedDayKeys
+            : Object.values(completedOnByLesson).filter(
+                (value): value is string => typeof value === "string"
+              );
+
+        setCompletedDayKeys(normalizeCompletedDayKeys(persistedCompletedDayKeys));
 
         setLessons((current) =>
           current.map((lesson) => {
@@ -1055,12 +1194,13 @@ export default function App() {
       completedOnByLesson: Object.fromEntries(
         lessons.map((lesson) => [lesson.id, lesson.completedOn])
       ),
+      completedDayKeys,
     };
 
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload)).catch(() => {
       // Best effort persistence.
     });
-  }, [lessons]);
+  }, [completedDayKeys, lessons]);
 
   const totalAnswered = lessons.reduce(
     (sum, lesson) => sum + lesson.answeredQuestions,
@@ -1072,12 +1212,11 @@ export default function App() {
   );
   const overallProgress = totalQuestions === 0 ? 0 : totalAnswered / totalQuestions;
   const todayKey = getTodayKey();
-  const streakCount = lessons.some((lesson) => lesson.completedOn === todayKey)
-    ? 1
-    : 0;
-  const hasCompletedLessonToday = lessons.some(
-    (lesson) => lesson.completedOn === todayKey
+  const streakCount = useMemo(
+    () => calculateStreakCount(completedDayKeys, todayKey),
+    [completedDayKeys, todayKey]
   );
+  const hasCompletedLessonToday = completedDayKeys.includes(todayKey);
 
   const activeLesson =
     activeLessonId == null
@@ -1108,11 +1247,14 @@ export default function App() {
       return [];
     }
 
-    if (activeQuestion.sentenceBuilder) {
+    const sentenceAssembly =
+      activeQuestion.sentenceBreakdown ?? activeQuestion.sentenceBuilder;
+
+    if (sentenceAssembly) {
       return [
         {
           word: activeQuestion.answer,
-          meaning: activeQuestion.sentenceBuilder.sourceSentence,
+          meaning: sentenceAssembly.sourceSentence,
         },
       ];
     }
@@ -1136,7 +1278,12 @@ export default function App() {
   }, [activeLessonId, activeQuestion]);
 
   const activeChoices = useMemo(() => {
-    if (!activeLessonId || !activeQuestion || activeQuestion.sentenceBuilder) {
+    if (
+      !activeLessonId ||
+      !activeQuestion ||
+      activeQuestion.sentenceBuilder ||
+      activeQuestion.sentenceBreakdown
+    ) {
       return [];
     }
 
@@ -1145,6 +1292,16 @@ export default function App() {
 
   useEffect(() => {
     return () => {
+      if (sentencePlayerSubscriptionRef.current) {
+        sentencePlayerSubscriptionRef.current.remove();
+        sentencePlayerSubscriptionRef.current = null;
+      }
+
+      if (sentencePlayerRef.current) {
+        sentencePlayerRef.current.remove();
+        sentencePlayerRef.current = null;
+      }
+
       if (activePlayerSubscriptionRef.current) {
         activePlayerSubscriptionRef.current.remove();
         activePlayerSubscriptionRef.current = null;
@@ -1162,6 +1319,81 @@ export default function App() {
     };
   }, []);
 
+  const playSentenceBreakdownAudio = useCallback(async (audioKey?: string) => {
+    const resolvedAudioKey = audioKey ?? activeQuestion?.audioKey;
+
+    if (
+      !resolvedAudioKey ||
+      isSentenceAudioLoading ||
+      isSentenceAudioPlaying
+    ) {
+      return;
+    }
+
+    const clip =
+      SENTENCE_BREAKDOWNS_EXAMPLE_IGBO_AUDIO[resolvedAudioKey] ??
+      SENTENCE_BREAKDOWNS_IGBO_AUDIO[resolvedAudioKey] ??
+      SENTENCE_BREAKDOWNS_AUDIO[resolvedAudioKey] ??
+      QUESTION_AUDIO[resolvedAudioKey];
+    if (!clip) {
+      return;
+    }
+
+    try {
+      setIsSentenceAudioLoading(true);
+      setIsSentenceAudioPlaying(false);
+      currentSentenceAudioKeyRef.current = resolvedAudioKey;
+
+      if (sentencePlayerSubscriptionRef.current) {
+        sentencePlayerSubscriptionRef.current.remove();
+        sentencePlayerSubscriptionRef.current = null;
+      }
+
+      if (sentencePlayerRef.current) {
+        sentencePlayerRef.current.remove();
+        sentencePlayerRef.current = null;
+      }
+
+      await setAudioModeAsync({
+        playsInSilentMode: true,
+        interruptionMode: "mixWithOthers",
+      });
+
+      const player = createAudioPlayer(clip, {
+        keepAudioSessionActive: true,
+      });
+      sentencePlayerRef.current = player;
+      player.loop = false;
+      player.setPlaybackRate(audioPlaybackRate);
+
+      sentencePlayerSubscriptionRef.current = player.addListener(
+        "playbackStatusUpdate",
+        (status) => {
+          setIsSentenceAudioLoading(status.isBuffering);
+
+          const statusRecord = status as unknown as {
+            isPlaying?: boolean;
+            playing?: boolean;
+            isBuffering?: boolean;
+          };
+          const currentlyPlaying =
+            statusRecord.isPlaying ?? statusRecord.playing ?? false;
+
+          if (!currentlyPlaying && !statusRecord.isBuffering) {
+            setIsSentenceAudioPlaying(false);
+          }
+        }
+      );
+
+      player.play();
+      setIsSentenceAudioLoading(false);
+      setIsSentenceAudioPlaying(true);
+    } catch {
+      setIsSentenceAudioLoading(false);
+      setIsSentenceAudioPlaying(false);
+    }
+  }, [activeQuestion?.audioKey, audioPlaybackRate, isSentenceAudioLoading, isSentenceAudioPlaying]);
+
   const toggleAudioPlaybackRate = useCallback(() => {
     setAudioPlaybackRate((currentRate) => {
       const nextRate: 0.5 | 1 = currentRate === 1 ? 0.5 : 1;
@@ -1170,9 +1402,32 @@ export default function App() {
         activePlayerRef.current.setPlaybackRate(nextRate);
       }
 
+      if (sentencePlayerRef.current) {
+        sentencePlayerRef.current.setPlaybackRate(nextRate);
+      }
+
+      const currentSentenceAudioKey = currentSentenceAudioKeyRef.current;
+      if (currentSentenceAudioKey) {
+        queueMicrotask(() => {
+          if (sentencePlayerRef.current) {
+            sentencePlayerRef.current.remove();
+            sentencePlayerRef.current = null;
+          }
+
+          if (sentencePlayerSubscriptionRef.current) {
+            sentencePlayerSubscriptionRef.current.remove();
+            sentencePlayerSubscriptionRef.current = null;
+          }
+
+          setIsSentenceAudioPlaying(false);
+          setIsSentenceAudioLoading(false);
+          void playSentenceBreakdownAudio(currentSentenceAudioKey);
+        });
+      }
+
       return nextRate;
     });
-  }, []);
+  }, [playSentenceBreakdownAudio]);
 
   const playFeedbackSound = useCallback(async (state: Exclude<FeedbackState, null>) => {
     const sound = state === "correct" ? GAME_SOUND_SUCCESS : GAME_SOUND_FAILURE;
@@ -1325,8 +1580,9 @@ export default function App() {
           ? error.message
           : "Upgrade failed. Try again.";
       const friendlyMessage =
-        message.includes("No subscription products are currently available")
-          ? "No Apple subscription product is available yet. Configure RevenueCat offering + App Store product, then try again."
+        message.includes("No subscription products are currently available") ||
+        message.includes("SKU not found")
+          ? "No Apple subscription product is available to this build yet. Confirm premium_annual_igbo_easy and premium_monthly_igbo_easy have complete metadata in App Store Connect, then add at least one subscription to this app version under In-App Purchases and Subscriptions before submitting for App Review."
           : message;
       Alert.alert("Upgrade unavailable", friendlyMessage);
     } finally {
@@ -1376,15 +1632,17 @@ export default function App() {
   }, [isAuthBusy]);
 
   const playActiveAudio = useCallback(async () => {
-    if (
-      !activeQuestion?.audioKey ||
-      isAudioPlayingRef.current ||
-      isAudioLoadingRef.current
-    ) {
+    const resolvedAudioKey = activeQuestion?.audioKey;
+    if (!resolvedAudioKey) {
       return;
     }
 
-    const clip = QUESTION_AUDIO[activeQuestion.audioKey];
+    const isSameAudio = currentActiveAudioKeyRef.current === resolvedAudioKey;
+    if ((isAudioPlayingRef.current || isAudioLoadingRef.current) && isSameAudio) {
+      return;
+    }
+
+    const clip = QUESTION_AUDIO[resolvedAudioKey] || SENTENCE_BREAKDOWNS_AUDIO[resolvedAudioKey];
     if (!clip) {
       return;
     }
@@ -1394,6 +1652,7 @@ export default function App() {
       setIsAudioPlaying(false);
       isAudioLoadingRef.current = true;
       isAudioPlayingRef.current = false;
+      currentActiveAudioKeyRef.current = resolvedAudioKey;
 
       if (activePlayerSubscriptionRef.current) {
         activePlayerSubscriptionRef.current.remove();
@@ -1417,20 +1676,39 @@ export default function App() {
       activePlayerSubscriptionRef.current = player.addListener(
         "playbackStatusUpdate",
         (status) => {
-          setIsAudioLoading(!status.isLoaded || status.isBuffering);
-          setIsAudioPlaying(status.playing);
-          isAudioLoadingRef.current = !status.isLoaded || status.isBuffering;
-          isAudioPlayingRef.current = status.playing;
+          setIsAudioLoading(status.isBuffering);
+          isAudioLoadingRef.current = status.isBuffering;
+
+          const statusRecord = status as unknown as {
+            isPlaying?: boolean;
+            playing?: boolean;
+            isBuffering?: boolean;
+          };
+          const currentlyPlaying =
+            statusRecord.isPlaying ?? statusRecord.playing ?? false;
+
+          setIsAudioPlaying(currentlyPlaying);
+          isAudioPlayingRef.current = currentlyPlaying;
+
+          if (!currentlyPlaying && !statusRecord.isBuffering) {
+            currentActiveAudioKeyRef.current = null;
+          }
         }
       );
 
       player.setPlaybackRate(audioPlaybackRate);
       player.play();
+
+      setIsAudioLoading(false);
+      setIsAudioPlaying(true);
+      isAudioLoadingRef.current = false;
+      isAudioPlayingRef.current = true;
     } catch {
       setIsAudioLoading(false);
       setIsAudioPlaying(false);
       isAudioLoadingRef.current = false;
       isAudioPlayingRef.current = false;
+      currentActiveAudioKeyRef.current = null;
       // Ignore audio playback errors.
     }
   }, [activeQuestion, audioPlaybackRate]);
@@ -1463,10 +1741,24 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (activePlayerSubscriptionRef.current) {
+      activePlayerSubscriptionRef.current.remove();
+      activePlayerSubscriptionRef.current = null;
+    }
+
+    if (activePlayerRef.current) {
+      activePlayerRef.current.remove();
+      activePlayerRef.current = null;
+    }
+
     setIsAudioLoading(false);
     setIsAudioPlaying(false);
     isAudioLoadingRef.current = false;
     isAudioPlayingRef.current = false;
+    currentActiveAudioKeyRef.current = null;
+    setIsSentenceAudioLoading(false);
+    setIsSentenceAudioPlaying(false);
+    currentSentenceAudioKeyRef.current = null;
   }, [activeQuestion?.answer]);
 
   const checkCurrentAnswer = () => {
@@ -1526,6 +1818,12 @@ export default function App() {
         })
       );
 
+      if (completedLesson) {
+        setCompletedDayKeys((currentKeys) =>
+          normalizeCompletedDayKeys([...currentKeys, todayKey])
+        );
+      }
+
       setUserAnswer("");
       setIsHintModalOpen(false);
       setFeedback(null);
@@ -1537,6 +1835,63 @@ export default function App() {
       setFeedback(null);
     }
   };
+
+  const previousSentenceBreakdownQuestion = useCallback(() => {
+    if (!activeLessonId) {
+      return;
+    }
+
+    setLessons((currentLessons) =>
+      currentLessons.map((lesson) => {
+        if (lesson.id !== activeLessonId) {
+          return lesson;
+        }
+
+        return {
+          ...lesson,
+          answeredQuestions: Math.max(0, lesson.answeredQuestions - 1),
+        };
+      })
+    );
+  }, [activeLessonId]);
+
+  const continueSentenceBreakdownLesson = useCallback(() => {
+    if (!activeLessonId) {
+      return;
+    }
+
+    const lessonBeforeUpdate = lessons.find((lesson) => lesson.id === activeLessonId);
+    if (!lessonBeforeUpdate) {
+      return;
+    }
+
+    const nextAnswered = Math.min(
+      lessonBeforeUpdate.answeredQuestions + 1,
+      lessonBeforeUpdate.totalQuestions
+    );
+    const completedLesson = nextAnswered >= lessonBeforeUpdate.totalQuestions;
+
+    setLessons((currentLessons) =>
+      currentLessons.map((lesson) => {
+        if (lesson.id !== activeLessonId) {
+          return lesson;
+        }
+
+        return {
+          ...lesson,
+          answeredQuestions: nextAnswered,
+          completedOn: completedLesson ? todayKey : lesson.completedOn,
+        };
+      })
+    );
+
+    if (completedLesson) {
+      setCompletedDayKeys((currentKeys) =>
+        normalizeCompletedDayKeys([...currentKeys, todayKey])
+      );
+      setScreen("completed");
+    }
+  }, [activeLessonId, lessons, todayKey]);
 
   if (!fontsLoaded) {
     return null;
@@ -1550,6 +1905,8 @@ export default function App() {
       <HomeGroup
         onGetStarted={handleGetStarted}
         onDemoReminderTest={handleDemoReminderTest}
+        onTogglePremium={__DEV__ ? () => setHasPremiumAccess((v) => !v) : undefined}
+        hasPremiumAccess={hasPremiumAccess}
         styles={styles}
       />
     );
@@ -1563,7 +1920,7 @@ export default function App() {
         renderLessons={() => (
           screen === "streak" ? (
             <StreakScreen
-              lessons={lessons}
+              completedDayKeys={completedDayKeys}
               streakCount={streakCount}
               onBack={() => setScreen("lessons")}
             />
@@ -1602,6 +1959,25 @@ export default function App() {
   }
 
   if (currentGroup === "game" && activeLesson != null && activeQuestion != null) {
+    if (activeQuestion.sentenceBreakdown) {
+      return (
+        <SentenceBreakdownLessonScreen
+          question={activeQuestion}
+          lessonIndex={activeLesson.answeredQuestions}
+          lessonCount={activeLesson.totalQuestions}
+          onExit={closeQuiz}
+          onNextQuestion={continueSentenceBreakdownLesson}
+          onPreviousQuestion={previousSentenceBreakdownQuestion}
+          onPlayAudio={playSentenceBreakdownAudio}
+          onPlayFeedbackSound={playFeedbackSound}
+          audioPlaybackRate={audioPlaybackRate}
+          onToggleAudioPlaybackRate={toggleAudioPlaybackRate}
+          isAudioLoading={isSentenceAudioLoading}
+          isAudioPlaying={isSentenceAudioPlaying}
+        />
+      );
+    }
+
     return (
       <GameGroup
         lesson={activeLesson}
@@ -1617,7 +1993,7 @@ export default function App() {
             feedback={feedback}
             onContinue={continueFromFeedback}
             showSpeaker={Boolean(
-              question.audioKey && QUESTION_AUDIO[question.audioKey]
+              question.audioKey && (QUESTION_AUDIO[question.audioKey] || SENTENCE_BREAKDOWNS_AUDIO[question.audioKey])
             )}
             onPlayAudio={playActiveAudio}
             audioPlaybackRate={audioPlaybackRate}
@@ -1668,6 +2044,268 @@ function buildLessonQuestionSet(
   return [
     ...storyQuestions,
     ...mixedQuestions,
+  ];
+}
+
+function buildIntroductionToIgboBreakdownSeeds(): SentenceBreakdownSeed[] {
+  return [
+    {
+      sourceSentence: "What is your name?",
+      targetWords: ["Gini", "bu", "aha", "gi"],
+      distractors: ["m", "anyi", "nke", "ebe"],
+      igboRule: "'Gini' means 'what,' 'bu' means 'is,' 'aha' means 'name,' and 'gi' means 'your.'",
+      anotherExample: {
+        igbo: "Gini bu aha nwa gi?",
+        english: "What is your child's name?",
+      },
+      illustrationKey: "What is your name",
+      audioKey: "what-is-your-name",
+    },
+    {
+      sourceSentence: "How are you?",
+      targetWords: ["Kedu", "ka", "i", "mere"],
+      distractors: ["anyi", "ha", "m", "bu"],
+      igboRule: "'Kedu ka' is a common way to say 'how are you?' 'I' means 'you' and 'mere' finishes the question.",
+      anotherExample: {
+        igbo: "Kedu ka ha mere?",
+        english: "How are they?",
+      },
+      illustrationKey: "How are you",
+      audioKey: "how-are-you",
+    },
+    {
+      sourceSentence: "I want to go home.",
+      targetWords: ["Achoro", "m", "iju", "ụlọ"],
+      distractors: ["na", "ebe", "ka", "ha"],
+      igboRule: "'Achoro m' means 'I want.' 'Iju' means 'go,' and 'ụlọ' means 'home.'",
+      anotherExample: {
+        igbo: "Achoro m iri nri.",
+        english: "I want to eat food.",
+      },
+      illustrationKey: "I want to go home",
+      audioKey: "i-want-to-go-home",
+    },
+    {
+      sourceSentence: "I do not understand.",
+      targetWords: ["Amaghi", "m"],
+      distractors: ["chi", "ka", "bu", "ebe"],
+      igboRule: "'Amaghi m' is a simple way to say 'I do not understand' or 'I do not know.'",
+      anotherExample: {
+        igbo: "Amaghi m okwu gi.",
+        english: "I do not understand your words.",
+      },
+      illustrationKey: "I do not understand",
+      audioKey: "i-do-not-understand",
+    },
+    {
+      sourceSentence: "I am hungry.",
+      targetWords: ["Aguu", "na", "agu", "m"],
+      distractors: ["chi", "afo", "ike", "okwu"],
+      igboRule: "Igbo says this like 'hunger is on me.' 'M' means 'me.'",
+      anotherExample: {
+        igbo: "Aguu na agu ha.",
+        english: "They are hungry.",
+      },
+      illustrationKey: "I am hungry",
+      audioKey: "i-am-hungry",
+    },
+    {
+      sourceSentence: "I have two brothers.",
+      targetWords: ["Nwanne", "m", "ndị", "nwoke", "abụọ"],
+      distractors: ["ogidi", "mmadụ", "nwa", "ha"],
+      igboRule: "'Nwanne m' means 'my sibling.' 'Ndị nwoke' means 'brothers/men,' and 'abụọ' means 'two.'",
+      anotherExample: {
+        igbo: "Nwanne m ndị nwanyị atọ.",
+        english: "I have three sisters.",
+      },
+      illustrationKey: "I have two brothers",
+      audioKey: "i-have-two-brothers",
+    },
+    {
+      sourceSentence: "I will come tomorrow.",
+      targetWords: ["Ga", "m", "abịa", "echi"],
+      distractors: ["na", "si", "ije", "nke"],
+      igboRule: "'Ga m' means 'I will.' 'Abịa' means 'come,' and 'echi' means 'tomorrow.'",
+      anotherExample: {
+        igbo: "Ga a ị gaa n'ụlọ?",
+        english: "Will you go home?",
+      },
+      illustrationKey: "I will come tomorrow",
+      audioKey: "i-will-come-tomorrow",
+    },
+    {
+      sourceSentence: "Where is our sister?",
+      targetWords: ["Ebe", "ka", "nne", "anyi", "no"],
+      distractors: ["di", "na", "gi", "bu"],
+      igboRule: "'Ebe' means 'where,' 'anyi' means 'our,' and 'no' means 'is there' or 'stays there.'",
+      anotherExample: {
+        igbo: "Ebe ka nne gi no?",
+        english: "Where is your mother?",
+      },
+      illustrationKey: "Where is our sister",
+      audioKey: "where-is-our-sister",
+    },
+    {
+      sourceSentence: "They are tired.",
+      targetWords: ["Ha", "wụrụ", "ngwu"],
+      distractors: ["ga", "na", "di", "cho"],
+      igboRule: "'Ha' means 'they,' and 'wụrụ ngwu' means 'got tired' or 'are tired.'",
+      anotherExample: {
+        igbo: "Ọ wụrụ ngwu.",
+        english: "He/she is tired.",
+      },
+      illustrationKey: "They are tired",
+      audioKey: "they-are-tired",
+    },
+    {
+      sourceSentence: "We are thirsty.",
+      targetWords: ["Anyi", "na", "agụ", "mmili"],
+      distractors: ["ha", "m", "gi", "ebe"],
+      igboRule: "'Anyi' means 'we.' In Igbo, thirst is said like 'we want water.'",
+      anotherExample: {
+        igbo: "O na agụ mmili.",
+        english: "He/she is thirsty.",
+      },
+      illustrationKey: "We are thirsty",
+      audioKey: "we-are-thirsty",
+    },
+  ];
+}
+
+function buildGettingStartedBreakdownSeeds(): SentenceBreakdownSeed[] {
+  return [
+    {
+      sourceSentence: "Give him water.",
+      targetWords: ["Nye", "ya", "mmili"],
+      distractors: ["ka", "nke", "bu", "na"],
+      igboRule: "'Nye' means 'give,' 'ya' means 'him' or 'her,' and 'mmili' means 'water.'",
+      anotherExample: {
+        igbo: "Nye m ihe.",
+        english: "Give me something.",
+      },
+      illustrationKey: "Give him water",
+      audioKey: "give-him-water",
+    },
+    {
+      sourceSentence: "He is going to the river to fetch water.",
+      targetWords: ["O", "na", "eje", "n'ime", "mmiri", "iji", "kpukuru", "mmili"],
+      distractors: ["ha", "ka", "m", "di"],
+      igboRule: "This says he is going to the river for water. 'O' means 'he,' and 'na eje' means 'is going.'",
+      anotherExample: {
+        igbo: "Ha na eje n'ụlọ.",
+        english: "They are going to the house.",
+      },
+      illustrationKey: "He is going to the river to fetch water",
+      audioKey: "he-is-going-to-the-river-to-fetch-water",
+    },
+    {
+      sourceSentence: "I am going to see my father at the farm.",
+      targetWords: ["Ga", "m", "ahụ", "pa", "m", "n'ibe"],
+      distractors: ["na", "eme", "di", "si"],
+      igboRule: "'Ga m' means 'I am going to.' 'Ahụ' means 'see,' 'pa m' means 'my father,' and 'n'ibe' means 'at the farm.'",
+      anotherExample: {
+        igbo: "Ga m ahụ nne m n'afo.",
+        english: "I am going to see my mother at home.",
+      },
+      illustrationKey: "I am going to see my father at the farm",
+      audioKey: "i-am-going-to-see-my-father-at-the-farm",
+    },
+    {
+      sourceSentence: "If it rains, we will stay at home.",
+      targetWords: ["Ọ", "bụrụ", "na", "ewe", "anyi", "ga", "nọdụ", "n'ụlọ"],
+      distractors: ["ha", "ka", "m", "iji"],
+      igboRule: "'Ọ bụrụ na' means 'if.' The rest says 'it rains, we will stay home.'",
+      anotherExample: {
+        igbo: "Ọ bụrụ na ọ no mma, anyi ga eri.",
+        english: "If it is good, we will eat.",
+      },
+      illustrationKey: "If it rains, we will stay at home",
+      audioKey: "if-it-rains-we-will-stay-at-home",
+    },
+    {
+      sourceSentence: "My house is bigger than your house.",
+      targetWords: ["Ụlọ", "m", "bụ", "nnukwu", "kar", "ụlọ", "gi"],
+      distractors: ["na", "di", "ka", "nke"],
+      igboRule: "'Ụlọ m' means 'my house.' 'Nnukwu' means 'big,' and 'kar' means 'more than.'",
+      anotherExample: {
+        igbo: "Okwu ya bụ mma kar okwu m.",
+        english: "His word is better than mine.",
+      },
+      illustrationKey: "My house is bigger than your house",
+      audioKey: "my-house-is-bigger-than-your-house",
+    },
+    {
+      sourceSentence: "Shall we go see them?",
+      targetWords: ["Ka", "anyi", "gaa", "hụ", "ha"],
+      distractors: ["na", "ga", "nke", "bu"],
+      igboRule: "'Ka anyi' means 'let us' or 'shall we.' 'Gaa' means 'go,' and 'hụ ha' means 'see them.'",
+      anotherExample: {
+        igbo: "Ka anyi rie nri.",
+        english: "Shall we eat food?",
+      },
+      illustrationKey: "Shall we go see them",
+      audioKey: "shall-we-go-see-them",
+    },
+    {
+      sourceSentence: "The boy who is playing football is my friend.",
+      targetWords: ["Nwata", "nwoke", "na", "egwu", "bọọlu", "bụ", "enyi", "m"],
+      distractors: ["ya", "ha", "ka", "di"],
+      igboRule: "This says the boy playing football is my friend. 'Enyi m' means 'my friend.'",
+      anotherExample: {
+        igbo: "Nwata na ịde akwụkwọ bụ ọmụmụ m.",
+        english: "The child who writes is my student.",
+      },
+      illustrationKey: "The boy who is playing football is my friend",
+      audioKey: "the-boy-who-is-playing-football-is-my-friend",
+    },
+    {
+      sourceSentence: "They are playing football near the school.",
+      targetWords: ["Ha", "na", "egwu", "bọọlu", "n'akụkụ", "ụlọ", "akwụkwọ"],
+      distractors: ["m", "i", "anyi", "ka"],
+      igboRule: "'Ha' means 'they.' 'Na egwu bọọlu' means 'are playing football,' and 'n'akụkụ' means 'near.'",
+      anotherExample: {
+        igbo: "Anyi na eje ibe.",
+        english: "We are going to the farm.",
+      },
+      illustrationKey: "They are playing football near the school",
+      audioKey: "they-are-playing-football-near-the-school",
+    },
+    {
+      sourceSentence: "They walked a long distance this morning.",
+      targetWords: ["Ha", "gagara", "anya", "ogologo", "n'ụtụtụ", "taa"],
+      distractors: ["na", "bi", "ka", "nke"],
+      igboRule: "This says they walked very far this morning. 'Taa' means 'today,' and 'n'ụtụtụ' means 'in the morning.'",
+      anotherExample: {
+        igbo: "O gagara anya.",
+        english: "He/she walked a distance.",
+      },
+      illustrationKey: "They walked a long distance this morning",
+      audioKey: "they-walked-a-long-distance-this-morning",
+    },
+    {
+      sourceSentence: "We can go tomorrow.",
+      targetWords: ["Anyi", "nwere", "ike", "iju", "echi"],
+      distractors: ["ga", "na", "di", "ka"],
+      igboRule: "'Nwere ike' means 'can.' 'Echi' means 'tomorrow.'",
+      anotherExample: {
+        igbo: "O nwere ike ibu ihe.",
+        english: "He/she can carry the thing.",
+      },
+      illustrationKey: "We can go tomorrow",
+      audioKey: "we-can-go-tomorrow",
+    },
+    {
+      sourceSentence: "We cannot go home.",
+      targetWords: ["Anyi", "agaghi", "uju", "ụlọ"],
+      distractors: ["nwere", "na", "di", "cho"],
+      igboRule: "'Agaghi' means 'will not' or 'cannot' here. 'Uju ụlọ' means 'go back home.'",
+      anotherExample: {
+        igbo: "Ha agaghi abụ nwoke.",
+        english: "They will not become men.",
+      },
+      illustrationKey: "We cannot go home",
+      audioKey: "we-cannot-go-home",
+    },
   ];
 }
 
@@ -1879,6 +2517,39 @@ function buildMixedQuestionSet(
   });
 }
 
+function buildSentenceBreakdownQuestionSet(
+  sentenceSeeds: SentenceBreakdownSeed[]
+): Question[] {
+  return sentenceSeeds.map((seed) => {
+    const sentenceAnswer = seed.targetWords.join(" ");
+    const anotherExampleAudioKey = seed.audioKey
+      ? `${seed.audioKey}-example`
+      : undefined;
+
+    return {
+      prompt: "Sentence breakdown",
+      answer: sentenceAnswer,
+      visualKey: seed.illustrationKey,
+      audioKey: seed.audioKey,
+      sentenceBreakdown: {
+        sourceSentence: seed.sourceSentence,
+        targetWords: seed.targetWords,
+        bankWords: shuffleArray([
+          ...seed.targetWords,
+          ...seed.distractors,
+        ]),
+        wordGlosses: seed.audioKey
+          ? SENTENCE_BREAKDOWN_WORD_GLOSSES[seed.audioKey]
+          : undefined,
+        igboRule: seed.igboRule,
+        anotherExample: seed.anotherExample,
+        anotherExampleAudioKey,
+        illustrationKey: seed.illustrationKey,
+      },
+    };
+  });
+}
+
 function findSentenceSeedForQuestion(
   question: Question,
   sentenceSeeds: SentenceBuilderSeed[]
@@ -2029,7 +2700,7 @@ function countWords(words: string[]): Record<string, number> {
 
 function buildLessonChoices(lessonId: string, question: Question): ChoiceOption[] {
   const lessonQuestions = (ACTIVE_QUESTION_BANK[lessonId] ?? []).filter(
-    (item) => !item.sentenceBuilder && !item.storyMode
+    (item) => !item.sentenceBuilder && !item.sentenceBreakdown && !item.storyMode
   );
   const uniquePool = lessonQuestions.filter(
     (item, index, array) =>
@@ -2151,9 +2822,74 @@ function isPersistedProgress(value: unknown): value is PersistedProgress {
 }
 
 function getTodayKey(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = `${now.getMonth() + 1}`.padStart(2, "0");
-  const day = `${now.getDate()}`.padStart(2, "0");
+  return formatDateKey(new Date());
+}
+
+function formatDateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function parseDateKey(value: string): Date | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return null;
+  }
+
+  const [yearRaw, monthRaw, dayRaw] = value.split("-");
+  const year = Number(yearRaw);
+  const month = Number(monthRaw);
+  const day = Number(dayRaw);
+  const parsed = new Date(year, month - 1, day);
+
+  if (
+    parsed.getFullYear() !== year ||
+    parsed.getMonth() !== month - 1 ||
+    parsed.getDate() !== day
+  ) {
+    return null;
+  }
+
+  parsed.setHours(0, 0, 0, 0);
+  return parsed;
+}
+
+function normalizeCompletedDayKeys(values: string[]): string[] {
+  return Array.from(new Set(values.filter((value) => parseDateKey(value) != null)))
+    .sort();
+}
+
+function calculateStreakCount(completedDayKeys: string[], todayKey: string): number {
+  const completedKeySet = new Set(normalizeCompletedDayKeys(completedDayKeys));
+  if (completedKeySet.size === 0) {
+    return 0;
+  }
+
+  const todayDate = parseDateKey(todayKey);
+  if (!todayDate) {
+    return 0;
+  }
+
+  let cursor = new Date(todayDate);
+  let cursorKey = formatDateKey(cursor);
+
+  if (!completedKeySet.has(cursorKey)) {
+    cursor.setDate(cursor.getDate() - 1);
+    cursorKey = formatDateKey(cursor);
+
+    if (!completedKeySet.has(cursorKey)) {
+      return 0;
+    }
+  }
+
+  let streak = 0;
+
+  while (completedKeySet.has(cursorKey)) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+    cursorKey = formatDateKey(cursor);
+  }
+
+  return streak;
 }

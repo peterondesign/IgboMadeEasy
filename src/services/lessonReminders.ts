@@ -1,7 +1,27 @@
 import * as Notifications from "expo-notifications";
 
-const MORNING_REMINDER_BODY = "Ụtụtụ ọma! Time for an Igbo lesson.";
-const NIGHT_REMINDER_BODY = "Tupu ị laa ụra, One Igbo lesson tonight.";
+const MORNING_REMINDER_VARIATIONS = [
+  "Ndewo 👋 Ready for 2 minutes?",
+  "Daalụ starts with one lesson.",
+  "Olee? Can you understand today's sentence?",
+  "Nnọọ. Your next Igbo lesson is waiting.",
+  "Biko, learn one sentence today.",
+  "Aha, okwu, mkparịta ụka. Start today's lesson.",
+  "Learn something your ezinụlọ might say.",
+  "Today's conversation is ready. Ka anyị gaa.",
+];
+const NIGHT_REMINDER_VARIATIONS = [
+  "Ndo. No Igbo today.",
+  "Today isn't over yet. Biko.",
+  "One sentence before bed. Daalụ.",
+  "No lesson completed today. Ka anyị gaa.",
+  "Your future self speaks Igbo. Nnọọ.",
+  "Someone will tell a story in Igbo. Olee?",
+  "One lesson. That's enough. Biko.",
+  "Tomorrow's conversation starts today. Daalụ.",
+  "Learn one thing today. Ka ọ dị?",
+  "Your streak is waiting. Ndewo.",
+];
 const REMINDER_TYPE_PREFIX = "lesson-reminder";
 
 let notificationsConfigured = false;
@@ -68,6 +88,22 @@ function buildReminderContent(reminderType: string, body: string): Notifications
   };
 }
 
+function pickRandom<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function getRandomTimeInWindow(
+  startHour: number,
+  endHourInclusive: number
+): { hour: number; minute: number } {
+  const hourRange = endHourInclusive - startHour + 1;
+  const hour = startHour + Math.floor(Math.random() * Math.max(hourRange, 1));
+  return {
+    hour,
+    minute: Math.floor(Math.random() * 60),
+  };
+}
+
 export async function syncDailyLessonReminderNotifications(options: {
   hasCompletedLessonToday: boolean;
 }) {
@@ -88,33 +124,49 @@ export async function syncDailyLessonReminderNotifications(options: {
     };
   }
 
+  const morningTime = getRandomTimeInWindow(10, 11);
+  const nightTime = getRandomTimeInWindow(20, 21);
+  const lateNightTime = getRandomTimeInWindow(23, 23);
+
   await Notifications.scheduleNotificationAsync({
     content: buildReminderContent(
       `${REMINDER_TYPE_PREFIX}-morning`,
-      MORNING_REMINDER_BODY
+      pickRandom(MORNING_REMINDER_VARIATIONS)
     ),
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
-      hour: 8,
-      minute: 0,
+      hour: morningTime.hour,
+      minute: morningTime.minute,
     },
   });
 
   await Notifications.scheduleNotificationAsync({
     content: buildReminderContent(
       `${REMINDER_TYPE_PREFIX}-night`,
-      NIGHT_REMINDER_BODY
+      pickRandom(NIGHT_REMINDER_VARIATIONS)
     ),
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
-      hour: 20,
-      minute: 0,
+      hour: nightTime.hour,
+      minute: nightTime.minute,
+    },
+  });
+
+  await Notifications.scheduleNotificationAsync({
+    content: buildReminderContent(
+      `${REMINDER_TYPE_PREFIX}-late-night`,
+      pickRandom(NIGHT_REMINDER_VARIATIONS)
+    ),
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
+      hour: lateNightTime.hour,
+      minute: lateNightTime.minute,
     },
   });
 
   return {
     hasPermission: true,
-    scheduledCount: 2,
+    scheduledCount: 3,
   };
 }
 
@@ -130,7 +182,7 @@ export async function scheduleDemoLessonReminderNotifications() {
   await Notifications.scheduleNotificationAsync({
     content: buildReminderContent(
       `${REMINDER_TYPE_PREFIX}-demo-morning`,
-      MORNING_REMINDER_BODY
+      pickRandom(MORNING_REMINDER_VARIATIONS)
     ),
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -141,7 +193,7 @@ export async function scheduleDemoLessonReminderNotifications() {
   await Notifications.scheduleNotificationAsync({
     content: buildReminderContent(
       `${REMINDER_TYPE_PREFIX}-demo-night`,
-      NIGHT_REMINDER_BODY
+      pickRandom(NIGHT_REMINDER_VARIATIONS)
     ),
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
