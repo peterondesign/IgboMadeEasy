@@ -56,6 +56,61 @@ export const SENTENCE_BREAKDOWNS_IGBO_AUDIO: Record<string, number> = {
   "they-walked-a-long-distance-this-morning": require("../../assets/audio/sentence_breakdowns_igbo/they-walked-a-long-distance-this-morning.wav"),
   "we-can-go-tomorrow": require("../../assets/audio/sentence_breakdowns_igbo/we-can-go-tomorrow.wav"),
   "we-cannot-go-home": require("../../assets/audio/sentence_breakdowns_igbo/we-cannot-go-home.wav"),
+
+  // Past, Present & Future Tenses lesson (position 10)
+  "i-am-eating-food": require("../../assets/audio/sentence_breakdowns_igbo/i-am-eating-food.wav"),
+  "i-am-going-home": require("../../assets/audio/sentence_breakdowns_igbo/i-am-going-home.wav"),
+  "i-am-learning-igbo": require("../../assets/audio/sentence_breakdowns_igbo/i-am-learning-igbo.wav"),
+  "i-ate-food": require("../../assets/audio/sentence_breakdowns_igbo/i-ate-food.wav"),
+  "i-went-home": require("../../assets/audio/sentence_breakdowns_igbo/i-went-home.wav"),
+  "i-learned-igbo": require("../../assets/audio/sentence_breakdowns_igbo/i-learned-igbo.wav"),
+  "i-will-eat-food": require("../../assets/audio/sentence_breakdowns_igbo/i-will-eat-food.wav"),
+  "i-will-go-home": require("../../assets/audio/sentence_breakdowns_igbo/i-will-go-home.wav"),
+  "i-will-learn-igbo": require("../../assets/audio/sentence_breakdowns_igbo/i-will-learn-igbo.wav"),
+
+  // Describing Things (Adjectives) lesson (position 11)
+  "big-house": require("../../assets/audio/sentence_breakdowns_igbo/big-house.wav"),
+  "good-person": require("../../assets/audio/sentence_breakdowns_igbo/good-person.wav"),
+  "small-child": require("../../assets/audio/sentence_breakdowns_igbo/small-child.wav"),
+  "beautiful-woman": require("../../assets/audio/sentence_breakdowns_igbo/beautiful-woman.wav"),
+  "the-house-is-big": require("../../assets/audio/sentence_breakdowns_igbo/the-house-is-big.wav"),
+  "the-food-is-good": require("../../assets/audio/sentence_breakdowns_igbo/the-food-is-good.wav"),
+  "the-water-is-cold": require("../../assets/audio/sentence_breakdowns_igbo/the-water-is-cold.wav"),
+  "the-food-is-very-good": require("../../assets/audio/sentence_breakdowns_igbo/the-food-is-very-good.wav"),
+  "the-child-is-strong": require("../../assets/audio/sentence_breakdowns_igbo/the-child-is-strong.wav"),
+
+  // Time & Dates lesson (position 12)
+  "learning-igbo-today": require("../../assets/audio/sentence_breakdowns_igbo/learning-igbo-today.wav"),
+  "went-to-market-yesterday": require("../../assets/audio/sentence_breakdowns_igbo/went-to-market-yesterday.wav"),
+  "will-go-tomorrow": require("../../assets/audio/sentence_breakdowns_igbo/will-go-tomorrow.wav"),
+  "will-come-at-3": require("../../assets/audio/sentence_breakdowns_igbo/will-come-at-3.wav"),
+  "work-in-morning": require("../../assets/audio/sentence_breakdowns_igbo/work-in-morning.wav"),
+  "meet-in-evening": require("../../assets/audio/sentence_breakdowns_igbo/meet-in-evening.wav"),
+  "learning-igbo-this-week": require("../../assets/audio/sentence_breakdowns_igbo/learning-igbo-this-week.wav"),
+  "went-market-last-week": require("../../assets/audio/sentence_breakdowns_igbo/went-market-last-week.wav"),
+  "start-new-job-next-week": require("../../assets/audio/sentence_breakdowns_igbo/start-new-job-next-week.wav"),
+
+  // Travel & Culture lesson (position 13)
+  "i-am-travelling": require("../../assets/audio/sentence_breakdowns_igbo/i-am-travelling.wav"),
+  "where-is-the-market": require("../../assets/audio/sentence_breakdowns_igbo/where-is-the-market.wav"),
+  "i-am-going-to-town": require("../../assets/audio/sentence_breakdowns_igbo/i-am-going-to-town.wav"),
+  "we-will-meet-at-village-square": require("../../assets/audio/sentence_breakdowns_igbo/we-will-meet-at-village-square.wav"),
+  "my-father-is-at-family-compound": require("../../assets/audio/sentence_breakdowns_igbo/my-father-is-at-family-compound.wav"),
+  "i-will-visit-my-sibling": require("../../assets/audio/sentence_breakdowns_igbo/i-will-visit-my-sibling.wav"),
+  "the-celebration-was-beautiful": require("../../assets/audio/sentence_breakdowns_igbo/the-celebration-was-beautiful.wav"),
+  "i-will-visit-my-family": require("../../assets/audio/sentence_breakdowns_igbo/i-will-visit-my-family.wav"),
+  "i-am-going-to-my-fathers-hometown": require("../../assets/audio/sentence_breakdowns_igbo/i-am-going-to-my-fathers-hometown.wav"),
+
+  // Opinions & Debate lesson (position 14)
+  "i-think-it-is-good": require("../../assets/audio/sentence_breakdowns_igbo/i-think-it-is-good.wav"),
+  "in-my-opinion-igbo-easy": require("../../assets/audio/sentence_breakdowns_igbo/in-my-opinion-igbo-easy.wav"),
+  "i-agree-with-you": require("../../assets/audio/sentence_breakdowns_igbo/i-agree-with-you.wav"),
+  "i-disagree": require("../../assets/audio/sentence_breakdowns_igbo/i-disagree.wav"),
+  "what-do-you-think": require("../../assets/audio/sentence_breakdowns_igbo/what-do-you-think.wav"),
+  "i-think-because-useful": require("../../assets/audio/sentence_breakdowns_igbo/i-think-because-useful.wav"),
+  "that-is-true": require("../../assets/audio/sentence_breakdowns_igbo/that-is-true.wav"),
+  "that-is-false": require("../../assets/audio/sentence_breakdowns_igbo/that-is-false.wav"),
+  "i-think-we-should-go": require("../../assets/audio/sentence_breakdowns_igbo/i-think-we-should-go.wav"),
 };
 
 export const SENTENCE_BREAKDOWNS_EXAMPLE_IGBO_AUDIO: Record<string, number> = {
@@ -80,5 +135,60 @@ export const SENTENCE_BREAKDOWNS_EXAMPLE_IGBO_AUDIO: Record<string, number> = {
   "they-walked-a-long-distance-this-morning-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/they-walked-a-long-distance-this-morning-example.wav"),
   "we-can-go-tomorrow-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/we-can-go-tomorrow-example.wav"),
   "we-cannot-go-home-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/we-cannot-go-home-example.wav"),
+
+  // Past, Present & Future Tenses lesson (position 10)
+  "i-am-eating-food-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-am-eating-food-example.wav"),
+  "i-am-going-home-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-am-going-home-example.wav"),
+  "i-am-learning-igbo-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-am-learning-igbo-example.wav"),
+  "i-ate-food-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-ate-food-example.wav"),
+  "i-went-home-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-went-home-example.wav"),
+  "i-learned-igbo-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-learned-igbo-example.wav"),
+  "i-will-eat-food-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-will-eat-food-example.wav"),
+  "i-will-go-home-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-will-go-home-example.wav"),
+  "i-will-learn-igbo-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-will-learn-igbo-example.wav"),
+
+  // Describing Things (Adjectives) lesson (position 11)
+  "big-house-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/big-house-example.wav"),
+  "good-person-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/good-person-example.wav"),
+  "small-child-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/small-child-example.wav"),
+  "beautiful-woman-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/beautiful-woman-example.wav"),
+  "the-house-is-big-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/the-house-is-big-example.wav"),
+  "the-food-is-good-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/the-food-is-good-example.wav"),
+  "the-water-is-cold-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/the-water-is-cold-example.wav"),
+  "the-food-is-very-good-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/the-food-is-very-good-example.wav"),
+  "the-child-is-strong-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/the-child-is-strong-example.wav"),
+
+  // Time & Dates lesson (position 12)
+  "learning-igbo-today-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/learning-igbo-today-example.wav"),
+  "went-to-market-yesterday-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/went-to-market-yesterday-example.wav"),
+  "will-go-tomorrow-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/will-go-tomorrow-example.wav"),
+  "will-come-at-3-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/will-come-at-3-example.wav"),
+  "work-in-morning-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/work-in-morning-example.wav"),
+  "meet-in-evening-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/meet-in-evening-example.wav"),
+  "learning-igbo-this-week-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/learning-igbo-this-week-example.wav"),
+  "went-market-last-week-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/went-market-last-week-example.wav"),
+  "start-new-job-next-week-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/start-new-job-next-week-example.wav"),
+
+  // Travel & Culture lesson (position 13)
+  "i-am-travelling-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-am-travelling-example.wav"),
+  "where-is-the-market-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/where-is-the-market-example.wav"),
+  "i-am-going-to-town-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-am-going-to-town-example.wav"),
+  "we-will-meet-at-village-square-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/we-will-meet-at-village-square-example.wav"),
+  "my-father-is-at-family-compound-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/my-father-is-at-family-compound-example.wav"),
+  "i-will-visit-my-sibling-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-will-visit-my-sibling-example.wav"),
+  "the-celebration-was-beautiful-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/the-celebration-was-beautiful-example.wav"),
+  "i-will-visit-my-family-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-will-visit-my-family-example.wav"),
+  "i-am-going-to-my-fathers-hometown-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-am-going-to-my-fathers-hometown-example.wav"),
+
+  // Opinions & Debate lesson (position 14)
+  "i-think-it-is-good-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-think-it-is-good-example.wav"),
+  "in-my-opinion-igbo-easy-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/in-my-opinion-igbo-easy-example.wav"),
+  "i-agree-with-you-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-agree-with-you-example.wav"),
+  "i-disagree-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-disagree-example.wav"),
+  "what-do-you-think-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/what-do-you-think-example.wav"),
+  "i-think-because-useful-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-think-because-useful-example.wav"),
+  "that-is-true-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/that-is-true-example.wav"),
+  "that-is-false-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/that-is-false-example.wav"),
+  "i-think-we-should-go-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-think-we-should-go-example.wav"),
 };
 

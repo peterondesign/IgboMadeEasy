@@ -770,6 +770,50 @@ const SENTENCE_BREAKDOWN_WORD_GLOSSES: Record<string, string[]> = {
   ],
   "we-can-go-tomorrow": ["we", "have", "power/can", "go", "tomorrow"],
   "we-cannot-go-home": ["we", "will-not", "go", "home"],
+
+  // Past, Present & Future Tenses
+  "i-am-eating-food": ["present", "I", "eat", "food"],
+  "i-am-going-home": ["present", "I", "go", "home"],
+  "i-am-learning-igbo": ["present", "I", "learn", "Igbo"],
+  "i-ate-food": ["ate-past", "I", "food"],
+  "i-went-home": ["went-past", "I", "home"],
+  "i-learned-igbo": ["learned-past", "I", "Igbo"],
+  "i-will-eat-food": ["will", "I", "eat", "food"],
+  "i-will-go-home": ["will", "I", "go", "home"],
+  "i-will-learn-igbo": ["will", "I", "learn", "Igbo"],
+
+  // Describing Things (Adjectives)
+  "big-house": ["house", "big"],
+  "good-person": ["person", "good"],
+  "small-child": ["child", "small"],
+  "beautiful-woman": ["woman", "beautiful", "beautiful"],
+  "the-house-is-big": ["house", "that", "is", "big"],
+  "the-food-is-good": ["food", "that", "is", "good"],
+  "the-water-is-cold": ["water", "that", "is", "cold"],
+  "the-food-is-very-good": ["food", "that", "is", "very", "good"],
+  "the-child-is-strong": ["child", "that", "is", "strong"],
+
+  // Time & Dates
+  "learning-igbo-today": ["present", "I", "learn", "Igbo", "today"],
+  "went-to-market-yesterday": ["went", "I", "market", "yesterday"],
+  "will-go-tomorrow": ["will", "I", "come", "tomorrow"],
+  "will-come-at-3": ["will", "I", "come", "at", "clock", "three"],
+  "work-in-morning": ["present", "I", "work", "in-morning"],
+  "meet-in-evening": ["we", "will-meet", "in", "evening"],
+  "learning-igbo-this-week": ["present", "I", "learn", "Igbo", "this-week"],
+  "went-market-last-week": ["went", "I", "market", "last-week"],
+  "start-new-job-next-week": ["will", "I", "start", "job", "new", "next-week"],
+
+  // Travel & Culture
+  "i-am-travelling": ["present", "I", "go", "journey"],
+  "where-is-the-market": ["where", "is", "market", "located"],
+  "i-am-going-to-town": ["present", "I", "go", "town"],
+  "we-will-meet-at-village-square": ["we", "will-meet", "at", "village-square"],
+  "my-father-is-at-family-compound": ["father", "my", "is", "at", "family-compound"],
+  "i-will-visit-my-sibling": ["will", "I", "visit", "sibling", "my"],
+  "the-celebration-was-beautiful": ["celebration", "that", "beautiful", "beautiful"],
+  "i-will-visit-my-family": ["will", "I", "visit", "family", "my"],
+  "i-am-going-to-my-fathers-hometown": ["present", "I", "go", "town", "father", "my"],
 };
 
 const QUESTION_BANK: Record<string, Question[]> = {
@@ -778,6 +822,21 @@ const QUESTION_BANK: Record<string, Question[]> = {
   ),
   "getting-started": buildSentenceBreakdownQuestionSet(
     buildGettingStartedBreakdownSeeds()
+  ),
+  "tenses": buildSentenceBreakdownQuestionSet(
+    buildTensesBreakdownSeeds()
+  ),
+  "adjectives": buildSentenceBreakdownQuestionSet(
+    buildAdjectivesBreakdownSeeds()
+  ),
+  "time-dates": buildSentenceBreakdownQuestionSet(
+    buildTimeDatesBreakdownSeeds()
+  ),
+  "travel-culture": buildSentenceBreakdownQuestionSet(
+    buildTravelCultureBreakdownSeeds()
+  ),
+  "opinions-debate": buildSentenceBreakdownQuestionSet(
+    buildOpinionsDebateBreakdownSeeds()
   ),
   greetings: buildLessonQuestionSet(
     "greetings",
@@ -1038,6 +1097,50 @@ const QUESTION_VISUALS: Record<string, ComponentType<any>> = {
   "custom-weather-nature-mmiri-ozuzo": toSvgComponent(require("./assets/questions/custom-weather-nature-mmiri-ozuzo.svg")),
   "custom-weather-nature-oke-ifufe": toSvgComponent(require("./assets/questions/custom-weather-nature-oke-ifufe.svg")),
   "custom-weather-nature-oyi": toSvgComponent(require("./assets/questions/custom-weather-nature-oyi.svg")),
+
+  // Past, Present & Future Tenses
+  "tenses-present-eat": toSvgComponent(require("./assets/questions/tenses-present-eat.svg")),
+  "tenses-present-go": toSvgComponent(require("./assets/questions/tenses-present-go.svg")),
+  "tenses-present-learn": toSvgComponent(require("./assets/questions/tenses-present-learn.svg")),
+  "tenses-past-eat": toSvgComponent(require("./assets/questions/tenses-past-eat.svg")),
+  "tenses-past-go": toSvgComponent(require("./assets/questions/tenses-past-go.svg")),
+  "tenses-past-learn": toSvgComponent(require("./assets/questions/tenses-past-learn.svg")),
+  "tenses-future-eat": toSvgComponent(require("./assets/questions/tenses-future-eat.svg")),
+  "tenses-future-go": toSvgComponent(require("./assets/questions/tenses-future-go.svg")),
+  "tenses-future-learn": toSvgComponent(require("./assets/questions/tenses-future-learn.svg")),
+
+  // Describing Things (Adjectives)
+  "adjectives-big-house": toSvgComponent(require("./assets/questions/adjectives-big-house.svg")),
+  "adjectives-good-person": toSvgComponent(require("./assets/questions/adjectives-good-person.svg")),
+  "adjectives-small-child": toSvgComponent(require("./assets/questions/adjectives-small-child.svg")),
+  "adjectives-beautiful-woman": toSvgComponent(require("./assets/questions/adjectives-beautiful-woman.svg")),
+  "adjectives-house-is-big": toSvgComponent(require("./assets/questions/adjectives-house-is-big.svg")),
+  "adjectives-food-is-good": toSvgComponent(require("./assets/questions/adjectives-food-is-good.svg")),
+  "adjectives-water-is-cold": toSvgComponent(require("./assets/questions/adjectives-water-is-cold.svg")),
+  "adjectives-food-very-good": toSvgComponent(require("./assets/questions/adjectives-food-very-good.svg")),
+  "adjectives-child-strong": toSvgComponent(require("./assets/questions/adjectives-child-strong.svg")),
+
+  // Time & Dates
+  "time-today": toSvgComponent(require("./assets/questions/time-today.svg")),
+  "time-yesterday": toSvgComponent(require("./assets/questions/time-yesterday.svg")),
+  "time-tomorrow": toSvgComponent(require("./assets/questions/time-tomorrow.svg")),
+  "time-oclock": toSvgComponent(require("./assets/questions/time-oclock.svg")),
+  "time-morning": toSvgComponent(require("./assets/questions/time-morning.svg")),
+  "time-evening": toSvgComponent(require("./assets/questions/time-evening.svg")),
+  "time-this-week": toSvgComponent(require("./assets/questions/time-this-week.svg")),
+  "time-last-week": toSvgComponent(require("./assets/questions/time-last-week.svg")),
+  "time-next-week": toSvgComponent(require("./assets/questions/time-next-week.svg")),
+
+  // Travel & Culture
+  "travel-journey": toSvgComponent(require("./assets/questions/travel-journey.svg")),
+  "travel-market": toSvgComponent(require("./assets/questions/travel-market.svg")),
+  "travel-going": toSvgComponent(require("./assets/questions/travel-going.svg")),
+  "travel-village-square": toSvgComponent(require("./assets/questions/travel-village-square.svg")),
+  "travel-family-home": toSvgComponent(require("./assets/questions/travel-family-home.svg")),
+  "travel-sibling": toSvgComponent(require("./assets/questions/travel-sibling.svg")),
+  "travel-celebration": toSvgComponent(require("./assets/questions/travel-celebration.svg")),
+  "travel-visit-family": toSvgComponent(require("./assets/questions/travel-visit-family.svg")),
+  "travel-hometown": toSvgComponent(require("./assets/questions/travel-hometown.svg")),
 };
 
 const LESSON_DEFS = [
@@ -1045,11 +1148,16 @@ const LESSON_DEFS = [
   { id: "getting-started", title: "Getting Started" },
   { id: "greetings", title: "Greetings" },
   { id: "everyday-verbs", title: "Everyday Verbs" },
+  { id: "adjectives", title: "Describing Things" },
   { id: "asking-questions", title: "Asking Questions" },
   { id: "family-people", title: "Family and People" },
   { id: "food-cooking", title: "Food and Cooking" },
   { id: "girl-and-skull", title: "Girl and Skull" },
   { id: "numbers-money", title: "Numbers and Money" },
+  { id: "tenses", title: "Past, Present & Future" },
+  { id: "time-dates", title: "Time & Dates" },
+  { id: "travel-culture", title: "Travel & Culture" },
+  { id: "opinions-debate", title: "Opinions & Debate" },
   { id: "school-work", title: "School and Work" },
   { id: "tortoise-and-its-shell", title: "Tortoise and its Shell" },
   { id: "tortoise-and-dove", title: "Tortoise and Dove" },
@@ -1156,8 +1264,8 @@ export default function App() {
           isPersistedProgress(parsed) && Array.isArray(parsed.completedDayKeys)
             ? parsed.completedDayKeys
             : Object.values(completedOnByLesson).filter(
-                (value): value is string => typeof value === "string"
-              );
+              (value): value is string => typeof value === "string"
+            );
 
         setCompletedDayKeys(normalizeCompletedDayKeys(persistedCompletedDayKeys));
 
@@ -1581,7 +1689,7 @@ export default function App() {
           : "Upgrade failed. Try again.";
       const friendlyMessage =
         message.includes("No subscription products are currently available") ||
-        message.includes("SKU not found")
+          message.includes("SKU not found")
           ? "No Apple subscription product is available to this build yet. Confirm premium_annual_igbo_easy and premium_monthly_igbo_easy have complete metadata in App Store Connect, then add at least one subscription to this app version under In-App Purchases and Subscriptions before submitting for App Review."
           : message;
       Alert.alert("Upgrade unavailable", friendlyMessage);
@@ -2309,6 +2417,578 @@ function buildGettingStartedBreakdownSeeds(): SentenceBreakdownSeed[] {
   ];
 }
 
+function buildTensesBreakdownSeeds(): SentenceBreakdownSeed[] {
+  return [
+    // Present tense
+    {
+      sourceSentence: "I am eating food.",
+      targetWords: ["Ana", "m", "eri", "nri"],
+      distractors: ["Aga", "Gara", "Eriri", "ha"],
+      igboRule: "'Ana m' starts a present tense sentence — it means 'I am doing.' 'Eri nri' means 'eating food.'",
+      anotherExample: {
+        igbo: "Ana ha eri nri.",
+        english: "They are eating food.",
+      },
+      illustrationKey: "tenses-present-eat",
+      audioKey: "i-am-eating-food",
+    },
+    {
+      sourceSentence: "I am going home.",
+      targetWords: ["Ana", "m", "aga", "ụlọ"],
+      distractors: ["Aga", "Gara", "echi", "ha"],
+      igboRule: "'Ana m' means 'I am doing now.' 'Aga ụlọ' means 'going home.'",
+      anotherExample: {
+        igbo: "Ana ha aga ụlọ.",
+        english: "They are going home.",
+      },
+      illustrationKey: "tenses-present-go",
+      audioKey: "i-am-going-home",
+    },
+    {
+      sourceSentence: "I am learning Igbo.",
+      targetWords: ["Ana", "m", "amụ", "Igbo"],
+      distractors: ["Aga", "Mụtara", "nri", "ha"],
+      igboRule: "'Ana m amụ' means 'I am learning right now.' Add what you are learning at the end.",
+      anotherExample: {
+        igbo: "Ana ha amụ Igbo.",
+        english: "They are learning Igbo.",
+      },
+      illustrationKey: "tenses-present-learn",
+      audioKey: "i-am-learning-igbo",
+    },
+    // Past tense
+    {
+      sourceSentence: "I ate food.",
+      targetWords: ["Eriri", "m", "nri"],
+      distractors: ["Ana", "Aga", "ụlọ", "ha"],
+      igboRule: "In Igbo, past tense changes the start of the verb. 'Eri' (eat) becomes 'Eriri m' (I ate).",
+      anotherExample: {
+        igbo: "Eriri ha nri.",
+        english: "They ate food.",
+      },
+      illustrationKey: "tenses-past-eat",
+      audioKey: "i-ate-food",
+    },
+    {
+      sourceSentence: "I went home.",
+      targetWords: ["Gara", "m", "ụlọ"],
+      distractors: ["Ana", "Aga", "nri", "ha"],
+      igboRule: "'Ga' (go) becomes 'Gara m' in the past — 'I went.' The verb changes its ending.",
+      anotherExample: {
+        igbo: "Gara ha ụlọ.",
+        english: "They went home.",
+      },
+      illustrationKey: "tenses-past-go",
+      audioKey: "i-went-home",
+    },
+    {
+      sourceSentence: "I learned Igbo.",
+      targetWords: ["Mụtara", "m", "Igbo"],
+      distractors: ["Ana", "Aga", "amụ", "ha"],
+      igboRule: "'Amụ' (learn) becomes 'Mụtara m' in the past — meaning 'I learned.' Notice how the verb shifts.",
+      anotherExample: {
+        igbo: "Mụtara ha Igbo.",
+        english: "They learned Igbo.",
+      },
+      illustrationKey: "tenses-past-learn",
+      audioKey: "i-learned-igbo",
+    },
+    // Future tense
+    {
+      sourceSentence: "I will eat food.",
+      targetWords: ["Aga", "m", "eri", "nri"],
+      distractors: ["Ana", "Eriri", "Gara", "ha"],
+      igboRule: "'Aga m' starts a future tense sentence — it means 'I will.' 'Eri nri' means 'eat food.'",
+      anotherExample: {
+        igbo: "Aga ha eri nri.",
+        english: "They will eat food.",
+      },
+      illustrationKey: "tenses-future-eat",
+      audioKey: "i-will-eat-food",
+    },
+    {
+      sourceSentence: "I will go home.",
+      targetWords: ["Aga", "m", "aga", "ụlọ"],
+      distractors: ["Ana", "Eriri", "Gara", "ha"],
+      igboRule: "'Aga m' means 'I will.' 'Aga ụlọ' means 'go home.' Together: I will go home.",
+      anotherExample: {
+        igbo: "Aga ha aga ụlọ.",
+        english: "They will go home.",
+      },
+      illustrationKey: "tenses-future-go",
+      audioKey: "i-will-go-home",
+    },
+    {
+      sourceSentence: "I will learn Igbo.",
+      targetWords: ["Aga", "m", "amụ", "Igbo"],
+      distractors: ["Ana", "Eriri", "Mụtara", "ha"],
+      igboRule: "'Aga m amụ' means 'I will learn.' Just say what you will learn after.",
+      anotherExample: {
+        igbo: "Aga ha amụ Igbo.",
+        english: "They will learn Igbo.",
+      },
+      illustrationKey: "tenses-future-learn",
+      audioKey: "i-will-learn-igbo",
+    },
+  ];
+}
+
+function buildAdjectivesBreakdownSeeds(): SentenceBreakdownSeed[] {
+  return [
+    // Noun + adjective (no verb)
+    {
+      sourceSentence: "Big house",
+      targetWords: ["Ụlọ", "ukwu"],
+      distractors: ["nta", "ọma", "dị", "ahụ"],
+      igboRule: "In Igbo, adjectives come AFTER the noun. 'Ụlọ' means 'house,' 'ukwu' means 'big.'",
+      anotherExample: {
+        igbo: "Ụlọ nta",
+        english: "Small house",
+      },
+      illustrationKey: "adjectives-big-house",
+      audioKey: "big-house",
+    },
+    {
+      sourceSentence: "Good person",
+      targetWords: ["Onye", "ọma"],
+      distractors: ["nwa", "ụlọ", "dị", "ukwu"],
+      igboRule: "'Onye' means 'person.' 'Ọma' means 'good.' The adjective follows the noun.",
+      anotherExample: {
+        igbo: "Onye ọjọọ",
+        english: "Bad person",
+      },
+      illustrationKey: "adjectives-good-person",
+      audioKey: "good-person",
+    },
+    {
+      sourceSentence: "Small child",
+      targetWords: ["Nwa", "nta"],
+      distractors: ["ụlọ", "onye", "dị", "ọma"],
+      igboRule: "'Nwa' means 'child.' 'Nta' means 'small.' In Igbo: child small.",
+      anotherExample: {
+        igbo: "Nwa ukwu",
+        english: "Big child",
+      },
+      illustrationKey: "adjectives-small-child",
+      audioKey: "small-child",
+    },
+    {
+      sourceSentence: "Beautiful woman",
+      targetWords: ["Nwanyị", "mara", "mma"],
+      distractors: ["nwa", "ụlọ", "dị", "ọma"],
+      igboRule: "'Nwanyị' means 'woman.' 'Mara mma' means 'beautiful.' It uses two words together.",
+      anotherExample: {
+        igbo: "Nwoke mara mma",
+        english: "Handsome man",
+      },
+      illustrationKey: "adjectives-beautiful-woman",
+      audioKey: "beautiful-woman",
+    },
+    // Noun + dị + adjective
+    {
+      sourceSentence: "The house is big.",
+      targetWords: ["Ụlọ", "ahụ", "dị", "ukwu"],
+      distractors: ["nwa", "ọma", "nri", "oyi"],
+      igboRule: "To say something IS a certain way, use: Noun + ahụ + dị + adjective. 'Dị' links noun and adjective.",
+      anotherExample: {
+        igbo: "Ụlọ ahụ dị nta.",
+        english: "The house is small.",
+      },
+      illustrationKey: "adjectives-house-is-big",
+      audioKey: "the-house-is-big",
+    },
+    {
+      sourceSentence: "The food is good.",
+      targetWords: ["Nri", "ahụ", "dị", "mma"],
+      distractors: ["ụlọ", "ukwu", "onye", "oyi"],
+      igboRule: "'Nri' means 'food.' 'Dị mma' means 'is good.' Use 'ahụ' to say 'the' in Igbo.",
+      anotherExample: {
+        igbo: "Nri ahụ dị ọjọọ.",
+        english: "The food is bad.",
+      },
+      illustrationKey: "adjectives-food-is-good",
+      audioKey: "the-food-is-good",
+    },
+    {
+      sourceSentence: "The water is cold.",
+      targetWords: ["Mmiri", "ahụ", "dị", "oyi"],
+      distractors: ["nri", "ụlọ", "ọkụ", "mma"],
+      igboRule: "'Mmiri' means 'water.' 'Oyi' means 'cold.' Igbo pairs noun + ahụ + dị + adjective.",
+      anotherExample: {
+        igbo: "Mmiri ahụ dị ọkụ.",
+        english: "The water is hot.",
+      },
+      illustrationKey: "adjectives-water-is-cold",
+      audioKey: "the-water-is-cold",
+    },
+    // ezigbo (very)
+    {
+      sourceSentence: "The food is very good.",
+      targetWords: ["Nri", "ahụ", "dị", "ezigbo", "mma"],
+      distractors: ["ụlọ", "oyi", "ukwu", "onye"],
+      igboRule: "To say 'very,' add 'ezigbo' before the adjective. 'Ezigbo mma' means 'very good.'",
+      anotherExample: {
+        igbo: "Ụlọ ahụ dị ezigbo ukwu.",
+        english: "The house is very big.",
+      },
+      illustrationKey: "adjectives-food-very-good",
+      audioKey: "the-food-is-very-good",
+    },
+    // dị + adjective on self
+    {
+      sourceSentence: "The child is strong.",
+      targetWords: ["Nwa", "ahụ", "dị", "ike"],
+      distractors: ["nri", "ụlọ", "mma", "oyi"],
+      igboRule: "'Ike' means 'strong.' 'Nwa ahụ dị ike' — the child is strong. Same dị pattern.",
+      anotherExample: {
+        igbo: "Adị m ike.",
+        english: "I am strong.",
+      },
+      illustrationKey: "adjectives-child-strong",
+      audioKey: "the-child-is-strong",
+    },
+  ];
+}
+
+function buildTimeDatesBreakdownSeeds(): SentenceBreakdownSeed[] {
+  return [
+    {
+      sourceSentence: "I am learning Igbo today.",
+      targetWords: ["Ana", "m", "amụ", "Igbo", "taa"],
+      distractors: ["Aga", "echi", "ụnyaahụ", "izu"],
+      igboRule: "'Taa' means 'today.' Put time words at the end of the sentence in Igbo.",
+      anotherExample: {
+        igbo: "Ana m arụ ọrụ taa.",
+        english: "I am working today.",
+      },
+      illustrationKey: "time-today",
+      audioKey: "learning-igbo-today",
+    },
+    {
+      sourceSentence: "I went to the market yesterday.",
+      targetWords: ["Gara", "m", "ahịa", "ụnyaahụ"],
+      distractors: ["Ana", "Aga", "taa", "echi"],
+      igboRule: "'Ụnyaahụ' means 'yesterday.' Past tense verbs like 'Gara m' tell you the action is done.",
+      anotherExample: {
+        igbo: "Gara m ụlọ ụnyaahụ.",
+        english: "I went home yesterday.",
+      },
+      illustrationKey: "time-yesterday",
+      audioKey: "went-to-market-yesterday",
+    },
+    {
+      sourceSentence: "I will come tomorrow.",
+      targetWords: ["Aga", "m", "abịa", "echi"],
+      distractors: ["Ana", "taa", "ụnyaahụ", "amụ"],
+      igboRule: "'Echi' means 'tomorrow.' Use 'Aga m' to talk about the future.",
+      anotherExample: {
+        igbo: "Aga m aga ụlọ echi.",
+        english: "I will go home tomorrow.",
+      },
+      illustrationKey: "time-tomorrow",
+      audioKey: "will-go-tomorrow",
+    },
+    {
+      sourceSentence: "I will come at 3 o'clock.",
+      targetWords: ["Aga", "m", "abịa", "na", "elekere", "atọ"],
+      distractors: ["taa", "ụnyaahụ", "ise", "abụọ"],
+      igboRule: "'Elekere' means 'clock' or 'o'clock.' Say 'na elekere' + the number for the time.",
+      anotherExample: {
+        igbo: "Aga m abịa na elekere ise.",
+        english: "I will come at 5 o'clock.",
+      },
+      illustrationKey: "time-oclock",
+      audioKey: "will-come-at-3",
+    },
+    {
+      sourceSentence: "I work in the morning.",
+      targetWords: ["Ana", "m", "arụ", "ọrụ", "n'ụtụtụ"],
+      distractors: ["mgbede", "abalị", "echi", "Aga"],
+      igboRule: "'N'ụtụtụ' means 'in the morning.' Other parts of day: ehihie (afternoon), mgbede (evening), abalị (night).",
+      anotherExample: {
+        igbo: "Ana m eri nri n'ehihie.",
+        english: "I eat in the afternoon.",
+      },
+      illustrationKey: "time-morning",
+      audioKey: "work-in-morning",
+    },
+    {
+      sourceSentence: "We will meet in the evening.",
+      targetWords: ["Anyi", "ga-ezukọ", "na", "mgbede"],
+      distractors: ["ụtụtụ", "abalị", "taa", "m"],
+      igboRule: "'Mgbede' means 'evening.' 'Ga-ezukọ' means 'will meet.'",
+      anotherExample: {
+        igbo: "Ana m ehi ụra n'abalị.",
+        english: "I sleep at night.",
+      },
+      illustrationKey: "time-evening",
+      audioKey: "meet-in-evening",
+    },
+    {
+      sourceSentence: "I am learning Igbo this week.",
+      targetWords: ["Ana", "m", "amụ", "Igbo", "izu", "a"],
+      distractors: ["ọnwa", "afọ", "echi", "gara"],
+      igboRule: "'Izu a' means 'this week.' Add 'a' after izu/ọnwa/afọ to say 'this.'",
+      anotherExample: {
+        igbo: "Ana m arụsi ọrụ ike ọnwa a.",
+        english: "I am working hard this month.",
+      },
+      illustrationKey: "time-this-week",
+      audioKey: "learning-igbo-this-week",
+    },
+    {
+      sourceSentence: "I went to the market last week.",
+      targetWords: ["Gara", "m", "ahịa", "izu", "gara", "aga"],
+      distractors: ["Ana", "Aga", "na-abịa", "taa"],
+      igboRule: "'Izu gara aga' means 'last week.' Use 'gara aga' after any time word for 'last.'",
+      anotherExample: {
+        igbo: "Mụtara m ọtụtụ okwu ọhụrụ ọnwa gara aga.",
+        english: "I learned many new words last month.",
+      },
+      illustrationKey: "time-last-week",
+      audioKey: "went-market-last-week",
+    },
+    {
+      sourceSentence: "I will start a new job next week.",
+      targetWords: ["Aga", "m", "amalite", "ọrụ", "ọhụrụ", "izu", "na-abịa"],
+      distractors: ["Ana", "gara", "aga", "taa"],
+      igboRule: "'Izu na-abịa' means 'next week.' Use 'na-abịa' after any time word for 'next.'",
+      anotherExample: {
+        igbo: "Aga m eleta ezinụlọ m ọnwa na-abịa.",
+        english: "I will visit my family next month.",
+      },
+      illustrationKey: "time-next-week",
+      audioKey: "start-new-job-next-week",
+    },
+  ];
+}
+
+function buildTravelCultureBreakdownSeeds(): SentenceBreakdownSeed[] {
+  return [
+    {
+      sourceSentence: "I am travelling.",
+      targetWords: ["Ana", "m", "eje", "njem"],
+      distractors: ["Aga", "obodo", "ahịa", "ụzọ"],
+      igboRule: "'Njem' means 'journey' or 'travel.' 'Ana m eje njem' — I am going on a journey.",
+      anotherExample: {
+        igbo: "Aga m eje njem echi.",
+        english: "I will travel tomorrow.",
+      },
+      illustrationKey: "travel-journey",
+      audioKey: "i-am-travelling",
+    },
+    {
+      sourceSentence: "Where is the market?",
+      targetWords: ["Ebee", "ka", "ahịa", "dị"],
+      distractors: ["ụzọ", "obodo", "ụlọ", "njem"],
+      igboRule: "'Ebee ka... dị?' means 'Where is...?' Use this pattern to ask for directions to any place.",
+      anotherExample: {
+        igbo: "Ebee ka ụlọ nkwari akụ dị?",
+        english: "Where is the hotel?",
+      },
+      illustrationKey: "travel-market",
+      audioKey: "where-is-the-market",
+    },
+    {
+      sourceSentence: "I am going to town.",
+      targetWords: ["Ana", "m", "aga", "obodo"],
+      distractors: ["Aga", "ahịa", "echi", "ụlọ"],
+      igboRule: "'Obodo' means 'town' or 'community.' 'Ana m aga obodo' — I am going to town (present tense).",
+      anotherExample: {
+        igbo: "Aga m Lagos echi.",
+        english: "I will go to Lagos tomorrow.",
+      },
+      illustrationKey: "travel-going",
+      audioKey: "i-am-going-to-town",
+    },
+    {
+      sourceSentence: "We will meet at the village square.",
+      targetWords: ["Anyi", "ga-ezukọ", "n'ama"],
+      distractors: ["obi", "ahịa", "ụlọ", "taa"],
+      igboRule: "'Ama' means 'village square' — the central gathering place of Igbo communities.",
+      anotherExample: {
+        igbo: "Anyi ga-ezukọ n'obi.",
+        english: "We will meet at the family compound.",
+      },
+      illustrationKey: "travel-village-square",
+      audioKey: "we-will-meet-at-village-square",
+    },
+    {
+      sourceSentence: "My father is at the family compound.",
+      targetWords: ["Nna", "m", "nọ", "n'obi"],
+      distractors: ["ama", "ahịa", "ụlọ", "ha"],
+      igboRule: "'Obi' is the family compound — the traditional home of a family's lineage in Igbo culture.",
+      anotherExample: {
+        igbo: "Nne m nọ n'ụlọ.",
+        english: "My mother is at home.",
+      },
+      illustrationKey: "travel-family-home",
+      audioKey: "my-father-is-at-family-compound",
+    },
+    {
+      sourceSentence: "I will visit my sibling.",
+      targetWords: ["Aga", "m", "eleta", "nwanne", "m"],
+      distractors: ["obi", "ahịa", "echi", "ama"],
+      igboRule: "'Nwanne m' means 'my sibling' or 'my relative.' 'Eleta' means 'to visit.'",
+      anotherExample: {
+        igbo: "Aga m eleta ezinụlọ m.",
+        english: "I will visit my family.",
+      },
+      illustrationKey: "travel-sibling",
+      audioKey: "i-will-visit-my-sibling",
+    },
+    {
+      sourceSentence: "The celebration was beautiful.",
+      targetWords: ["Emume", "ahụ", "mara", "mma"],
+      distractors: ["nri", "egwu", "ọma", "ụlọ"],
+      igboRule: "'Emume' means 'celebration' or 'event.' Celebrations are central to Igbo communal life.",
+      anotherExample: {
+        igbo: "Emume ahụ dị mma.",
+        english: "The celebration was good.",
+      },
+      illustrationKey: "travel-celebration",
+      audioKey: "the-celebration-was-beautiful",
+    },
+    {
+      sourceSentence: "I will visit my family.",
+      targetWords: ["Aga", "m", "eleta", "ezinụlọ", "m"],
+      distractors: ["obi", "nwanne", "ahịa", "taa"],
+      igboRule: "'Ezinụlọ' means 'family.' 'Eleta' means 'visit.' Family visits are a key part of Igbo culture.",
+      anotherExample: {
+        igbo: "Obi dị m ụtọ ịhụ gị.",
+        english: "I am happy to see you.",
+      },
+      illustrationKey: "travel-visit-family",
+      audioKey: "i-will-visit-my-family",
+    },
+    {
+      sourceSentence: "I am going to my father's hometown.",
+      targetWords: ["Ana", "m", "aga", "obodo", "nna", "m"],
+      distractors: ["Aga", "eleta", "echi", "ama"],
+      igboRule: "'Obodo nna m' means 'my father's hometown.' Every Igbo person has a village they belong to.",
+      anotherExample: {
+        igbo: "Maka emume ezinụlọ.",
+        english: "For a family celebration.",
+      },
+      illustrationKey: "travel-hometown",
+      audioKey: "i-am-going-to-my-fathers-hometown",
+    },
+  ];
+}
+
+function buildOpinionsDebateBreakdownSeeds(): SentenceBreakdownSeed[] {
+  return [
+    {
+      sourceSentence: "I think it is good.",
+      targetWords: ["Echere", "m", "na", "ọ", "dị", "mma"],
+      distractors: ["Ekwenyere", "n'ihi", "Mba", "ụgha"],
+      igboRule: "'Echere m na...' means 'I think that...' Use this pattern to share your opinion about anything.",
+      anotherExample: {
+        igbo: "Echere m na nke ahụ bụ ezi echiche.",
+        english: "I think that is a good idea.",
+      },
+      illustrationKey: "opinions-think-good",
+      audioKey: "i-think-it-is-good",
+    },
+    {
+      sourceSentence: "In my opinion, Igbo is easy.",
+      targetWords: ["N'echiche", "m,", "Igbo", "dị", "mfe"],
+      distractors: ["Echere", "siri", "ike", "mma"],
+      igboRule: "'N'echiche m' means 'In my opinion.' It is a softer, more formal way to share your view.",
+      anotherExample: {
+        igbo: "N'echiche m, nke ahụ adịghị mma.",
+        english: "In my opinion, that is not good.",
+      },
+      illustrationKey: "opinions-igbo-easy",
+      audioKey: "in-my-opinion-igbo-easy",
+    },
+    {
+      sourceSentence: "I agree with you.",
+      targetWords: ["Ekwenyere", "m", "gị"],
+      distractors: ["mghị", "Mba", "Echere", "n'ihi"],
+      igboRule: "'Ekwenyere m gị' means 'I agree with you.' Drop 'gị' to say 'I agree' on its own.",
+      anotherExample: {
+        igbo: "Ee, nke ahụ bụ eziokwu.",
+        english: "Yes, that is true.",
+      },
+      illustrationKey: "opinions-agree",
+      audioKey: "i-agree-with-you",
+    },
+    {
+      sourceSentence: "I disagree.",
+      targetWords: ["Ekwenyere", "mghị"],
+      distractors: ["m", "gị", "Echere", "Mba"],
+      igboRule: "'Ekwenyere mghị' means 'I disagree.' The suffix '-ghị' negates a verb in Igbo.",
+      anotherExample: {
+        igbo: "Mba, echere m na ọ bụghị eziokwu.",
+        english: "No, I think it is not true.",
+      },
+      illustrationKey: "opinions-disagree",
+      audioKey: "i-disagree",
+    },
+    {
+      sourceSentence: "What do you think?",
+      targetWords: ["Gịnị", "ka", "ị", "chere?"],
+      distractors: ["Echere", "m", "banyere", "mma"],
+      igboRule: "'Gịnị ka ị chere?' means 'What do you think?' Use it to invite someone's opinion in any discussion.",
+      anotherExample: {
+        igbo: "Gịnị ka ị chere banyere fim ahụ?",
+        english: "What do you think about that movie?",
+      },
+      illustrationKey: "opinions-what-think",
+      audioKey: "what-do-you-think",
+    },
+    {
+      sourceSentence: "I think it is good because it is useful.",
+      targetWords: ["Echere", "m", "na", "ọ", "dị", "mma", "n'ihi", "na", "ọ", "bara", "uru"],
+      distractors: ["siri", "ike", "adịghị", "Mba"],
+      igboRule: "'N'ihi na...' means 'because...' Attach it to give a reason for your opinion.",
+      anotherExample: {
+        igbo: "Ekwenyere m gị n'ihi na nke ahụ bụ eziokwu.",
+        english: "I agree with you because that is true.",
+      },
+      illustrationKey: "opinions-because-useful",
+      audioKey: "i-think-because-useful",
+    },
+    {
+      sourceSentence: "That is true.",
+      targetWords: ["Nke", "ahụ", "bụ", "eziokwu"],
+      distractors: ["ụgha", "mma", "Mba", "dị"],
+      igboRule: "'Eziokwu' means 'truth.' 'Nke ahụ bụ eziokwu' — That is the truth.",
+      anotherExample: {
+        igbo: "Ee, nke ahụ bụ eziokwu.",
+        english: "Yes, that is true.",
+      },
+      illustrationKey: "opinions-that-true",
+      audioKey: "that-is-true",
+    },
+    {
+      sourceSentence: "That is false.",
+      targetWords: ["Nke", "ahụ", "bụ", "ụgha"],
+      distractors: ["eziokwu", "mma", "dị", "na"],
+      igboRule: "'Ụgha' means 'lie' or 'falsehood.' The opposite of 'eziokwu' (truth).",
+      anotherExample: {
+        igbo: "Nke ahụ abụghị eziokwu.",
+        english: "That is not true.",
+      },
+      illustrationKey: "opinions-that-false",
+      audioKey: "that-is-false",
+    },
+    {
+      sourceSentence: "I think we should go.",
+      targetWords: ["Echere", "m", "na", "anyị", "kwesịrị", "ịga"],
+      distractors: ["Ekwenyere", "n'ihi", "mfe", "mma"],
+      igboRule: "'Kwesịrị' means 'should' or 'ought to.' 'Anyị kwesịrị ịga' — We should go.",
+      anotherExample: {
+        igbo: "Anyị kwesịrị ịga ụlọ.",
+        english: "We should go home.",
+      },
+      illustrationKey: "opinions-we-should-go",
+      audioKey: "i-think-we-should-go",
+    },
+  ];
+}
+
 function buildStoryQuestions(lessonId: string): Question[] {
   if (lessonId === "greetings") {
     return buildBalancedStoryQuestionSet(GREETINGS_STORY_DIALOGUE);
@@ -2402,12 +3082,12 @@ function buildBalancedStoryQuestionSet(entries: StoryDialogueEntry[]): Question[
     const statement = shouldBeTrue
       ? entry.statement
       :
-          entry.falseStatement?.trim() ||
-          buildMismatchedStoryStatement(
-            entries,
-            index,
-            formatStorySpeakerLabel(entry.speaker)
-          );
+      entry.falseStatement?.trim() ||
+      buildMismatchedStoryStatement(
+        entries,
+        index,
+        formatStorySpeakerLabel(entry.speaker)
+      );
 
     return {
       prompt: "Story mode",

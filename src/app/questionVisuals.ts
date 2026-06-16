@@ -154,4 +154,59 @@ export const QUESTION_VISUALS: Record<string, ComponentType<any>> = {
   "They walked a long distance this morning": toSvgComponent(require("../../assets/illustrations/sentence_breakdowns/They walked a long distance this morning.svg")),
   "We can go tomorrow": toSvgComponent(require("../../assets/illustrations/sentence_breakdowns/We can go tomorrow.svg")),
   "We cannot go home": toSvgComponent(require("../../assets/illustrations/sentence_breakdowns/We cannot go home.svg")),
+
+  // Past, Present & Future Tenses
+  "tenses-present-eat": toSvgComponent(require("../../assets/questions/tenses-present-eat.svg")),
+  "tenses-present-go": toSvgComponent(require("../../assets/questions/tenses-present-go.svg")),
+  "tenses-present-learn": toSvgComponent(require("../../assets/questions/tenses-present-learn.svg")),
+  "tenses-past-eat": toSvgComponent(require("../../assets/questions/tenses-past-eat.svg")),
+  "tenses-past-go": toSvgComponent(require("../../assets/questions/tenses-past-go.svg")),
+  "tenses-past-learn": toSvgComponent(require("../../assets/questions/tenses-past-learn.svg")),
+  "tenses-future-eat": toSvgComponent(require("../../assets/questions/tenses-future-eat.svg")),
+  "tenses-future-go": toSvgComponent(require("../../assets/questions/tenses-future-go.svg")),
+  "tenses-future-learn": toSvgComponent(require("../../assets/questions/tenses-future-learn.svg")),
+
+  // Describing Things (Adjectives)
+  "adjectives-big-house": toSvgComponent(require("../../assets/questions/adjectives-big-house.svg")),
+  "adjectives-good-person": toSvgComponent(require("../../assets/questions/adjectives-good-person.svg")),
+  "adjectives-small-child": toSvgComponent(require("../../assets/questions/adjectives-small-child.svg")),
+  "adjectives-beautiful-woman": toSvgComponent(require("../../assets/questions/adjectives-beautiful-woman.svg")),
+  "adjectives-house-is-big": toSvgComponent(require("../../assets/questions/adjectives-house-is-big.svg")),
+  "adjectives-food-is-good": toSvgComponent(require("../../assets/questions/adjectives-food-is-good.svg")),
+  "adjectives-water-is-cold": toSvgComponent(require("../../assets/questions/adjectives-water-is-cold.svg")),
+  "adjectives-food-very-good": toSvgComponent(require("../../assets/questions/adjectives-food-very-good.svg")),
+  "adjectives-child-strong": toSvgComponent(require("../../assets/questions/adjectives-child-strong.svg")),
+
+  // Time & Dates
+  "time-today": toSvgComponent(require("../../assets/questions/time-today.svg")),
+  "time-yesterday": toSvgComponent(require("../../assets/questions/time-yesterday.svg")),
+  "time-tomorrow": toSvgComponent(require("../../assets/questions/time-tomorrow.svg")),
+  "time-oclock": toSvgComponent(require("../../assets/questions/time-oclock.svg")),
+  "time-morning": toSvgComponent(require("../../assets/questions/time-morning.svg")),
+  "time-evening": toSvgComponent(require("../../assets/questions/time-evening.svg")),
+  "time-this-week": toSvgComponent(require("../../assets/questions/time-this-week.svg")),
+  "time-last-week": toSvgComponent(require("../../assets/questions/time-last-week.svg")),
+  "time-next-week": toSvgComponent(require("../../assets/questions/time-next-week.svg")),
+
+  // Travel & Culture
+  "travel-journey": toSvgComponent(require("../../assets/questions/travel-journey.svg")),
+  "travel-market": toSvgComponent(require("../../assets/questions/travel-market.svg")),
+  "travel-going": toSvgComponent(require("../../assets/questions/travel-going.svg")),
+  "travel-village-square": toSvgComponent(require("../../assets/questions/travel-village-square.svg")),
+  "travel-family-home": toSvgComponent(require("../../assets/questions/travel-family-home.svg")),
+  "travel-sibling": toSvgComponent(require("../../assets/questions/travel-sibling.svg")),
+  "travel-celebration": toSvgComponent(require("../../assets/questions/travel-celebration.svg")),
+  "travel-visit-family": toSvgComponent(require("../../assets/questions/travel-visit-family.svg")),
+  "travel-hometown": toSvgComponent(require("../../assets/questions/travel-hometown.svg")),
+
+  // Opinions & Debate lesson (position 14)
+  "opinions-think-good": toSvgComponent(require("../../assets/questions/opinions-think-good.svg")),
+  "opinions-igbo-easy": toSvgComponent(require("../../assets/questions/opinions-igbo-easy.svg")),
+  "opinions-agree": toSvgComponent(require("../../assets/questions/opinions-agree.svg")),
+  "opinions-disagree": toSvgComponent(require("../../assets/questions/opinions-disagree.svg")),
+  "opinions-what-think": toSvgComponent(require("../../assets/questions/opinions-what-think.svg")),
+  "opinions-because-useful": toSvgComponent(require("../../assets/questions/opinions-because-useful.svg")),
+  "opinions-that-true": toSvgComponent(require("../../assets/questions/opinions-that-true.svg")),
+  "opinions-that-false": toSvgComponent(require("../../assets/questions/opinions-that-false.svg")),
+  "opinions-we-should-go": toSvgComponent(require("../../assets/questions/opinions-we-should-go.svg")),
 };

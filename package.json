@@ -20,6 +20,11 @@
     "tts:sentence-breakdowns": "node scripts/generate-sentence-breakdown-tts.mjs",
     "tts:sentence-breakdowns-igbo": "node scripts/generate-sentence-breakdown-igbo-tts.mjs",
     "tts:sentence-breakdowns-examples-igbo": "node scripts/generate-sentence-breakdown-example-igbo-tts.mjs",
+    "tts:tenses": "node scripts/generate-tenses-igbo-tts.mjs",
+    "tts:adjectives": "node scripts/generate-adjectives-igbo-tts.mjs",
+    "tts:time-dates": "node scripts/generate-time-dates-igbo-tts.mjs",
+    "tts:travel-culture": "node scripts/generate-travel-culture-igbo-tts.mjs",
+    "tts:opinions-debate": "node scripts/generate-opinions-debate-igbo-tts.mjs",
     "story:false": "node scripts/generate-story-false-statements.mjs",
     "generate:greetings-translations": "node scripts/generate-greetings-translations.mjs"
   },
