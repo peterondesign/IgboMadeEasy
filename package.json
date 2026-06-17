@@ -25,6 +25,8 @@
     "tts:time-dates": "node scripts/generate-time-dates-igbo-tts.mjs",
     "tts:travel-culture": "node scripts/generate-travel-culture-igbo-tts.mjs",
     "tts:opinions-debate": "node scripts/generate-opinions-debate-igbo-tts.mjs",
+    "tts:shopping-bargaining": "node scripts/generate-shopping-bargaining-igbo-tts.mjs",
+    "tts:proverbs-idioms": "node scripts/generate-proverbs-idioms-igbo-tts.mjs",
     "story:false": "node scripts/generate-story-false-statements.mjs",
     "generate:greetings-translations": "node scripts/generate-greetings-translations.mjs"
   },
@@ -33,6 +35,7 @@
     "@expo/metro-runtime": "~56.0.13",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~56.0.8",
+    "expo-apple-authentication": "~56.0.4",
     "expo-asset": "~56.0.15",
     "expo-audio": "~56.0.11",
     "expo-auth-session": "^56.0.13",

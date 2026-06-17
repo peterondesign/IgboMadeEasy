@@ -34,6 +34,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - ExpoAppleAuthentication (56.0.4):
+    - ExpoModulesCore
   - ExpoAsset (56.0.15):
     - ExpoModulesCore
   - ExpoAudio (56.0.11):
@@ -2033,6 +2035,7 @@ DEPENDENCIES:
   - EXJSONUtils (from `../node_modules/expo-json-utils/ios`)
   - EXManifests (from `../node_modules/expo-manifests/ios`)
   - Expo (from `../node_modules/expo`)
+  - ExpoAppleAuthentication (from `../node_modules/expo-apple-authentication/ios`)
   - ExpoAsset (from `../node_modules/expo-asset/ios`)
   - ExpoAudio (from `../node_modules/expo-audio/ios`)
   - ExpoCrypto (from `../node_modules/expo-auth-session/node_modules/expo-crypto/ios`)
@@ -2149,6 +2152,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-manifests/ios"
   Expo:
     :path: "../node_modules/expo"
+  ExpoAppleAuthentication:
+    :path: "../node_modules/expo-apple-authentication/ios"
   ExpoAsset:
     :path: "../node_modules/expo-asset/ios"
   ExpoAudio:
@@ -2350,6 +2355,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: 9548f57656823662ca8f2708d76b986abd417273
   Expo: ed59ed237e929bb3c2b504308141d52bdc72e1f5
+  ExpoAppleAuthentication: b81047ca57c710e6a6a6eff5a634b01839720e3e
   ExpoAsset: 9f0e1f1b3f721162184314e9d9ef5d0ce15a0427
   ExpoAudio: ba9d9e5cf35a90b1831071347d7127620f119f25
   ExpoCrypto: ae4972f8cbd915f8b8068a357d20812cb1bc311b

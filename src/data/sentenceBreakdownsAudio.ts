@@ -111,6 +111,28 @@ export const SENTENCE_BREAKDOWNS_IGBO_AUDIO: Record<string, number> = {
   "that-is-true": require("../../assets/audio/sentence_breakdowns_igbo/that-is-true.wav"),
   "that-is-false": require("../../assets/audio/sentence_breakdowns_igbo/that-is-false.wav"),
   "i-think-we-should-go": require("../../assets/audio/sentence_breakdowns_igbo/i-think-we-should-go.wav"),
+
+  // Shopping & Bargaining lesson (position 15)
+  "how-much-is-it": require("../../assets/audio/sentence_breakdowns_igbo/how-much-is-it.wav"),
+  "i-want-to-shop": require("../../assets/audio/sentence_breakdowns_igbo/i-want-to-shop.wav"),
+  "i-am-buying-a-book": require("../../assets/audio/sentence_breakdowns_igbo/i-am-buying-a-book.wav"),
+  "it-is-expensive": require("../../assets/audio/sentence_breakdowns_igbo/it-is-expensive.wav"),
+  "please-reduce-the-price": require("../../assets/audio/sentence_breakdowns_igbo/please-reduce-the-price.wav"),
+  "i-want-three-mangoes": require("../../assets/audio/sentence_breakdowns_igbo/i-want-three-mangoes.wav"),
+  "i-have-money": require("../../assets/audio/sentence_breakdowns_igbo/i-have-money.wav"),
+  "give-me-two-bananas": require("../../assets/audio/sentence_breakdowns_igbo/give-me-two-bananas.wav"),
+  "i-bought-shoes": require("../../assets/audio/sentence_breakdowns_igbo/i-bought-shoes.wav"),
+
+  // Igbo Idioms and Proverbs lesson (position 16)
+  "proverbs-oil-words": require("../../assets/audio/sentence_breakdowns_igbo/proverbs-oil-words.wav"),
+  "proverbs-kite-eagle": require("../../assets/audio/sentence_breakdowns_igbo/proverbs-kite-eagle.wav"),
+  "proverbs-wash-hands": require("../../assets/audio/sentence_breakdowns_igbo/proverbs-wash-hands.wav"),
+  "proverbs-hands-cooperate": require("../../assets/audio/sentence_breakdowns_igbo/proverbs-hands-cooperate.wav"),
+  "proverbs-askquestions": require("../../assets/audio/sentence_breakdowns_igbo/proverbs-askquestions.wav"),
+  "proverbs-one-tree": require("../../assets/audio/sentence_breakdowns_igbo/proverbs-one-tree.wav"),
+  "proverbs-serve-king": require("../../assets/audio/sentence_breakdowns_igbo/proverbs-serve-king.wav"),
+  "proverbs-hero-known": require("../../assets/audio/sentence_breakdowns_igbo/proverbs-hero-known.wav"),
+  "proverbs-actions-good": require("../../assets/audio/sentence_breakdowns_igbo/proverbs-actions-good.wav"),
 };
 
 export const SENTENCE_BREAKDOWNS_EXAMPLE_IGBO_AUDIO: Record<string, number> = {
@@ -190,5 +212,27 @@ export const SENTENCE_BREAKDOWNS_EXAMPLE_IGBO_AUDIO: Record<string, number> = {
   "that-is-true-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/that-is-true-example.wav"),
   "that-is-false-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/that-is-false-example.wav"),
   "i-think-we-should-go-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-think-we-should-go-example.wav"),
+
+  // Shopping & Bargaining lesson (position 15)
+  "how-much-is-it-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/how-much-is-it-example.wav"),
+  "i-want-to-shop-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-want-to-shop-example.wav"),
+  "i-am-buying-a-book-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-am-buying-a-book-example.wav"),
+  "it-is-expensive-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/it-is-expensive-example.wav"),
+  "please-reduce-the-price-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/please-reduce-the-price-example.wav"),
+  "i-want-three-mangoes-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-want-three-mangoes-example.wav"),
+  "i-have-money-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-have-money-example.wav"),
+  "give-me-two-bananas-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/give-me-two-bananas-example.wav"),
+  "i-bought-shoes-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/i-bought-shoes-example.wav"),
+
+  // Igbo Idioms and Proverbs lesson (position 16)
+  "proverbs-oil-words-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/proverbs-oil-words-example.wav"),
+  "proverbs-kite-eagle-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/proverbs-kite-eagle-example.wav"),
+  "proverbs-wash-hands-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/proverbs-wash-hands-example.wav"),
+  "proverbs-hands-cooperate-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/proverbs-hands-cooperate-example.wav"),
+  "proverbs-askquestions-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/proverbs-askquestions-example.wav"),
+  "proverbs-one-tree-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/proverbs-one-tree-example.wav"),
+  "proverbs-serve-king-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/proverbs-serve-king-example.wav"),
+  "proverbs-hero-known-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/proverbs-hero-known-example.wav"),
+  "proverbs-actions-good-example": require("../../assets/audio/sentence_breakdowns_examples_igbo/proverbs-actions-good-example.wav"),
 };
 

@@ -209,4 +209,26 @@ export const QUESTION_VISUALS: Record<string, ComponentType<any>> = {
   "opinions-that-true": toSvgComponent(require("../../assets/questions/opinions-that-true.svg")),
   "opinions-that-false": toSvgComponent(require("../../assets/questions/opinions-that-false.svg")),
   "opinions-we-should-go": toSvgComponent(require("../../assets/questions/opinions-we-should-go.svg")),
+
+  // Shopping & Bargaining lesson (position 15)
+  "shopping-how-much": toSvgComponent(require("../../assets/questions/shopping-how-much.svg")),
+  "shopping-want": toSvgComponent(require("../../assets/questions/shopping-want.svg")),
+  "shopping-buying": toSvgComponent(require("../../assets/questions/shopping-buying.svg")),
+  "shopping-expensive": toSvgComponent(require("../../assets/questions/shopping-expensive.svg")),
+  "shopping-bargaining": toSvgComponent(require("../../assets/questions/shopping-bargaining.svg")),
+  "shopping-numbers": toSvgComponent(require("../../assets/questions/shopping-numbers.svg")),
+  "shopping-paying": toSvgComponent(require("../../assets/questions/shopping-paying.svg")),
+  "shopping-bananas": toSvgComponent(require("../../assets/questions/shopping-bananas.svg")),
+  "shopping-bought-shoes": toSvgComponent(require("../../assets/questions/shopping-bought-shoes.svg")),
+
+  // Igbo Idioms and Proverbs lesson (position 16)
+  "proverbs-oil-words": toSvgComponent(require("../../assets/questions/proverbs-oil-words.svg")),
+  "proverbs-kite-eagle": toSvgComponent(require("../../assets/questions/proverbs-kite-eagle.svg")),
+  "proverbs-wash-hands": toSvgComponent(require("../../assets/questions/proverbs-wash-hands.svg")),
+  "proverbs-hands-cooperate": toSvgComponent(require("../../assets/questions/proverbs-hands-cooperate.svg")),
+  "proverbs-askquestions": toSvgComponent(require("../../assets/questions/proverbs-askquestions.svg")),
+  "proverbs-one-tree": toSvgComponent(require("../../assets/questions/proverbs-one-tree.svg")),
+  "proverbs-serve-king": toSvgComponent(require("../../assets/questions/proverbs-serve-king.svg")),
+  "proverbs-hero-known": toSvgComponent(require("../../assets/questions/proverbs-hero-known.svg")),
+  "proverbs-actions-good": toSvgComponent(require("../../assets/questions/proverbs-actions-good.svg")),
 };

@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as AppleAuthentication from "expo-apple-authentication";
 import {
   DMSans_400Regular,
   DMSans_700Bold,
@@ -798,22 +799,55 @@ const SENTENCE_BREAKDOWN_WORD_GLOSSES: Record<string, string[]> = {
   "went-to-market-yesterday": ["went", "I", "market", "yesterday"],
   "will-go-tomorrow": ["will", "I", "come", "tomorrow"],
   "will-come-at-3": ["will", "I", "come", "at", "clock", "three"],
-  "work-in-morning": ["present", "I", "work", "in-morning"],
+  "work-in-morning": ["present", "I", "do", "work", "in-morning"],
   "meet-in-evening": ["we", "will-meet", "in", "evening"],
-  "learning-igbo-this-week": ["present", "I", "learn", "Igbo", "this-week"],
-  "went-market-last-week": ["went", "I", "market", "last-week"],
-  "start-new-job-next-week": ["will", "I", "start", "job", "new", "next-week"],
+  "learning-igbo-this-week": ["present", "I", "learn", "Igbo", "week", "this"],
+  "went-market-last-week": ["went", "I", "market", "week", "went", "past"],
+  "start-new-job-next-week": ["will", "I", "start", "job", "new", "week", "coming"],
 
   // Travel & Culture
   "i-am-travelling": ["present", "I", "go", "journey"],
   "where-is-the-market": ["where", "is", "market", "located"],
   "i-am-going-to-town": ["present", "I", "go", "town"],
-  "we-will-meet-at-village-square": ["we", "will-meet", "at", "village-square"],
-  "my-father-is-at-family-compound": ["father", "my", "is", "at", "family-compound"],
+  "we-will-meet-at-village-square": ["we", "will-meet", "at-square"],
+  "my-father-is-at-family-compound": ["father", "my", "is", "at-family-compound"],
   "i-will-visit-my-sibling": ["will", "I", "visit", "sibling", "my"],
   "the-celebration-was-beautiful": ["celebration", "that", "beautiful", "beautiful"],
   "i-will-visit-my-family": ["will", "I", "visit", "family", "my"],
   "i-am-going-to-my-fathers-hometown": ["present", "I", "go", "town", "father", "my"],
+
+  // Opinions & Debate lesson (position 14)
+  "i-think-it-is-good": ["think", "I", "that", "it", "is", "good"],
+  "in-my-opinion-igbo-easy": ["opinion", "my", "Igbo", "is", "easy"],
+  "i-agree-with-you": ["agree", "I", "you"],
+  "i-disagree": ["agree", "not-I"],
+  "what-do-you-think": ["what", "that", "you", "think"],
+  "i-think-because-useful": ["think", "I", "that", "it", "is", "good", "because", "that", "it", "has", "value"],
+  "that-is-true": ["one", "that", "is", "truth"],
+  "that-is-false": ["one", "that", "is", "lie"],
+  "i-think-we-should-go": ["think", "I", "that", "we", "should", "go"],
+
+  // Shopping & Bargaining lesson (position 15)
+  "how-much-is-it": ["money", "how-much", "that", "it", "is"],
+  "i-want-to-shop": ["want", "I", "to-buy", "goods"],
+  "i-am-buying-a-book": ["present", "I", "buying", "book"],
+  "it-is-expensive": ["it", "is", "excessive", "price"],
+  "please-reduce-the-price": ["please", "reduce", "price", "goods"],
+  "i-want-three-mangoes": ["want", "I", "mango", "three"],
+  "i-have-money": ["have", "I", "money"],
+  "give-me-two-bananas": ["give", "me", "banana", "two"],
+  "i-bought-shoes": ["bought", "I", "skin", "feet"],
+
+  // Igbo Idioms and Proverbs lesson (position 16)
+  "proverbs-oil-words": ["proverb", "is", "oil", "used", "eat", "words"],
+  "proverbs-kite-eagle": ["kite", "perch,", "eagle", "perch"],
+  "proverbs-wash-hands": ["child", "wash-past", "hands,", "he", "join", "plural", "elders", "eat", "food"],
+  "proverbs-hands-cooperate": ["hand", "right", "wash-subjunctive", "hand", "left,", "hand", "left", "wash-subjunctive", "hand", "right"],
+  "proverbs-askquestions": ["person", "question", "does-not", "lose", "way"],
+  "proverbs-one-tree": ["one", "tree", "does-not", "make", "forest"],
+  "proverbs-serve-king": ["person", "serve", "king,", "king", "reach", "him"],
+  "proverbs-hero-known": ["they", "present-identify", "general", "in-battle"],
+  "proverbs-actions-good": ["they", "use", "know", "person", "good", "is", "conduct", "his"],
 };
 
 const QUESTION_BANK: Record<string, Question[]> = {
@@ -837,6 +871,12 @@ const QUESTION_BANK: Record<string, Question[]> = {
   ),
   "opinions-debate": buildSentenceBreakdownQuestionSet(
     buildOpinionsDebateBreakdownSeeds()
+  ),
+  "shopping-bargaining": buildSentenceBreakdownQuestionSet(
+    buildShoppingBargainingBreakdownSeeds()
+  ),
+  "proverbs-idioms": buildSentenceBreakdownQuestionSet(
+    buildProverbsIdiomsBreakdownSeeds()
   ),
   greetings: buildLessonQuestionSet(
     "greetings",
@@ -1152,26 +1192,29 @@ const LESSON_DEFS = [
   { id: "asking-questions", title: "Asking Questions" },
   { id: "family-people", title: "Family and People" },
   { id: "food-cooking", title: "Food and Cooking" },
-  { id: "girl-and-skull", title: "Girl and Skull" },
   { id: "numbers-money", title: "Numbers and Money" },
+  { id: "shopping-bargaining", title: "Shopping & Bargaining" },
   { id: "tenses", title: "Past, Present & Future" },
   { id: "time-dates", title: "Time & Dates" },
   { id: "travel-culture", title: "Travel & Culture" },
-  { id: "opinions-debate", title: "Opinions & Debate" },
   { id: "school-work", title: "School and Work" },
+  { id: "girl-and-skull", title: "Girl and Skull" },
+  { id: "mosquito-and-ear", title: "Mosquito and Ear" },
   { id: "tortoise-and-its-shell", title: "Tortoise and its Shell" },
   { id: "tortoise-and-dove", title: "Tortoise and Dove" },
   { id: "transportation", title: "Transportation" },
   { id: "emotions", title: "Emotions" },
   { id: "health", title: "Health" },
+  { id: "colors", title: "Colors" },
   { id: "household-objects", title: "Household Objects" },
-  { id: "mosquito-and-ear", title: "Mosquito and Ear" },
   { id: "pointing-things-out", title: "Pointing Things Out" },
   { id: "weather-nature", title: "Weather and Nature" },
   { id: "animals", title: "Animals" },
+  { id: "opinions-debate", title: "Opinions & Debate" },
   { id: "elders", title: "Elders" },
   { id: "celebrations", title: "Celebrations" },
-  { id: "colors", title: "Colors" },
+  { id: "proverbs-idioms", title: "Idioms & Proverbs" },
+
 ];
 
 const ACTIVE_QUESTION_BANK: Record<string, Question[]> = QUESTION_BANK;
@@ -1698,6 +1741,48 @@ export default function App() {
     }
   }, []);
 
+  const handleAppAppleSignInRestore = useCallback(async () => {
+    try {
+      const isAvailable = await AppleAuthentication.isAvailableAsync();
+      if (!isAvailable) {
+        Alert.alert(
+          "Not Available",
+          "Apple Authentication is not supported on this device's system version."
+        );
+        return;
+      }
+
+      setIsAuthBusy(true);
+
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      if (credential.identityToken) {
+        // Authenticate/unlock premium
+        setHasPremiumAccess(true);
+        setIsLoggedIn(true);
+        await AsyncStorage.setItem(PREMIUM_UNLOCK_STORAGE_KEY, "true");
+        setScreen("lessons");
+        Alert.alert(
+          "Restore successful",
+          "This Apple ID has an active subscription."
+        );
+      } else {
+        Alert.alert("Authentication failed", "No valid credentials found.");
+      }
+    } catch (error: any) {
+      if (error?.code !== "ERR_REQUEST_CANCELED") {
+        Alert.alert("Sign In Error", error?.message || "An error occurred with Apple Sign In.");
+      }
+    } finally {
+      setIsAuthBusy(false);
+    }
+  }, []);
+
   const handleRestorePurchases = useCallback(async () => {
     if (isAuthBusy) {
       return;
@@ -1706,28 +1791,38 @@ export default function App() {
     setIsAuthBusy(true);
 
     try {
+      // First try normal subscription query, if not, provide choice to restore via Apple Sign In
       const restored = await restorePremiumPurchases();
 
-      if (!restored) {
-        Alert.alert(
-          "Nothing to restore",
-          "No active premium purchase was found for this account."
-        );
+      if (restored) {
+        setHasPremiumAccess(true);
+        setIsLoggedIn(true);
+        await AsyncStorage.setItem(PREMIUM_UNLOCK_STORAGE_KEY, "true");
+        setScreen("lessons");
+        Alert.alert("Premium restored", "Your Premium access is active again.");
         return;
       }
 
-      if (__DEV__) {
-        Alert.alert(
-          "Premium debug",
-          `Access matched by ${getLastPremiumAccessReason()}`
-        );
-      }
-
-      setHasPremiumAccess(true);
-      setIsLoggedIn(true);
-      await AsyncStorage.setItem(PREMIUM_UNLOCK_STORAGE_KEY, "true");
-      setScreen("lessons");
-      Alert.alert("Premium restored", "Your Premium access is active again.");
+      // No active purchase was returned on IAP restore. Provide an Apple Sign In route!
+      Alert.alert(
+        "IAP Restore Empty",
+        "No Active App Store purchase found. Would you like to restore by logging into the Apple ID used to subscribe?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Restore via Apple Sign In",
+            onPress: () => {
+              // Defer execution outside original try task blocks
+              setTimeout(() => {
+                handleAppAppleSignInRestore();
+              }, 100);
+            },
+          },
+        ]
+      );
     } catch (error) {
       const message =
         error instanceof Error && error.message
@@ -1737,7 +1832,7 @@ export default function App() {
     } finally {
       setIsAuthBusy(false);
     }
-  }, [isAuthBusy]);
+  }, [isAuthBusy, handleAppAppleSignInRestore]);
 
   const playActiveAudio = useCallback(async () => {
     const resolvedAudioKey = activeQuestion?.audioKey;
@@ -2985,6 +3080,232 @@ function buildOpinionsDebateBreakdownSeeds(): SentenceBreakdownSeed[] {
       },
       illustrationKey: "opinions-we-should-go",
       audioKey: "i-think-we-should-go",
+    },
+  ];
+}
+
+function buildShoppingBargainingBreakdownSeeds(): SentenceBreakdownSeed[] {
+  return [
+    {
+      sourceSentence: "How much is it?",
+      targetWords: ["Ego", "ole", "ka", "ọ", "bụ?"],
+      distractors: ["Achọrọ", "m", "dị", "nri"],
+      igboRule: "'Ego ole ka ọ bụ?' is the universal question for 'How much is it?'",
+      anotherExample: {
+        igbo: "Ego ole ka mango a bụ?",
+        english: "How much is this mango?",
+      },
+      illustrationKey: "shopping-how-much",
+      audioKey: "how-much-is-it",
+    },
+    {
+      sourceSentence: "I want to shop.",
+      targetWords: ["Achọrọ", "m", "ịzụ", "ahịa"],
+      distractors: ["Ego", "ole", "bụ", "nri"],
+      igboRule: "'Achọrọ m' means 'I want.' 'Ịzụ ahịa' is the verb phrase 'to shop' or 'to buy goods.'",
+      anotherExample: {
+        igbo: "Achọrọ m mango abụọ.",
+        english: "I want two mangoes.",
+      },
+      illustrationKey: "shopping-want",
+      audioKey: "i-want-to-shop",
+    },
+    {
+      sourceSentence: "I am buying a book.",
+      targetWords: ["Ana", "m", "azụ", "akwụkwọ"],
+      distractors: ["Achọrọ", "bụ", "dị", "ego"],
+      igboRule: "'Ana m azụ' represents the present continuous tense 'I am buying.'",
+      anotherExample: {
+        igbo: "Aga m azụ nri.",
+        english: "I will buy food.",
+      },
+      illustrationKey: "shopping-buying",
+      audioKey: "i-am-buying-a-book",
+    },
+    {
+      sourceSentence: "It is expensive.",
+      targetWords: ["Ọ", "dị", "oke", "ọnụ"],
+      distractors: ["ala", "mfe", "Biko", "ego"],
+      igboRule: "'Ọ dị oke ọnụ' literally translates to 'It is of high mouth/price,' meaning 'expensive.'",
+      anotherExample: {
+        igbo: "Ọ dị ọnụ ala.",
+        english: "It is cheap.",
+      },
+      illustrationKey: "shopping-expensive",
+      audioKey: "it-is-expensive",
+    },
+    {
+      sourceSentence: "Please reduce the price.",
+      targetWords: ["Biko,", "belata", "ọnụ", "ahịa"],
+      distractors: ["dị", "oke", "Achọrọ", "m"],
+      igboRule: "'Belata' is the imperative 'reduce.' 'Biko, belata ọnụ ahịa' is how you barging is Igbo markets.",
+      anotherExample: {
+        igbo: "Ọ dị oke ọnụ. Belata ya ntakịrị.",
+        english: "It is expensive. Reduce it a little.",
+      },
+      illustrationKey: "shopping-bargaining",
+      audioKey: "please-reduce-the-price",
+    },
+    {
+      sourceSentence: "I want three mangoes.",
+      targetWords: ["Achọrọ", "m", "mango", "atọ"],
+      distractors: ["abụọ", "nri", "bụ", "ole"],
+      igboRule: "In Igbo, the adjective or number usually follows the noun it describes ('mango atọ' = three mangoes).",
+      anotherExample: {
+        igbo: "Achọrọ m uwe ọhụrụ.",
+        english: "I want a new cloth.",
+      },
+      illustrationKey: "shopping-numbers",
+      audioKey: "i-want-three-mangoes",
+    },
+    {
+      sourceSentence: "I have money.",
+      targetWords: ["Enwere", "m", "ego"],
+      distractors: ["adịghị", "bụ", "akwụkwọ", "nri"],
+      igboRule: "'Enwere m' means 'I have.' 'Ego' means 'money.'",
+      anotherExample: {
+        igbo: "Ego adịghị m ugbu a.",
+        english: "I don't have money now.",
+      },
+      illustrationKey: "shopping-paying",
+      audioKey: "i-have-money",
+    },
+    {
+      sourceSentence: "Give me two bananas.",
+      targetWords: ["Nye", "m", "banana", "abụọ"],
+      distractors: ["atọ", "achọrọ", "bụ", "ala"],
+      igboRule: "'Nye m' is the command 'Give me.' Always follow it with the noun then the count.",
+      anotherExample: {
+        igbo: "Nye m mango abụọ.",
+        english: "Give me two mangoes.",
+      },
+      illustrationKey: "shopping-bananas",
+      audioKey: "give-me-two-bananas",
+    },
+    {
+      sourceSentence: "I bought shoes.",
+      targetWords: ["Azụrụ", "m", "akpụkpọ", "ụkwụ"],
+      distractors: ["Ana", "aga", "uwe", "nri"],
+      igboRule: "'Azụrụ m' is the past simple 'I bought.' 'Akpụkpọ ụkwụ' literally means 'skin of feet' (shoes).",
+      anotherExample: {
+        igbo: "Azụrụ m uwe.",
+        english: "I bought clothes.",
+      },
+      illustrationKey: "shopping-bought-shoes",
+      audioKey: "i-bought-shoes",
+    },
+  ];
+}
+
+function buildProverbsIdiomsBreakdownSeeds(): SentenceBreakdownSeed[] {
+  return [
+    {
+      sourceSentence: "Proverbs are the palm oil used to eat words.",
+      targetWords: ["Ilu", "bụ", "mmanụ", "eji", "eri", "okwu"],
+      distractors: ["dike", "ogụ", "eze", "osisi"],
+      igboRule: "'Ilu' means 'proverb.' 'Mmanụ' means 'oil' (specifically palm oil here). This teaches that proverbs enrich conversation.",
+      anotherExample: {
+        igbo: "Ilu bụ mmanụ eji eri okwu taa.",
+        english: "Proverbs are the palm oil with which words are eaten today.",
+      },
+      illustrationKey: "proverbs-oil-words",
+      audioKey: "proverbs-oil-words",
+    },
+    {
+      sourceSentence: "Let the kite perch, let the eagle perch.",
+      targetWords: ["Egbe", "bere,", "ugo", "bere"],
+      distractors: ["dike", "onye", "eze", "osisi"],
+      igboRule: "'Egbe' is kite, 'ugo' is eagle. 'Bere' means perch or settle. This advocates for tolerance and equal opportunity.",
+      anotherExample: {
+        igbo: "Biko, egbe bere ugo bere.",
+        english: "Please, let the kite perch and let the eagle perch.",
+      },
+      illustrationKey: "proverbs-kite-eagle",
+      audioKey: "proverbs-kite-eagle",
+    },
+    {
+      sourceSentence: "A child who washes his hands eats with elders.",
+      targetWords: ["Nwata", "kwocha", "aka,", "ọ", "soro", "ndị", "okenye", "rie", "nri"],
+      distractors: ["eze", "dike", "osisi", "ogụ"],
+      igboRule: "'Kwocha aka' is washing hands. 'Okenye' is elder. Good manners and achievement elevate a youth.",
+      anotherExample: {
+        igbo: "Ọ na-eso ndị okenye.",
+        english: "He/she joins the elders.",
+      },
+      illustrationKey: "proverbs-wash-hands",
+      audioKey: "proverbs-wash-hands",
+    },
+    {
+      sourceSentence: "The right hand washes the left, and the left washes the right.",
+      targetWords: ["Aka", "nri", "kwoo", "aka", "ekpe,", "aka", "ekpe", "akụọ", "aka", "nri"],
+      distractors: ["dike", "eze", "ọhịa", "osisi"],
+      igboRule: "'Aka nri' is right hand. 'Aka ekpe' is left hand. Expresses Mutual aid and reciprocal support.",
+      anotherExample: {
+        igbo: "Aka nri na-esiri m ike.",
+        english: "My right hand is strong.",
+      },
+      illustrationKey: "proverbs-hands-cooperate",
+      audioKey: "proverbs-hands-cooperate",
+    },
+    {
+      sourceSentence: "The person who asks questions never loses the way.",
+      targetWords: ["Onye", "ajụjụ", "anaghị", "efu", "ụzọ"],
+      distractors: ["dike", "eze", "mmanụ", "ilu"],
+      igboRule: "'Ajụjụ' is question/asking. 'Efu ụzọ' is losing path. Encourages seeking wisdom and guidance.",
+      anotherExample: {
+        igbo: "Onye ajụjụ na-achọ amamihe.",
+        english: "The person who asks questions seeks wisdom.",
+      },
+      illustrationKey: "proverbs-askquestions",
+      audioKey: "proverbs-askquestions",
+    },
+    {
+      sourceSentence: "One tree does not make a forest.",
+      targetWords: ["Otu", "osisi", "anaghị", "eme", "ọhịa"],
+      distractors: ["dike", "eze", "bọọlu", "nri"],
+      igboRule: "'Otu osisi' is one tree. 'Ọhịa' is forest. Community and teamwork are essential for greatness.",
+      anotherExample: {
+        igbo: "Anyị bụ otu osisi n'ọhịa.",
+        english: "We are one tree in a forest.",
+      },
+      illustrationKey: "proverbs-one-tree",
+      audioKey: "proverbs-one-tree",
+    },
+    {
+      sourceSentence: "Whoever serves the king should receive benefit from the king.",
+      targetWords: ["Onye", "fee", "eze,", "eze", "eruo", "ya"],
+      distractors: ["dike", "mmanụ", "osisi", "aka"],
+      igboRule: "'Fee eze' is serving/knowing the king. Assures that dedication and service lead to reward and status.",
+      anotherExample: {
+        igbo: "Onye fee eze ga-enwe anụrị.",
+        english: "Whoever serves the king will have joy.",
+      },
+      illustrationKey: "proverbs-serve-king",
+      audioKey: "proverbs-serve-king",
+    },
+    {
+      sourceSentence: "A hero is known in battle.",
+      targetWords: ["A", "na-amata", "dike", "n'ogu"],
+      distractors: ["eze", "ilu", "osisi", "nri"],
+      igboRule: "'Dike' is hero/warrior. 'Ogu' is fight/battle. True strength is proven during adversity.",
+      anotherExample: {
+        igbo: "Anyị na-amata dike taa.",
+        english: "We recognize a hero today.",
+      },
+      illustrationKey: "proverbs-hero-known",
+      audioKey: "proverbs-hero-known",
+    },
+    {
+      sourceSentence: "A good person is known by their actions.",
+      targetWords: ["E", "jiri", "mara", "onye", "ọma", "bụ", "omume", "ya"],
+      distractors: ["eze", "dike", "osisi", "aka"],
+      igboRule: "'Omume ya' is his/her behavior or actions. Virtue is shown through real lifestyle choice.",
+      anotherExample: {
+        igbo: "Omume ya mara mma.",
+        english: "His/her behavior is beautiful.",
+      },
+      illustrationKey: "proverbs-actions-good",
+      audioKey: "proverbs-actions-good",
     },
   ];
 }

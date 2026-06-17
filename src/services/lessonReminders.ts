@@ -2,21 +2,16 @@ import * as Notifications from "expo-notifications";
 
 const MORNING_REMINDER_VARIATIONS = [
   "Ndewo 👋 Ready for 2 minutes?",
-  "Daalụ starts with one lesson.",
-  "Olee? Can you understand today's sentence?",
   "Nnọọ. Your next Igbo lesson is waiting.",
   "Biko, learn one sentence today.",
-  "Aha, okwu, mkparịta ụka. Start today's lesson.",
   "Learn something your ezinụlọ might say.",
-  "Today's conversation is ready. Ka anyị gaa.",
 ];
 const NIGHT_REMINDER_VARIATIONS = [
-  "Ndo. No Igbo today.",
+  "Ndo. No Igbo today?",
   "Today isn't over yet. Biko.",
   "One sentence before bed. Daalụ.",
   "No lesson completed today. Ka anyị gaa.",
   "Your future self speaks Igbo. Nnọọ.",
-  "Someone will tell a story in Igbo. Olee?",
   "One lesson. That's enough. Biko.",
   "Tomorrow's conversation starts today. Daalụ.",
   "Learn one thing today. Ka ọ dị?",
